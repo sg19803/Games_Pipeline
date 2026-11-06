@@ -938,18 +938,24 @@ body{
   }
 
   function save() {
+    /* ключа нет — спрашиваем один раз и сразу сохраняем */
+    if (!token()) {
+      var typed = window.prompt('Один раз вставь ключ доступа GitHub — дальше кнопка '
+        + '«Сохранить» будет писать прямо в репозиторий.', '');
+      if (typed && typed.replace(/\s+/g, '')) setToken(typed.replace(/\s+/g, ''));
+    }
     var snap = snapshot();
     var text = collect();
-    var p = token() ? saveViaGitHub(snap) : saveToSaver(snap, text);
+    var p = token() ? saveViaGitHub(snap, 0) : saveToSaver(snap, text);
     withTimeout(p, 20000, 'сохранение').then(function (res) {
       dirty = false;
       toast(res.commit ? 'Сохранено в репозиторий, коммит ' + res.commit
-                       : 'Сохранено в репозиторий: изменений не было');
+                       : 'Сохранено: изменений не было');
     }).catch(function (err) {
       saveLocal();
       var why = (err && err.message) ? String(err.message) : 'нет ответа';
       if (/401|403/.test(why)) setToken('');
-      toast('Файл скачан в «Загрузки». В репозиторий не ушло: ' + why.slice(0, 80));
+      toast('В репозиторий не ушло (' + why.slice(0, 60) + '). Файл скачан в «Загрузки».');
     });
   }
 
