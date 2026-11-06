@@ -733,6 +733,15 @@ body{
     return out;
   }
 
+  /* точный вид полей «ИМЯ»: что в большом поле и каждая строка как есть,
+     включая пустые — иначе после сохранения число полей не восстановить */
+  function nameRows() {
+    var out = [], inputs = namesEl.querySelectorAll('.ninput');
+    for (var i = 0; i < inputs.length; i++) out.push(inputs[i].value || '');
+    return out;
+  }
+  function nameState() { return { head: cnumEl.value || '', rows: nameRows() }; }
+
   function onPlus(e) {
     if (!e.target || !e.target.closest) return;
     if (!e.target.closest('.nplus')) return;
@@ -997,7 +1006,8 @@ body{
       if (t) nodes[id] = t;
       if (R[id].done) done[id] = true;      /* зелёные карточки тоже запоминаем */
     }
-    return { version: 1, savedAt: stamp(), creative: creativeValues(), nodes: nodes, done: done };
+    return { version: 1, savedAt: stamp(), creative: creativeValues(),
+             names: nameState(), nodes: nodes, done: done };
   }
 
   function applySnapshot(data) {
@@ -1020,16 +1030,33 @@ body{
       if (cb) cb.setAttribute('aria-checked', want ? 'true' : 'false');
       changed = true;
     }
-    /* номера креативов: первый — в большое поле, остальные — строками ниже */
-    var want = (data.creative || []).map(function (v) {
-      return String(v == null ? '' : v).replace(/\s+/g, ' ').trim();
-    }).filter(function (v) { return v; });
-    if (JSON.stringify(want) !== JSON.stringify(creativeValues())) {
-      cnumEl.value = want.length ? want[0] : '';
-      while (namesEl.firstChild) namesEl.removeChild(namesEl.firstChild);
-      for (var k = 1; k < want.length; k++) addRow(want[k]);
-      ensureRow();
-      changed = true;
+    /* поля «ИМЯ»: если в снимке есть точный вид — восстанавливаем как было,
+       вместе с пустыми строками; старые снимки (без names) — по-прежнему:
+       первый номер в большое поле, остальные строками ниже */
+    var savedNames = (data.names && typeof data.names === 'object') ? data.names : null;
+    if (savedNames) {
+      var head = String(savedNames.head == null ? '' : savedNames.head);
+      var rows = Array.isArray(savedNames.rows) ? savedNames.rows.map(function (v) {
+        return String(v == null ? '' : v);
+      }) : [];
+      if (cnumEl.value !== head || JSON.stringify(rows) !== JSON.stringify(nameRows())) {
+        cnumEl.value = head;
+        while (namesEl.firstChild) namesEl.removeChild(namesEl.firstChild);
+        for (var r2 = 0; r2 < rows.length; r2++) addRow(rows[r2]);
+        ensureRow();
+        changed = true;
+      }
+    } else {
+      var want = (data.creative || []).map(function (v) {
+        return String(v == null ? '' : v).replace(/\s+/g, ' ').trim();
+      }).filter(function (v) { return v; });
+      if (JSON.stringify(want) !== JSON.stringify(creativeValues())) {
+        cnumEl.value = want.length ? want[0] : '';
+        while (namesEl.firstChild) namesEl.removeChild(namesEl.firstChild);
+        for (var k = 1; k < want.length; k++) addRow(want[k]);
+        ensureRow();
+        changed = true;
+      }
     }
     if (changed) { readSheet(); layout(); }
     return changed;
