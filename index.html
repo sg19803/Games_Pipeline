@@ -762,7 +762,7 @@ body{
     toast('Скачано в «Загрузки»: ' + fileName);
   }
 
-  function save() {
+  function saveLocal() {
     var text = collect();
     if (!window.showSaveFilePicker) { saveAsDownload(text); return; }
     window.showSaveFilePicker({
@@ -783,12 +783,121 @@ body{
     });
   }
 
+  /* ---------- 7. сохранение прямо в репозиторий ----------
+     Страница статическая: сама в GitHub писать она не может. Поэтому рядом
+     с машиной работает «почтальон» — 01_SCRIPTS\GamesPageSaver.py на
+     127.0.0.1:8787: он кладёт тексты в pipeline-data.json, коммитит и пушит.
+     Нет почтальона — как раньше: файл скачивается в «Загрузки». ---------- */
+  var SAVER = 'http://127.0.0.1:8787';
+  var dataFile = 'pipeline-data.json';
+
+  function snapshot() {
+    var nodes = {};
+    var id, t;
+    for (id in R) {
+      if (id.indexOf('bad') === 0 || id.indexOf('good') === 0) continue;
+      t = nodeText(id);
+      if (t) nodes[id] = t;
+    }
+    var creative = [];
+    var inputs = namesEl.querySelectorAll('.ninput');
+    for (var i = 0; i < inputs.length; i++) {
+      var v = (inputs[i].value || '').trim();
+      if (v) creative.push(v);
+    }
+    return { version: 1, savedAt: stamp(), creative: creative, nodes: nodes };
+  }
+
+  function applySnapshot(data) {
+    if (!data || !data.nodes) return false;
+    var changed = false;
+    for (var id in data.nodes) {
+      if (!R[id] || id.indexOf('bad') === 0 || id.indexOf('good') === 0) continue;
+      var t = String(data.nodes[id] == null ? '' : data.nodes[id])
+        .replace(/\s+/g, ' ').trim();
+      if (t && nodeText(id) !== t) { R[id].el.textContent = t; changed = true; }
+    }
+    if (data.creative && data.creative.length) {
+      var inputs = namesEl.querySelectorAll('.ninput');
+      if (inputs.length) {
+        inputs[0].value = data.creative[0];
+        for (var k = 1; k < data.creative.length; k++) {
+          var row = inputs[inputs.length - 1].closest('.nrow');
+          var copy = row.cloneNode(true);
+          copy.querySelector('.ninput').value = data.creative[k];
+          row.parentNode.insertBefore(copy, row.nextSibling);
+          inputs = namesEl.querySelectorAll('.ninput');
+        }
+        changed = true;
+      }
+    }
+    if (changed) { readSheet(); layout(); }
+    return changed;
+  }
+
+  function withTimeout(promise, ms, what) {
+    return new Promise(function (resolve, reject) {
+      var t = setTimeout(function () { reject(new Error(what + ' не ответил за ' + ms + ' мс')); }, ms);
+      promise.then(function (v) { clearTimeout(t); resolve(v); },
+                   function (e) { clearTimeout(t); reject(e); });
+    });
+  }
+
+  function saveToRepo(snap, text) {
+    var req = fetch(SAVER + '/save', {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-store',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: snap, text: text })
+    }).then(function (r) {
+      return r.text().then(function (raw) {
+        var json = null;
+        try { json = JSON.parse(raw); } catch (e) { json = null; }
+        if (!r.ok || !json || json.ok !== true) {
+          var why = (json && (json.error || json.detail)) || ('HTTP ' + r.status);
+          throw new Error(String(why));
+        }
+        return json;
+      });
+    });
+    return withTimeout(req, 20000, 'почтальон');
+  }
+
+  function save() {
+    var snap = snapshot();
+    var text = collect();
+    saveToRepo(snap, text).then(function (res) {
+      dirty = false;
+      toast(res.commit ? 'Сохранено в репозиторий, коммит ' + res.commit
+                       : 'Сохранено в репозиторий: изменений не было');
+    }).catch(function (err) {
+      saveLocal();
+      var why = (err && err.message) ? String(err.message).slice(0, 70) : 'нет ответа';
+      toast('Не сохранилось в репозиторий (' + why + ') — файл скачан в «Загрузки»');
+    });
+  }
+
   document.getElementById('save').addEventListener('click', save);
+
+  /* при открытии подхватываем то, что уже лежит в репозитории */
+  fetch(dataFile + '?v=' + Date.now(), { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (data) {
+      if (applySnapshot(data)) {
+        dirty = false;
+        toast('Загружены сохранённые тексты: ' + (data.savedAt || ''));
+      }
+    })
+    .catch(function () { /* файла нет или страница открыта локально */ });
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
     layout: layout,
     collect: collect,
+    snapshot: snapshot,
+    applySnapshot: applySnapshot,
+    save: save,
     download: function () { saveAsDownload(collect()); }
   };
 
