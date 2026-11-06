@@ -897,6 +897,7 @@ body{
     collect: collect,
     snapshot: snapshot,
     applySnapshot: applySnapshot,
+    set: function (id, text) { if (R[id]) { R[id].el.textContent = text; readSheet(); layout(); } },
     save: save,
     download: function () { saveAsDownload(collect()); }
   };
