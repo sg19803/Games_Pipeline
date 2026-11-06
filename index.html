@@ -147,6 +147,20 @@ body{
 .w.b{stroke:var(--blue)}
 .w.r{stroke:var(--red)}
 .w.t{stroke-width:1.4}
+/* ---- пустое поле для заметок внизу каждого блока ----
+   высота задана числом: текст внутри поля не растит ни поле, ни блок,
+   вместо этого появляется ползунок прокрутки */
+.notes{position:absolute; left:0; top:0}
+.note{
+  position:absolute; margin:0; padding:9px 11px;
+  border:1px solid var(--hair); border-radius:11px; background:#fff; color:var(--ink);
+  font:inherit; font-size:12px; font-weight:500; line-height:1.4; letter-spacing:-.004em;
+  white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word;
+  resize:none; overflow:auto; outline:none;
+  transition:border-color .18s ease, box-shadow .18s ease;
+}
+.note:hover{border-color:#d8d8de}
+.note:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,113,227,.16)}
 /* ---- правка текста прямо в карточке ---- */
 .node[contenteditable="true"]{
   cursor:text; outline:none; overflow-wrap:anywhere; word-break:break-word;
@@ -200,6 +214,7 @@ body{
       <div class="names" id="names"></div>
       <div class="stage" id="stage">
         <div class="frames" id="frames"></div>
+        <div class="notes" id="notes"></div>
         <svg class="wires" id="wires" xmlns="http://www.w3.org/2000/svg"></svg>
         <div class="nodes" id="nodes"></div>
       </div>
@@ -213,6 +228,7 @@ body{
   var NS = 'http://www.w3.org/2000/svg';
   var nodesEl  = document.getElementById('nodes');
   var framesEl = document.getElementById('frames');
+  var notesEl  = document.getElementById('notes');
   var wiresEl  = document.getElementById('wires');
   var stageEl  = document.getElementById('stage');
   var sheetEl  = document.getElementById('sheet');
@@ -237,6 +253,8 @@ body{
   var PGAPX = 48;     // зазор под вертикальную перемычку в персиковой панели
 
   var R = {};
+  /* поле заметок внизу блока: высота постоянная, текст её не меняет */
+  var NOTE_H = 160, NOTE_GAP = 26;
   var framesOut = [];   /* границы блоков — нужны для сохранения текстов по порядку */
   var panelOut = null;  /* границы персиковой панели — чтобы отделить её от основного ряда */
 
@@ -506,7 +524,10 @@ body{
   }
   var frameTop = minT - PAD;
   /* все рамки одной высоты: низ считается и по персиковой панели, иначе блок 2 торчит */
-  var frameBot = Math.max(maxB, F.panel.b) + PAD;
+  /* под карточками (и персиковой панелью) оставлено место под поле заметок:
+     рамка блока вытянута вниз на высоту поля, сам текст рамку не растит */
+  var notesTop = Math.max(maxB, F.panel.b) + NOTE_GAP;
+  var frameBot = notesTop + NOTE_H + PAD;
 
   var frames = [F1, F2, F3, F45, F6, F7].map(function (f) {
     return { l: f.l, r: f.r, t: frameTop, b: frameBot };
@@ -545,6 +566,24 @@ body{
   pn.style.width = Math.round(F.panel.r - F.panel.l) + 'px';
   pn.style.height = Math.round(F.panel.b - F.panel.t) + 'px';
   framesEl.appendChild(pn);
+
+  /* ---------- 3б. пустые поля для заметок: по одному в каждом блоке ----------
+     создаём один раз, при пересборке только двигаем — набранный текст остаётся */
+  while (notesEl.children.length > frames.length) notesEl.removeChild(notesEl.lastChild);
+  while (notesEl.children.length < frames.length) {
+    var nt = document.createElement('textarea');
+    nt.className = 'note';
+    nt.spellcheck = false;
+    nt.setAttribute('aria-label', 'Заметки блока');
+    notesEl.appendChild(nt);
+  }
+  for (i = 0; i < frames.length; i++) {
+    var ne = notesEl.children[i];
+    ne.style.left = Math.round(frames[i].l + PAD + OX) + 'px';
+    ne.style.top = Math.round(notesTop + OY) + 'px';
+    ne.style.width = Math.round(frames[i].r - frames[i].l - 2 * PAD) + 'px';
+    ne.style.height = Math.round(NOTE_H) + 'px';
+  }
 
   stageEl.style.width = stageW + 'px';
   stageEl.style.height = stageH + 'px';
@@ -742,6 +781,17 @@ body{
   }
   function nameState() { return { head: cnumEl.value || '', rows: nameRows() }; }
 
+  /* заметки блоков: номер блока (с 1) → текст как есть; пустые не сохраняем */
+  function noteValues() {
+    var out = {};
+    if (!notesEl) return out;
+    for (var i = 0; i < notesEl.children.length; i++) {
+      var v = notesEl.children[i].value;
+      if (v && v.replace(/\s+/g, ' ').trim()) out[String(i + 1)] = v;
+    }
+    return out;
+  }
+
   function onPlus(e) {
     if (!e.target || !e.target.closest) return;
     if (!e.target.closest('.nplus')) return;
@@ -820,7 +870,8 @@ body{
     if (!t) return;
     if (!t.isContentEditable) {
       /* номер креатива — тоже правка: при закрытии вкладки предупредим */
-      if (t.id === 'cnum' || String(t.className || '').indexOf('ninput') >= 0) dirty = true;
+      if (t.id === 'cnum' || String(t.className || '').indexOf('ninput') >= 0
+          || String(t.className || '').indexOf('note') >= 0) dirty = true;
       return;
     }
     dirty = true;
@@ -1007,7 +1058,7 @@ body{
       if (R[id].done) done[id] = true;      /* зелёные карточки тоже запоминаем */
     }
     return { version: 1, savedAt: stamp(), creative: creativeValues(),
-             names: nameState(), nodes: nodes, done: done };
+             names: nameState(), notes: noteValues(), nodes: nodes, done: done };
   }
 
   function applySnapshot(data) {
@@ -1056,6 +1107,19 @@ body{
         for (var k = 1; k < want.length; k++) addRow(want[k]);
         ensureRow();
         changed = true;
+      }
+    }
+    /* заметки блоков: возвращаем в поля по порядку блоков */
+    /* заметки блоков: возвращаем в поля по порядку блоков */
+    var savedNotes = (data.notes && typeof data.notes === 'object') ? data.notes : null;
+    if (savedNotes && notesEl) {
+      for (var n2 = 0; n2 < notesEl.children.length; n2++) {
+        var wantN = savedNotes[String(n2 + 1)];
+        wantN = String(wantN == null ? '' : wantN);
+        if (notesEl.children[n2].value !== wantN) {
+          notesEl.children[n2].value = wantN;
+          changed = true;
+        }
       }
     }
     if (changed) { readSheet(); layout(); }
