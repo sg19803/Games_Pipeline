@@ -105,8 +105,8 @@ body{
   box-shadow:0 2px 5px rgba(0,0,0,.07), 0 10px 24px rgba(0,80,160,.14), 0 0 0 3px rgba(0,113,227,.14);
 }
 /* смайлики вместо − и + */
-.node.smiley{width:32px; height:32px; padding:0; border-radius:50%; border-width:2px; background:#fff}
-.node.smiley svg{width:19px; height:19px; display:block}
+.node.smiley{width:64px; height:64px; padding:0; border-radius:50%; border-width:2.5px; background:#fff}
+.node.smiley svg{width:46px; height:46px; display:block}
 .node.smiley.bad{border-color:var(--red); color:var(--red)}
 .node.smiley.good{border-color:var(--green); color:var(--green)}
 .node.smiley:hover{transform:translateY(-1px)}
@@ -189,17 +189,22 @@ body{
   var zoomerEl = document.getElementById('zoomer');
   var scroller = document.getElementById('scroller');
 
-  /* сетка: все зазоры одинаковые */
-  var GAPX = 68;      // между блоками по горизонтали
+  /* сетка: один шаг у всех — карточки одной ширины и высоты,
+     шины строго посередине между столбцами, стрелки только горизонтальные */
+  var W    = 138;     // ширина обычной карточки
+  var KW   = 152;     // ширина «ВХОД ЗАДАЧИ» / «Выход задачи»
+  var BUS  = 24;      // от края карточки до вертикальной шины
+  var PAD  = 30;      // поле внутри рамки блока
+  var FGAP = 34;      // между рамками блоков
+  var HGAP = 42;      // между карточками внутри блока (прямая стрелка)
   var GAPY = 26;      // между карточками в столбце
-  var SUBX = 48;      // между под-колонками внутри блока
-  var SUBX2 = 58;     // то же в блоке 2 — чтобы под ним встала персиковая панель
-  var DGAP = 118;     // после ромба — место под смайлики
-  var PAD  = 22;      // поле внутри рамки блока
-  var STUB = 28;      // длина «носика» перед разветвлением
+  var SM   = 64;      // диаметр смайлика
+  var SM_DY = 62;     // смайлик: насколько выше/ниже оси потока
+  var SM_GAP = 18;    // от точки развилки до края кружка
   var PGAP = 26;      // между персиковыми карточками
   var PPAD = 14;      // поле внутри персиковой панели
   var PGAPY = 44;     // от основного ряда до персиковой панели
+  var PGAPX = 48;     // зазор под вертикальную перемычку в персиковой панели
 
   var R = {};
   var framesOut = [];   /* границы блоков — нужны для сохранения текстов по порядку */
@@ -229,36 +234,37 @@ body{
   function mkSmiley(id, kind) {
     var d = document.createElement('div');
     d.className = 'node smiley ' + kind;
+    /* глаза и рот крупные: сам кружок 64px, лицо занимает почти всё поле */
     d.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' +
-      '<circle cx="8.6" cy="9.7" r="1.5" fill="currentColor"/>' +
-      '<circle cx="15.4" cy="9.7" r="1.5" fill="currentColor"/>' +
+      '<circle cx="8.2" cy="9.2" r="2.3" fill="currentColor"/>' +
+      '<circle cx="15.8" cy="9.2" r="2.3" fill="currentColor"/>' +
       '<path d="' + (kind === 'bad'
-        ? 'M7.8 17.4c1.3-2.4 7.1-2.4 8.4 0'
-        : 'M7.8 14.6c1.3 2.4 7.1 2.4 8.4 0') +
-      '" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+        ? 'M6.2 17.9c1.8-3.6 9.8-3.6 11.6 0'
+        : 'M6.2 14.1c1.8 3.6 9.8 3.6 11.6 0') +
+      '" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
     nodesEl.appendChild(d);
     R[id] = { el: d, x: 0, y: 0, w: 0, h: 0 };
   }
 
   /* ---------- 1. содержимое ---------- */
-  mk('in',   'ВХОД ЗАДАЧИ', 152, 'key');
-  mk('b1',   'Разработка идеи', 130);
-  mk('b2',   'Подготовка референсов', 130);
-  mk('scen', 'Создание сценария', 126);
-  mk('v20',  'Создание видео gpt image 2.0 опенрус', 138);
-  mk('txt',  'Создание текстов: опенрус', 138);
-  mk('mont', 'Монтаж и сведение озвучки аудио', 130);
+  mk('in',   'ВХОД ЗАДАЧИ', KW, 'key');
+  mk('b1',   'Разработка идеи', W);
+  mk('b2',   'Подготовка референсов', W);
+  mk('scen', 'Создание сценария', W);
+  mk('v20',  'Создание видео gpt image 2.0 опенрус', W);
+  mk('txt',  'Создание текстов: опенрус', W);
+  mk('mont', 'Монтаж и сведение озвучки аудио', W);
   mk('d1',   'Утверждение', 0, 'diamondWrap');
-  mk('vid',  'Генерация видео veo3 / kling', 138);
-  mk('comp', 'Композитинг VFX', 138);
-  mk('mus',  'Разработка музыки и эффектов', 138);
-  mk('fin',  'Финальный продакшн', 138);
-  mk('sved', 'Сведение в один трек', 138);
-  mk('color','Цветокоррекция', 130);
-  mk('master','Мастеринг звука', 130);
+  mk('vid',  'Генерация видео veo3 / kling', W);
+  mk('comp', 'Композитинг VFX', W);
+  mk('mus',  'Разработка музыки и эффектов', W);
+  mk('fin',  'Финальный продакшн', W);
+  mk('sved', 'Сведение в один трек', W);
+  mk('color','Цветокоррекция', W);
+  mk('master','Мастеринг звука', W);
   mk('d2',   'Утверждение', 0, 'diamondWrap');
-  mk('topj', 'Утверждение Топ джинг', 138);
-  mk('out',  'Выход задачи', 152, 'key');
+  mk('topj', 'Утверждение Топ джинг', W);
+  mk('out',  'Выход задачи', KW, 'key');
   mk('p1', 'Создание локаций в ИИ', 112, 'peach');
   mk('p2', 'Создании персонажей ИИ', 112, 'peach');
   mk('p3', 'Сборка опорных кадров', 112, 'peach');
@@ -273,7 +279,30 @@ body{
   wiresEl.innerHTML = '';
 
   /* замер: ширина задана, высоту даёт сам текст — отсюда «резина» */
+  for (var k0 in R) { R[k0].el.style.height = ''; }
   for (var k in R) { R[k].w = R[k].el.offsetWidth; R[k].h = R[k].el.offsetHeight; }
+
+  /* одна высота у всех обычных карточек: «Композитинг VFX» и «Финальный продакшн»
+     перестают быть разной высоты, столбцы выходят симметричными,
+     а стрелки входят и выходят строго по середине карточки */
+  var FIXED = { d1: 1, d2: 1, bad1: 1, bad2: 1, good1: 1, good2: 1, p1: 1, p2: 1, p3: 1 };
+  var commonH = 0;
+  var kh;
+  for (kh in R) { if (!FIXED[kh]) commonH = Math.max(commonH, R[kh].h); }
+  for (kh in R) {
+    if (FIXED[kh]) continue;
+    R[kh].el.style.height = commonH + 'px';
+    R[kh].h = R[kh].el.offsetHeight;
+  }
+  /* персиковая панель выравнивается внутри себя: три карточки одной высоты */
+  var PEACH = { p1: 1, p2: 1, p3: 1 };
+  var peachH = 0;
+  for (kh in PEACH) peachH = Math.max(peachH, R[kh].h);
+  for (kh in PEACH) {
+    R[kh].el.style.height = peachH + 'px';
+    R[kh].h = R[kh].el.offsetHeight;
+  }
+
   /* раскладка (ось потока y = 0) */
   var axis = 0;
   var F = {};
@@ -299,38 +328,38 @@ body{
   }
 
   var c = 0;
+  var i;
 
-  /* блок 1: вход + развилка */
-  var left1 = c;
+  /* --- блок 1: вход → идея / референсы --- */
   put('in', c, axis);
-  c += R['in'].w + GAPX;
-  var w1 = widest(['b1', 'b2']);
-  stack(['b1', 'b2'], c, axis);
-  var right1 = c + w1;
-  c = right1 + GAPX;
+  var bus1 = R['in'].x + R['in'].w + BUS;      /* шина развилки после входа */
+  var bX = bus1 + BUS;
+  stack(['b1', 'b2'], bX, axis);
+  var F1 = { l: c - PAD, r: bX + widest(['b1', 'b2']) + PAD };
 
-  /* блок 2: сценарий → (видео | тексты) → монтаж */
-  var left2 = c;
-  put('scen', c, axis);
-  c += R.scen.w + SUBX2;
-  stack(['v20', 'txt'], c, axis);
-  c += widest(['v20', 'txt']) + SUBX2;
-  put('mont', c, axis);
-  var right2 = c + R.mont.w;
+  /* --- блок 2: сценарий → видео / тексты → монтаж --- */
+  var f2l = F1.r + FGAP;
+  var bus2 = f2l + PAD;                        /* шина слияния перед сценарием */
+  var scenX = bus2 + BUS;
+  put('scen', scenX, axis);
+  var bus3 = scenX + R.scen.w + BUS;           /* шина развилки сценария */
+  var vX = bus3 + BUS;
+  stack(['v20', 'txt'], vX, axis);
+  var bus4 = vX + widest(['v20', 'txt']) + BUS; /* шина слияния перед монтажом */
+  var montX = bus4 + BUS;
+  put('mont', montX, axis);
+  var F2 = { l: f2l, r: montX + R.mont.w + PAD };
   F.mainBot2 = bottomOf(['scen', 'v20', 'txt', 'mont']);
-  c = right2 + GAPX;
 
   /* персиковая панель — второй ряд внутри блока 2, как на референсе:
      две карточки друг над другом сходятся в одну «Сборка опорных кадров» */
   var panelTop = F.mainBot2 + PGAPY;
   var pCol = ['p1', 'p2'];
-  var i;
   var pColH = R.p1.h + PGAP + R.p2.h;
-  var pColX = left2;
+  var pColX = scenX + PPAD;                    /* левый край панели ровно по столбцу карточек */
   R.p1.x = pColX; R.p1.y = panelTop + PPAD;
   R.p2.x = pColX; R.p2.y = R.p1.y + R.p1.h + PGAP;
   /* правая карточка стоит ровно между двумя левыми */
-  var PGAPX = 48;   /* зазор под вертикальную перемычку — как на референсе */
   R.p3.x = pColX + widest(pCol) + PGAPX;
   R.p3.y = R.p1.y + (pColH - R.p3.h) / 2;
   var pGroupW = widest(pCol) + PGAPX + R.p3.w;
@@ -342,48 +371,51 @@ body{
     b: panelTop + PPAD * 2 + pColH
   };
 
-  /* блок 3: первое «Утверждение» */
-  put('d1', c, axis);
-  var left3 = R.d1.x, right3 = R.d1.x + R.d1.w;
-  c = right3 + DGAP;
+  /* --- блок 3: первое «Утверждение» и два смайлика --- */
+  var f3l = F2.r + FGAP;
+  put('d1', f3l + PAD, axis);
+  var br1 = R.d1.x + R.d1.w + 20;              /* точка развилки сразу после ромба */
+  var sm1x = br1 + SM_GAP + SM / 2;            /* центр красного и зелёного кружка */
+  R.bad1.x = sm1x - SM / 2;  R.bad1.y = axis - SM_DY - SM / 2;
+  R.good1.x = sm1x - SM / 2; R.good1.y = axis + SM_DY - SM / 2;
+  var F3 = { l: f3l, r: sm1x + SM / 2 + PAD };
 
-  /* блок 4: четыре ветки → сведение */
-  var left4 = c;
-  var w4 = widest(['vid', 'comp', 'mus', 'fin']);
-  stack(['vid', 'comp', 'mus', 'fin'], c, axis);
-  c += w4 + GAPX;
-  put('sved', c, axis);
-  var right4 = c + R.sved.w;
-  c = right4 + GAPX;
+  /* --- блок 4: четыре ветки → сведение --- */
+  var f4l = F3.r + FGAP;
+  var bus5 = f4l + PAD;                        /* шина четырёх веток */
+  var v4X = bus5 + BUS;
+  stack(['vid', 'comp', 'mus', 'fin'], v4X, axis);
+  var bus6 = v4X + widest(['vid', 'comp', 'mus', 'fin']) + BUS;  /* шина слияния */
+  var svedX = bus6 + BUS;
+  put('sved', svedX, axis);
+  var F4 = { l: f4l, r: svedX + R.sved.w + PAD };
 
-  /* блок 5: цвет и звук — две ветки параллельно, как на референсе */
-  var left5 = c;
-  stack(['color', 'master'], c, axis);
-  var right5 = c + widest(['color', 'master']) + 16;   /* +16 — место под слияние ветвей */
-  c = right5 + GAPX;
+  /* --- блок 5: цвет и звук — две ветки параллельно --- */
+  var f5l = F4.r + FGAP;
+  var bus7 = f5l + PAD;
+  var cX = bus7 + BUS;
+  stack(['color', 'master'], cX, axis);
+  var bus8 = cX + widest(['color', 'master']) + BUS;
+  var F5 = { l: f5l, r: bus8 + PAD };
 
-  /* блок 6: второе «Утверждение» → джингл → выход */
-  var left6 = c;
-  put('d2', c, axis);
-  c += R.d2.w + DGAP;
-  put('topj', c, axis);
-  c += R.topj.w + GAPX;
-  put('out', c, axis);
-  var right6 = c + R.out.w;
+  /* --- блок 6: второе «Утверждение» → джингл → выход --- */
+  var f6l = F5.r + FGAP;
+  put('d2', f6l + PAD, axis);
+  var br2 = R.d2.x + R.d2.w + 20;
+  var sm2x = br2 + SM_GAP + SM / 2;
+  R.bad2.x = sm2x - SM / 2;  R.bad2.y = axis - SM_DY - SM / 2;
+  R.good2.x = sm2x - SM / 2; R.good2.y = axis + SM_DY - SM / 2;
+  var jx = sm2x + SM / 2 + BUS;                /* «да» выходит вправо и поднимается на ось */
+  var topjX = jx + BUS;
+  put('topj', topjX, axis);
+  var outX = topjX + R.topj.w + HGAP;
+  put('out', outX, axis);
+  var F6 = { l: f6l, r: outX + R.out.w + PAD };
 
-  /* смайлики: красный «нет» сверху, зелёный «да» снизу */
-  var SMILEY_DY = 66;
-  var sxA = right3 + 36, sxB = R.d2.x + R.d2.w + 36;
-  R.bad1.x = sxA - R.bad1.w / 2;  R.bad1.y = axis - SMILEY_DY - R.bad1.h / 2;
-  R.good1.x = sxA - R.good1.w / 2; R.good1.y = axis + SMILEY_DY - R.good1.h / 2;
-  R.bad2.x = sxB - R.bad2.w / 2;  R.bad2.y = axis - SMILEY_DY - R.bad2.h / 2;
-  R.good2.x = sxB - R.good2.w / 2; R.good2.y = axis + SMILEY_DY - R.good2.h / 2;
-  F.sxA = sxA; F.sxB = sxB;
   /* ---------- 3. рамки блоков и общий сдвиг ---------- */
   var minT = Infinity, maxB = -Infinity;
   for (var kk in R) {
     if (kk === 'p1' || kk === 'p2' || kk === 'p3') continue;
-    if (kk.indexOf('bad') === 0 || kk.indexOf('good') === 0) continue;
     minT = Math.min(minT, R[kk].y);
     maxB = Math.max(maxB, R[kk].y + R[kk].h);
   }
@@ -391,14 +423,9 @@ body{
   /* все рамки одной высоты: низ считается и по персиковой панели, иначе блок 2 торчит */
   var frameBot = Math.max(maxB, F.panel.b) + PAD;
 
-  var frames = [
-    { l: left1 - PAD, r: right1 + PAD, t: frameTop, b: frameBot },
-    { l: left2 - PAD, r: right2 + PAD, t: frameTop, b: frameBot },
-    { l: left3 - PAD, r: left4 - 52, t: frameTop, b: frameBot },
-    { l: left4 - PAD, r: right4 + PAD, t: frameTop, b: frameBot },
-    { l: left5 - PAD, r: right5 + PAD, t: frameTop, b: frameBot },
-    { l: left6 - PAD, r: right6 + PAD, t: frameTop, b: frameBot }
-  ];
+  var frames = [F1, F2, F3, F4, F5, F6].map(function (f) {
+    return { l: f.l, r: f.r, t: frameTop, b: frameBot };
+  });
 
   framesOut = frames;
   panelOut = F.panel;
@@ -409,7 +436,7 @@ body{
     fB = Math.max(fB, frames[i].b);
   }
   var OX = -fL, OY = -frameTop;
-  var W = Math.round(fR - fL), H = Math.round(fB - frameTop);
+  var stageW = Math.round(fR - fL), stageH = Math.round(fB - frameTop);
   var busY = frameTop - 28;   /* шина возврата — над рамками */
 
   /* ставим всё на свои места */
@@ -434,11 +461,11 @@ body{
   pn.style.height = Math.round(F.panel.b - F.panel.t) + 'px';
   framesEl.appendChild(pn);
 
-  stageEl.style.width = W + 'px';
-  stageEl.style.height = H + 'px';
-  wiresEl.setAttribute('width', W);
-  wiresEl.setAttribute('height', H);
-  wiresEl.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  stageEl.style.width = stageW + 'px';
+  stageEl.style.height = stageH + 'px';
+  wiresEl.setAttribute('width', stageW);
+  wiresEl.setAttribute('height', stageH);
+  wiresEl.setAttribute('viewBox', '0 0 ' + stageW + ' ' + stageH);
   /* ---------- 4. линии ---------- */
   function svg(tag, attrs) {
     var e = document.createElementNS(NS, tag);
@@ -493,79 +520,74 @@ body{
   function YT(k) { return R[k].y; }
 
   /* вход → две ветки */
-  wire([[X2('in'), axis], [X2('in') + STUB, axis]], 'b');
-  wire([[X2('in') + STUB, YC('b1')], [X2('in') + STUB, YC('b2')]], 'b');
-  wire([[X2('in') + STUB, YC('b1')], [X1('b1'), YC('b1')]], 'b', 'ab');
-  wire([[X2('in') + STUB, YC('b2')], [X1('b2'), YC('b2')]], 'b', 'ab');
+  wire([[X2('in'), axis], [bus1, axis]], 'b');
+  wire([[bus1, YC('b1')], [bus1, YC('b2')]], 'b');
+  wire([[bus1, YC('b1')], [X1('b1'), YC('b1')]], 'b', 'ab');
+  wire([[bus1, YC('b2')], [X1('b2'), YC('b2')]], 'b', 'ab');
 
   /* две ветки → сценарий */
-  wire([[X2('b1'), YC('b1')], [X1('scen') - STUB, YC('b1')]], 'b');
-  wire([[X2('b2'), YC('b2')], [X1('scen') - STUB, YC('b2')]], 'b');
-  wire([[X1('scen') - STUB, YC('b1')], [X1('scen') - STUB, YC('b2')]], 'b');
-  wire([[X1('scen') - STUB, axis], [X1('scen'), axis]], 'b', 'ab');
+  wire([[X2('b1'), YC('b1')], [bus2, YC('b1')]], 'b');
+  wire([[X2('b2'), YC('b2')], [bus2, YC('b2')]], 'b');
+  wire([[bus2, YC('b1')], [bus2, YC('b2')]], 'b');
+  wire([[bus2, axis], [X1('scen'), axis]], 'b', 'ab');
 
   /* сценарий → видео / тексты → монтаж */
-  wire([[X2('scen'), axis], [X2('scen') + STUB, axis]], 'b');
-  wire([[X2('scen') + STUB, YC('v20')], [X2('scen') + STUB, YC('txt')]], 'b');
-  wire([[X2('scen') + STUB, YC('v20')], [X1('v20'), YC('v20')]], 'b', 'ab');
-  wire([[X2('scen') + STUB, YC('txt')], [X1('txt'), YC('txt')]], 'b', 'ab');
-  wire([[X2('v20'), YC('v20')], [X1('mont') - STUB, YC('v20')]], 'b');
-  wire([[X2('txt'), YC('txt')], [X1('mont') - STUB, YC('txt')]], 'b');
-  wire([[X1('mont') - STUB, YC('v20')], [X1('mont') - STUB, YC('txt')]], 'b');
-  wire([[X1('mont') - STUB, axis], [X1('mont'), axis]], 'b', 'ab');
+  wire([[X2('scen'), axis], [bus3, axis]], 'b');
+  wire([[bus3, YC('v20')], [bus3, YC('txt')]], 'b');
+  wire([[bus3, YC('v20')], [X1('v20'), YC('v20')]], 'b', 'ab');
+  wire([[bus3, YC('txt')], [X1('txt'), YC('txt')]], 'b', 'ab');
+  wire([[X2('v20'), YC('v20')], [bus4, YC('v20')]], 'b');
+  wire([[X2('txt'), YC('txt')], [bus4, YC('txt')]], 'b');
+  wire([[bus4, YC('v20')], [bus4, YC('txt')]], 'b');
+  wire([[bus4, axis], [X1('mont'), axis]], 'b', 'ab');
 
   /* монтаж → утверждение */
   wire([[X2('mont'), axis], [X1('d1'), axis]], 'b', 'ab');
-  /* «Утверждение»: смайлики, красный возврат, зелёный выход */
-  function gate(dId, badId, goodId, targetId) {
+
+  /* «Утверждение»: развилка на смайлики, красный возврат, зелёный выход */
+  function gate(dId, badId, goodId, brX, targetId) {
     var bcx = R[badId].x + R[badId].w / 2;         /* центр красного кружка */
-    var fx = X2(dId) + 12;                         /* развилка сразу после ромба */
-    wire([[X2(dId) - 4, axis], [fx, axis]], 'b');
-    wire([[fx, YC(badId)], [fx, YC(goodId)]], 'b');
+    wire([[X2(dId) - 3, axis], [brX, axis]], 'b');
+    wire([[brX, YC(badId)], [brX, YC(goodId)]], 'b');
     /* стрелки входят в кружки слева — как на референсе */
-    wire([[fx, YC(badId)], [X1(badId), YC(badId)]], 'b', 'ab');
-    wire([[fx, YC(goodId)], [X1(goodId), YC(goodId)]], 'b', 'ab');
+    wire([[brX, YC(badId)], [X1(badId), YC(badId)]], 'b', 'ab');
+    wire([[brX, YC(goodId)], [X1(goodId), YC(goodId)]], 'b', 'ab');
     var tx = X1(targetId) + R[targetId].w / 2;
     /* красный возврат: из верхнего кружка вверх, по шине назад, вниз в целевой блок */
     wire([[bcx, YT(badId)], [bcx, busY], [tx, busY], [tx, YT(targetId)]], 'r', 'ar');
   }
-  gate('d1', 'bad1', 'good1', 'scen');
-  gate('d2', 'bad2', 'good2', 'vid');
+  gate('d1', 'bad1', 'good1', br1, 'scen');
+  gate('d2', 'bad2', 'good2', br2, 'vid');
 
   /* «да» → четыре ветки */
-  var fanX = X1('vid') - STUB;
   var fanYs = [YC('vid'), YC('comp'), YC('mus'), YC('fin'), YC('good1')];
-  wire([[X2('good1'), YC('good1')], [fanX, YC('good1')]], 'b');
-  wire([[fanX, Math.min.apply(null, fanYs)], [fanX, Math.max.apply(null, fanYs)]], 'b');
+  wire([[X2('good1'), YC('good1')], [bus5, YC('good1')]], 'b');
+  wire([[bus5, Math.min.apply(null, fanYs)], [bus5, Math.max.apply(null, fanYs)]], 'b');
   ['vid', 'comp', 'mus', 'fin'].forEach(function (k) {
-    wire([[fanX, YC(k)], [X1(k), YC(k)]], 'b', 'ab');
+    wire([[bus5, YC(k)], [X1(k), YC(k)]], 'b', 'ab');
   });
 
   /* четыре ветки → сведение */
-  var mX = Math.max(X2('vid'), X2('comp'), X2('mus'), X2('fin')) + STUB;
   ['vid', 'comp', 'mus', 'fin'].forEach(function (k) {
-    wire([[X2(k), YC(k)], [mX, YC(k)]], 'b');
+    wire([[X2(k), YC(k)], [bus6, YC(k)]], 'b');
   });
-  wire([[mX, YC('vid')], [mX, YC('fin')]], 'b');
-  wire([[mX, axis], [X1('sved'), axis]], 'b', 'ab');
+  wire([[bus6, YC('vid')], [bus6, YC('fin')]], 'b');
+  wire([[bus6, axis], [X1('sved'), axis]], 'b', 'ab');
 
   /* сведение → развилка → цвет и звук (параллельно) → слияние → второе утверждение */
-  var f5 = X2('sved') + 16;
-  wire([[X2('sved'), axis], [f5, axis]], 'b');
-  wire([[f5, YC('color')], [f5, YC('master')]], 'b');
+  wire([[X2('sved'), axis], [bus7, axis]], 'b');
+  wire([[bus7, YC('color')], [bus7, YC('master')]], 'b');
   ['color', 'master'].forEach(function (k) {
-    wire([[f5, YC(k)], [X1(k), YC(k)]], 'b', 'ab');
+    wire([[bus7, YC(k)], [X1(k), YC(k)]], 'b', 'ab');
   });
-  var m5 = Math.max(X2('color'), X2('master')) + 16;
   ['color', 'master'].forEach(function (k) {
-    wire([[X2(k), YC(k)], [m5, YC(k)]], 'b');
+    wire([[X2(k), YC(k)], [bus8, YC(k)]], 'b');
   });
-  wire([[m5, YC('color')], [m5, YC('master')]], 'b');
-  wire([[m5, axis], [X1('d2'), axis]], 'b', 'ab');
+  wire([[bus8, YC('color')], [bus8, YC('master')]], 'b');
+  wire([[bus8, axis], [X1('d2'), axis]], 'b', 'ab');
 
 
   /* «да» → джингл → выход */
-  var jx = X2('good2') + STUB;
   wire([[X2('good2'), YC('good2')], [jx, YC('good2')], [jx, axis]], 'b');
   wire([[jx, axis], [X1('topj'), axis]], 'b', 'ab');
   wire([[X2('topj'), axis], [X1('out'), axis]], 'b', 'ab');
