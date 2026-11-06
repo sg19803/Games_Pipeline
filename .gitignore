@@ -1,0 +1,11 @@
+# снимок страницы до подключения git: рабочий файл теперь index.html
+ai-creative-pipeline.html
+
+# файл, который пишет кнопка «Сохранить» на странице
+ai-creative-pipeline.txt
+
+# служебный мусор Windows/Office
+Thumbs.db
+desktop.ini
+~$*
+*.tmp

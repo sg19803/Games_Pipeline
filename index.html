@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Пайплайн ИИ-креативов</title>
+<style>
+:root{
+  --bg:#f5f5f7; --ink:#1d1d1f; --ink2:#6e6e73; --ink3:#c7c7cc;
+  --hair:#e5e5ea; --blue:#0071e3; --red:#ff3b30; --green:#34c759;
+  --peach:#fdf3ea; --peachLine:#f0dcc6; --dia:#eef6ff; --diaLine:#d5e5fb; --diaInk:#0b4a86;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  display:flex; flex-direction:column; height:100vh; overflow:hidden;
+}
+/* ---- панели сверху нет: лист занимает всё окно ---- */
+/* ---- полотно: белый лист на сером столе ---- */
+.scroller{flex:1 1 auto; overflow:auto; padding:28px 28px 84px; -webkit-overflow-scrolling:touch; display:flex}
+.scroller::-webkit-scrollbar{height:12px; width:12px}
+.scroller::-webkit-scrollbar-track{background:transparent}
+.scroller::-webkit-scrollbar-thumb{background:#d2d2d7; border-radius:6px; border:3px solid var(--bg)}
+.scroller::-webkit-scrollbar-thumb:hover{background:#bcbcc2}
+/* лист всегда по центру окна — и по горизонтали, и по вертикали;
+   margin:auto (а не justify-content) — иначе при зуме обрезается верх */
+.zoomer{position:relative; margin:auto}
+.sheet{
+  position:absolute; left:0; top:0; transform-origin:0 0;
+  background:#fff; border-radius:20px; padding:14px 30px 30px;
+  box-shadow:0 1px 2px rgba(0,0,0,.05), 0 12px 40px rgba(0,0,0,.07);
+}
+/* ---- заголовок: обычная надпись, стоит выше формы ---- */
+.headline{
+  margin:0 0 14px; font-size:40px; font-weight:600; letter-spacing:-.02em; color:var(--ink);
+}
+/* ---- форма имён: пустое поле с серой подсказкой «ИМЯ» и плюсик рядом ---- */
+.names{display:flex; flex-direction:column; gap:9px; margin:0 0 22px}
+.nrow{display:flex; align-items:center; gap:10px}
+.ninput{
+  width:340px; max-width:100%; font:inherit; font-size:15px; letter-spacing:-.004em; color:var(--ink);
+  padding:10px 14px; border:1px solid var(--hair); border-radius:11px; background:#fff;
+  outline:none; transition:border-color .18s ease, box-shadow .18s ease;
+}
+.ninput::placeholder{color:var(--ink3)}
+.ninput:hover{border-color:#d8d8de}
+.ninput:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,113,227,.16)}
+.nplus{
+  flex:0 0 auto; width:34px; height:34px; padding:0; border-radius:50%;
+  border:1px solid var(--hair); background:#fff; color:var(--blue); cursor:pointer;
+  font:inherit; font-size:19px; line-height:1;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .18s ease, border-color .18s ease, transform .15s ease;
+}
+.nplus:hover{background:#f4f9ff; border-color:#c9dcf8}
+.nplus:active{transform:scale(.94)}
+/* ---- полотно схемы ---- */
+.stage{position:relative}
+.frames,.nodes{position:absolute; left:0; top:0}
+.frame{position:absolute; background:#fafafb; border:1px solid #ececf1; border-radius:18px}
+.panel{position:absolute; background:#fdf7f0; border:1px solid #f4e4d1; border-radius:16px}
+.wires{position:absolute; left:0; top:0; overflow:visible; pointer-events:none}
+/* ---- карточки: тянутся по тексту, текст по центру ---- */
+.node{
+  position:absolute; display:flex; align-items:center; justify-content:center;
+  text-align:center; text-wrap:balance;
+  background:#fff; border:1px solid var(--hair); border-radius:11px; padding:10px 11px;
+  font-size:12px; font-weight:500; line-height:1.35; letter-spacing:-.004em; color:var(--ink);
+  box-shadow:0 1px 2px rgba(0,0,0,.05);
+  transition:box-shadow .2s ease, border-color .2s ease, transform .18s ease;
+}
+.node:hover{
+  border-color:#cfcfd8; transform:translateY(-1px);
+  box-shadow:0 2px 5px rgba(0,0,0,.07), 0 10px 24px rgba(0,0,0,.10), 0 0 0 3px rgba(0,113,227,.12);
+}
+.node.key{font-size:13px; font-weight:600; letter-spacing:.055em; padding:14px 12px; border-radius:12px}
+.node.peach{background:var(--peach); border-color:var(--peachLine)}
+.node.peach:hover{
+  border-color:#e2c8a9;
+  box-shadow:0 2px 5px rgba(0,0,0,.06), 0 10px 24px rgba(120,80,30,.13), 0 0 0 3px rgba(214,150,80,.18);
+}
+/* ромб «Утверждение» */
+.node.diamondWrap{width:136px; height:136px; background:none; border:0; box-shadow:none; padding:0}
+.diamondInner{
+  position:absolute; left:50%; top:50%; width:92px; height:92px;
+  transform:translate(-50%,-50%) rotate(45deg);
+  background:var(--dia); border:1px solid var(--diaLine); border-radius:12px;
+  box-shadow:0 1px 2px rgba(0,0,0,.05);
+  transition:box-shadow .2s ease, border-color .2s ease, background .2s ease;
+}
+.diamondWrap span{position:relative; z-index:1; font-size:11px; font-weight:500; color:var(--diaInk)}
+.diamondWrap:hover .diamondInner{
+  border-color:#b9d5f7; background:#e7f1ff;
+  box-shadow:0 2px 5px rgba(0,0,0,.07), 0 10px 24px rgba(0,80,160,.14), 0 0 0 3px rgba(0,113,227,.14);
+}
+/* смайлики вместо − и + */
+.node.smiley{width:32px; height:32px; padding:0; border-radius:50%; border-width:2px; background:#fff}
+.node.smiley svg{width:19px; height:19px; display:block}
+.node.smiley.bad{border-color:var(--red); color:var(--red)}
+.node.smiley.good{border-color:var(--green); color:var(--green)}
+.node.smiley:hover{transform:translateY(-1px)}
+.node.smiley.bad:hover{box-shadow:0 2px 6px rgba(255,59,48,.28), 0 0 0 3px rgba(255,59,48,.16)}
+.node.smiley.good:hover{box-shadow:0 2px 6px rgba(52,199,89,.28), 0 0 0 3px rgba(52,199,89,.16)}
+/* линии */
+.w{fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round}
+.w.b{stroke:var(--blue)}
+.w.r{stroke:var(--red)}
+.w.t{stroke-width:1.4}
+/* ---- правка текста прямо в карточке ---- */
+.node[contenteditable="true"]{
+  cursor:text; outline:none; overflow-wrap:break-word;
+  -webkit-user-modify:read-write-plaintext-only;
+}
+/* курсор-текст и отсутствие «прыжка» при правке — без перекраски рамки */
+.node[contenteditable="true"]:focus{
+  border-color:#8fbdf2; transform:none;
+  box-shadow:0 0 0 3px rgba(0,113,227,.16), 0 4px 14px rgba(0,0,0,.08);
+  background:#fff;
+}
+.node.peach[contenteditable="true"]:focus{background:#fffaf4; border-color:#e2c8a9}
+/* ромб: правится надпись, а не повёрнутый квадрат */
+.diamondWrap span[contenteditable="true"]{cursor:text; outline:none; padding:1px 3px; border-radius:5px}
+.diamondWrap span[contenteditable="true"]:focus{background:#fff; box-shadow:0 0 0 3px rgba(0,113,227,.18)}
+/* ---- временная кнопка «Сохранить» по центру внизу ---- */
+.savebar{position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:30}
+.savebar button{
+  font:inherit; font-size:13px; font-weight:600; letter-spacing:-.004em;
+  padding:9px 24px; border-radius:980px; border:1px solid #d8d8de;
+  background:rgba(255,255,255,.94); color:var(--ink); cursor:pointer;
+  box-shadow:0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.10);
+  -webkit-backdrop-filter:saturate(180%) blur(12px); backdrop-filter:saturate(180%) blur(12px);
+  transition:transform .15s ease, box-shadow .2s ease, background .2s ease;
+}
+.savebar button:hover{
+  background:#fff; transform:translateY(-1px);
+  box-shadow:0 2px 5px rgba(0,0,0,.08), 0 12px 30px rgba(0,0,0,.14);
+}
+.savebar button:active{transform:translateY(0) scale(.98)}
+/* всплывающее подтверждение */
+.toast{
+  position:fixed; left:50%; bottom:72px; transform:translate(-50%,8px);
+  padding:8px 16px; border-radius:980px; background:#1d1d1f; color:#fff;
+  font-size:12.5px; font-weight:500; letter-spacing:-.004em; white-space:nowrap;
+  opacity:0; pointer-events:none; z-index:31;
+  transition:opacity .2s ease, transform .2s ease;
+}
+.toast.on{opacity:1; transform:translate(-50%,0)}
+
+</style>
+</head>
+<body>
+<div class="scroller" id="scroller">
+  <div class="zoomer" id="zoomer">
+    <div class="sheet" id="sheet">
+      <div class="headline">Номер креатива</div>
+      <div class="names" id="names">
+        <div class="nrow">
+          <input class="ninput" type="text" placeholder="ИМЯ" spellcheck="false" autocomplete="off">
+          <button class="nplus" type="button" aria-label="Добавить строку" title="Добавить строку">+</button>
+        </div>
+      </div>
+      <div class="stage" id="stage">
+        <div class="frames" id="frames"></div>
+        <svg class="wires" id="wires" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="nodes" id="nodes"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="savebar"><button id="save" type="button">Сохранить</button></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  var nodesEl  = document.getElementById('nodes');
+  var framesEl = document.getElementById('frames');
+  var wiresEl  = document.getElementById('wires');
+  var stageEl  = document.getElementById('stage');
+  var sheetEl  = document.getElementById('sheet');
+  var zoomerEl = document.getElementById('zoomer');
+  var scroller = document.getElementById('scroller');
+
+  /* сетка: все зазоры одинаковые */
+  var GAPX = 68;      // между блоками по горизонтали
+  var GAPY = 26;      // между карточками в столбце
+  var SUBX = 48;      // между под-колонками внутри блока
+  var SUBX2 = 58;     // то же в блоке 2 — чтобы под ним встала персиковая панель
+  var DGAP = 118;     // после ромба — место под смайлики
+  var PAD  = 22;      // поле внутри рамки блока
+  var STUB = 28;      // длина «носика» перед разветвлением
+  var PGAP = 26;      // между персиковыми карточками
+  var PPAD = 14;      // поле внутри персиковой панели
+  var PGAPY = 44;     // от основного ряда до персиковой панели
+
+  var R = {};
+  var framesOut = [];   /* границы блоков — нужны для сохранения текстов по порядку */
+  var panelOut = null;  /* границы персиковой панели — чтобы отделить её от основного ряда */
+
+  function mk(id, text, w, kind) {
+    var d = document.createElement('div');
+    d.className = 'node' + (kind ? ' ' + kind : '');
+    if (w) d.style.width = w + 'px';
+    if (kind === 'diamondWrap') {
+      /* в ромбе правится надпись, повёрнутый квадрат остаётся фоном */
+      d.innerHTML = '<i class="diamondInner"></i><span></span>';
+      var sp = d.querySelector('span');
+      sp.textContent = text;
+      sp.contentEditable = 'true';
+      sp.spellcheck = false;
+    } else {
+      d.textContent = text;
+      /* текст карточки правится на месте: ширина задана, высота считается по тексту */
+      d.contentEditable = 'true';
+      d.spellcheck = false;
+    }
+    nodesEl.appendChild(d);
+    R[id] = { el: d, x: 0, y: 0, w: 0, h: 0 };
+  }
+
+  function mkSmiley(id, kind) {
+    var d = document.createElement('div');
+    d.className = 'node smiley ' + kind;
+    d.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+      '<circle cx="8.6" cy="9.7" r="1.5" fill="currentColor"/>' +
+      '<circle cx="15.4" cy="9.7" r="1.5" fill="currentColor"/>' +
+      '<path d="' + (kind === 'bad'
+        ? 'M7.8 17.4c1.3-2.4 7.1-2.4 8.4 0'
+        : 'M7.8 14.6c1.3 2.4 7.1 2.4 8.4 0') +
+      '" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+    nodesEl.appendChild(d);
+    R[id] = { el: d, x: 0, y: 0, w: 0, h: 0 };
+  }
+
+  /* ---------- 1. содержимое ---------- */
+  mk('in',   'ВХОД ЗАДАЧИ', 152, 'key');
+  mk('b1',   'Разработка идеи', 130);
+  mk('b2',   'Подготовка референсов', 130);
+  mk('scen', 'Создание сценария', 126);
+  mk('v20',  'Создание видео gpt image 2.0 опенрус', 138);
+  mk('txt',  'Создание текстов: опенрус', 138);
+  mk('mont', 'Монтаж и сведение озвучки аудио', 130);
+  mk('d1',   'Утверждение', 0, 'diamondWrap');
+  mk('vid',  'Генерация видео veo3 / kling', 138);
+  mk('comp', 'Композитинг VFX', 138);
+  mk('mus',  'Разработка музыки и эффектов', 138);
+  mk('fin',  'Финальный продакшн', 138);
+  mk('sved', 'Сведение в один трек', 138);
+  mk('color','Цветокоррекция', 130);
+  mk('master','Мастеринг звука', 130);
+  mk('d2',   'Утверждение', 0, 'diamondWrap');
+  mk('topj', 'Утверждение Топ джинг', 138);
+  mk('out',  'Выход задачи', 152, 'key');
+  mk('p1', 'Создание локаций в ИИ', 112, 'peach');
+  mk('p2', 'Создании персонажей ИИ', 112, 'peach');
+  mk('p3', 'Сборка опорных кадров', 112, 'peach');
+  mkSmiley('bad1', 'bad');  mkSmiley('good1', 'good');
+  mkSmiley('bad2', 'bad');  mkSmiley('good2', 'good');
+
+  /* ---------- 2. раскладка.
+     Считается заново после каждой правки: текст меняет высоту карточки,
+     а рамки и линии пересчитываются по новым замерам («резина»). ---------- */
+  function layout() {
+  framesEl.innerHTML = '';
+  wiresEl.innerHTML = '';
+
+  /* замер: ширина задана, высоту даёт сам текст — отсюда «резина» */
+  for (var k in R) { R[k].w = R[k].el.offsetWidth; R[k].h = R[k].el.offsetHeight; }
+  /* раскладка (ось потока y = 0) */
+  var axis = 0;
+  var F = {};
+
+
+  function put(id, x, cy) { R[id].x = x; R[id].y = cy - R[id].h / 2; }
+  function stack(ids, x, cy) {
+    var t = 0, i;
+    for (i = 0; i < ids.length; i++) t += R[ids[i]].h;
+    t += GAPY * (ids.length - 1);
+    var y = cy - t / 2;
+    for (i = 0; i < ids.length; i++) { R[ids[i]].x = x; R[ids[i]].y = y; y += R[ids[i]].h + GAPY; }
+  }
+  function widest(ids) {
+    var m = 0;
+    for (var i = 0; i < ids.length; i++) m = Math.max(m, R[ids[i]].w);
+    return m;
+  }
+  function bottomOf(ids) {
+    var m = -Infinity;
+    for (var i = 0; i < ids.length; i++) m = Math.max(m, R[ids[i]].y + R[ids[i]].h);
+    return m;
+  }
+
+  var c = 0;
+
+  /* блок 1: вход + развилка */
+  var left1 = c;
+  put('in', c, axis);
+  c += R['in'].w + GAPX;
+  var w1 = widest(['b1', 'b2']);
+  stack(['b1', 'b2'], c, axis);
+  var right1 = c + w1;
+  c = right1 + GAPX;
+
+  /* блок 2: сценарий → (видео | тексты) → монтаж */
+  var left2 = c;
+  put('scen', c, axis);
+  c += R.scen.w + SUBX2;
+  stack(['v20', 'txt'], c, axis);
+  c += widest(['v20', 'txt']) + SUBX2;
+  put('mont', c, axis);
+  var right2 = c + R.mont.w;
+  F.mainBot2 = bottomOf(['scen', 'v20', 'txt', 'mont']);
+  c = right2 + GAPX;
+
+  /* персиковая панель — второй ряд внутри блока 2, как на референсе:
+     две карточки друг над другом сходятся в одну «Сборка опорных кадров» */
+  var panelTop = F.mainBot2 + PGAPY;
+  var pCol = ['p1', 'p2'];
+  var i;
+  var pColH = R.p1.h + PGAP + R.p2.h;
+  var pColX = left2;
+  R.p1.x = pColX; R.p1.y = panelTop + PPAD;
+  R.p2.x = pColX; R.p2.y = R.p1.y + R.p1.h + PGAP;
+  /* правая карточка стоит ровно между двумя левыми */
+  var PGAPX = 48;   /* зазор под вертикальную перемычку — как на референсе */
+  R.p3.x = pColX + widest(pCol) + PGAPX;
+  R.p3.y = R.p1.y + (pColH - R.p3.h) / 2;
+  var pGroupW = widest(pCol) + PGAPX + R.p3.w;
+  /* панель облегает карточки, как на референсе, а не тянется во всю ширину блока */
+  F.panel = {
+    l: pColX - PPAD,
+    r: pColX + pGroupW + PPAD,
+    t: panelTop,
+    b: panelTop + PPAD * 2 + pColH
+  };
+
+  /* блок 3: первое «Утверждение» */
+  put('d1', c, axis);
+  var left3 = R.d1.x, right3 = R.d1.x + R.d1.w;
+  c = right3 + DGAP;
+
+  /* блок 4: четыре ветки → сведение */
+  var left4 = c;
+  var w4 = widest(['vid', 'comp', 'mus', 'fin']);
+  stack(['vid', 'comp', 'mus', 'fin'], c, axis);
+  c += w4 + GAPX;
+  put('sved', c, axis);
+  var right4 = c + R.sved.w;
+  c = right4 + GAPX;
+
+  /* блок 5: цвет и звук — две ветки параллельно, как на референсе */
+  var left5 = c;
+  stack(['color', 'master'], c, axis);
+  var right5 = c + widest(['color', 'master']) + 16;   /* +16 — место под слияние ветвей */
+  c = right5 + GAPX;
+
+  /* блок 6: второе «Утверждение» → джингл → выход */
+  var left6 = c;
+  put('d2', c, axis);
+  c += R.d2.w + DGAP;
+  put('topj', c, axis);
+  c += R.topj.w + GAPX;
+  put('out', c, axis);
+  var right6 = c + R.out.w;
+
+  /* смайлики: красный «нет» сверху, зелёный «да» снизу */
+  var SMILEY_DY = 66;
+  var sxA = right3 + 36, sxB = R.d2.x + R.d2.w + 36;
+  R.bad1.x = sxA - R.bad1.w / 2;  R.bad1.y = axis - SMILEY_DY - R.bad1.h / 2;
+  R.good1.x = sxA - R.good1.w / 2; R.good1.y = axis + SMILEY_DY - R.good1.h / 2;
+  R.bad2.x = sxB - R.bad2.w / 2;  R.bad2.y = axis - SMILEY_DY - R.bad2.h / 2;
+  R.good2.x = sxB - R.good2.w / 2; R.good2.y = axis + SMILEY_DY - R.good2.h / 2;
+  F.sxA = sxA; F.sxB = sxB;
+  /* ---------- 3. рамки блоков и общий сдвиг ---------- */
+  var minT = Infinity, maxB = -Infinity;
+  for (var kk in R) {
+    if (kk === 'p1' || kk === 'p2' || kk === 'p3') continue;
+    if (kk.indexOf('bad') === 0 || kk.indexOf('good') === 0) continue;
+    minT = Math.min(minT, R[kk].y);
+    maxB = Math.max(maxB, R[kk].y + R[kk].h);
+  }
+  var frameTop = minT - PAD;
+  /* все рамки одной высоты: низ считается и по персиковой панели, иначе блок 2 торчит */
+  var frameBot = Math.max(maxB, F.panel.b) + PAD;
+
+  var frames = [
+    { l: left1 - PAD, r: right1 + PAD, t: frameTop, b: frameBot },
+    { l: left2 - PAD, r: right2 + PAD, t: frameTop, b: frameBot },
+    { l: left3 - PAD, r: left4 - 52, t: frameTop, b: frameBot },
+    { l: left4 - PAD, r: right4 + PAD, t: frameTop, b: frameBot },
+    { l: left5 - PAD, r: right5 + PAD, t: frameTop, b: frameBot },
+    { l: left6 - PAD, r: right6 + PAD, t: frameTop, b: frameBot }
+  ];
+
+  framesOut = frames;
+  panelOut = F.panel;
+
+  var fL = Infinity, fR = -Infinity, fB = -Infinity;
+  for (i = 0; i < frames.length; i++) {
+    fL = Math.min(fL, frames[i].l); fR = Math.max(fR, frames[i].r);
+    fB = Math.max(fB, frames[i].b);
+  }
+  var OX = -fL, OY = -frameTop;
+  var W = Math.round(fR - fL), H = Math.round(fB - frameTop);
+  var busY = frameTop - 28;   /* шина возврата — над рамками */
+
+  /* ставим всё на свои места */
+  for (var k2 in R) {
+    R[k2].el.style.left = Math.round(R[k2].x + OX) + 'px';
+    R[k2].el.style.top = Math.round(R[k2].y + OY) + 'px';
+  }
+  for (i = 0; i < frames.length; i++) {
+    var fd = document.createElement('div');
+    fd.className = 'frame';
+    fd.style.left = Math.round(frames[i].l + OX) + 'px';
+    fd.style.top = Math.round(frames[i].t + OY) + 'px';
+    fd.style.width = Math.round(frames[i].r - frames[i].l) + 'px';
+    fd.style.height = Math.round(frames[i].b - frames[i].t) + 'px';
+    framesEl.appendChild(fd);
+  }
+  var pn = document.createElement('div');
+  pn.className = 'panel';
+  pn.style.left = Math.round(F.panel.l + OX) + 'px';
+  pn.style.top = Math.round(F.panel.t + OY) + 'px';
+  pn.style.width = Math.round(F.panel.r - F.panel.l) + 'px';
+  pn.style.height = Math.round(F.panel.b - F.panel.t) + 'px';
+  framesEl.appendChild(pn);
+
+  stageEl.style.width = W + 'px';
+  stageEl.style.height = H + 'px';
+  wiresEl.setAttribute('width', W);
+  wiresEl.setAttribute('height', H);
+  wiresEl.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  /* ---------- 4. линии ---------- */
+  function svg(tag, attrs) {
+    var e = document.createElementNS(NS, tag);
+    for (var a in attrs) e.setAttribute(a, attrs[a]);
+    return e;
+  }
+  var defs = svg('defs', {});
+  [['ab', '#0071e3'], ['ar', '#ff3b30']].forEach(function (m) {
+    var mk = svg('marker', {
+      id: m[0], viewBox: '0 0 10 10', refX: '9.2', refY: '5',
+      markerWidth: '9', markerHeight: '9', markerUnits: 'userSpaceOnUse', orient: 'auto'
+    });
+    mk.appendChild(svg('path', { d: 'M0.6 0.6 L9.2 5 L0.6 9.4 z', fill: m[1] }));
+    defs.appendChild(mk);
+  });
+  wiresEl.appendChild(defs);
+
+  var g = svg('g', { transform: 'translate(' + OX + ',' + OY + ')' });
+  wiresEl.appendChild(g);
+
+  function n(v) { return Math.round(v * 100) / 100; }
+
+  function rounded(pts, r) {
+    if (pts.length < 3) {
+      return 'M' + n(pts[0][0]) + ' ' + n(pts[0][1]) + 'L' + n(pts[1][0]) + ' ' + n(pts[1][1]);
+    }
+    var d = 'M' + n(pts[0][0]) + ' ' + n(pts[0][1]);
+    for (var i = 1; i < pts.length - 1; i++) {
+      var p0 = pts[i - 1], p1 = pts[i], p2 = pts[i + 1];
+      var v1x = p1[0] - p0[0], v1y = p1[1] - p0[1];
+      var v2x = p2[0] - p1[0], v2y = p2[1] - p1[1];
+      var l1 = Math.sqrt(v1x * v1x + v1y * v1y), l2 = Math.sqrt(v2x * v2x + v2y * v2y);
+      if (!l1 || !l2) continue;
+      var rr = Math.min(r, l1 / 2, l2 / 2);
+      d += 'L' + n(p1[0] - v1x / l1 * rr) + ' ' + n(p1[1] - v1y / l1 * rr) +
+           'Q' + n(p1[0]) + ' ' + n(p1[1]) + ' ' +
+           n(p1[0] + v2x / l2 * rr) + ' ' + n(p1[1] + v2y / l2 * rr);
+    }
+    var e2 = pts[pts.length - 1];
+    return d + 'L' + n(e2[0]) + ' ' + n(e2[1]);
+  }
+
+  function wire(pts, colour, marker, thin) {
+    var p = svg('path', { d: rounded(pts, 8), 'class': 'w ' + colour + (thin ? ' t' : '') });
+    if (marker) p.setAttribute('marker-end', 'url(#' + marker + ')');
+    g.appendChild(p);
+  }
+
+  function X1(k) { return R[k].x; }
+  function X2(k) { return R[k].x + R[k].w; }
+  function YC(k) { return R[k].y + R[k].h / 2; }
+  function YT(k) { return R[k].y; }
+
+  /* вход → две ветки */
+  wire([[X2('in'), axis], [X2('in') + STUB, axis]], 'b');
+  wire([[X2('in') + STUB, YC('b1')], [X2('in') + STUB, YC('b2')]], 'b');
+  wire([[X2('in') + STUB, YC('b1')], [X1('b1'), YC('b1')]], 'b', 'ab');
+  wire([[X2('in') + STUB, YC('b2')], [X1('b2'), YC('b2')]], 'b', 'ab');
+
+  /* две ветки → сценарий */
+  wire([[X2('b1'), YC('b1')], [X1('scen') - STUB, YC('b1')]], 'b');
+  wire([[X2('b2'), YC('b2')], [X1('scen') - STUB, YC('b2')]], 'b');
+  wire([[X1('scen') - STUB, YC('b1')], [X1('scen') - STUB, YC('b2')]], 'b');
+  wire([[X1('scen') - STUB, axis], [X1('scen'), axis]], 'b', 'ab');
+
+  /* сценарий → видео / тексты → монтаж */
+  wire([[X2('scen'), axis], [X2('scen') + STUB, axis]], 'b');
+  wire([[X2('scen') + STUB, YC('v20')], [X2('scen') + STUB, YC('txt')]], 'b');
+  wire([[X2('scen') + STUB, YC('v20')], [X1('v20'), YC('v20')]], 'b', 'ab');
+  wire([[X2('scen') + STUB, YC('txt')], [X1('txt'), YC('txt')]], 'b', 'ab');
+  wire([[X2('v20'), YC('v20')], [X1('mont') - STUB, YC('v20')]], 'b');
+  wire([[X2('txt'), YC('txt')], [X1('mont') - STUB, YC('txt')]], 'b');
+  wire([[X1('mont') - STUB, YC('v20')], [X1('mont') - STUB, YC('txt')]], 'b');
+  wire([[X1('mont') - STUB, axis], [X1('mont'), axis]], 'b', 'ab');
+
+  /* монтаж → утверждение */
+  wire([[X2('mont'), axis], [X1('d1'), axis]], 'b', 'ab');
+  /* «Утверждение»: смайлики, красный возврат, зелёный выход */
+  function gate(dId, badId, goodId, targetId) {
+    var bcx = R[badId].x + R[badId].w / 2;         /* центр красного кружка */
+    var fx = X2(dId) + 12;                         /* развилка сразу после ромба */
+    wire([[X2(dId) - 4, axis], [fx, axis]], 'b');
+    wire([[fx, YC(badId)], [fx, YC(goodId)]], 'b');
+    /* стрелки входят в кружки слева — как на референсе */
+    wire([[fx, YC(badId)], [X1(badId), YC(badId)]], 'b', 'ab');
+    wire([[fx, YC(goodId)], [X1(goodId), YC(goodId)]], 'b', 'ab');
+    var tx = X1(targetId) + R[targetId].w / 2;
+    /* красный возврат: из верхнего кружка вверх, по шине назад, вниз в целевой блок */
+    wire([[bcx, YT(badId)], [bcx, busY], [tx, busY], [tx, YT(targetId)]], 'r', 'ar');
+  }
+  gate('d1', 'bad1', 'good1', 'scen');
+  gate('d2', 'bad2', 'good2', 'vid');
+
+  /* «да» → четыре ветки */
+  var fanX = X1('vid') - STUB;
+  var fanYs = [YC('vid'), YC('comp'), YC('mus'), YC('fin'), YC('good1')];
+  wire([[X2('good1'), YC('good1')], [fanX, YC('good1')]], 'b');
+  wire([[fanX, Math.min.apply(null, fanYs)], [fanX, Math.max.apply(null, fanYs)]], 'b');
+  ['vid', 'comp', 'mus', 'fin'].forEach(function (k) {
+    wire([[fanX, YC(k)], [X1(k), YC(k)]], 'b', 'ab');
+  });
+
+  /* четыре ветки → сведение */
+  var mX = Math.max(X2('vid'), X2('comp'), X2('mus'), X2('fin')) + STUB;
+  ['vid', 'comp', 'mus', 'fin'].forEach(function (k) {
+    wire([[X2(k), YC(k)], [mX, YC(k)]], 'b');
+  });
+  wire([[mX, YC('vid')], [mX, YC('fin')]], 'b');
+  wire([[mX, axis], [X1('sved'), axis]], 'b', 'ab');
+
+  /* сведение → развилка → цвет и звук (параллельно) → слияние → второе утверждение */
+  var f5 = X2('sved') + 16;
+  wire([[X2('sved'), axis], [f5, axis]], 'b');
+  wire([[f5, YC('color')], [f5, YC('master')]], 'b');
+  ['color', 'master'].forEach(function (k) {
+    wire([[f5, YC(k)], [X1(k), YC(k)]], 'b', 'ab');
+  });
+  var m5 = Math.max(X2('color'), X2('master')) + 16;
+  ['color', 'master'].forEach(function (k) {
+    wire([[X2(k), YC(k)], [m5, YC(k)]], 'b');
+  });
+  wire([[m5, YC('color')], [m5, YC('master')]], 'b');
+  wire([[m5, axis], [X1('d2'), axis]], 'b', 'ab');
+
+
+  /* «да» → джингл → выход */
+  var jx = X2('good2') + STUB;
+  wire([[X2('good2'), YC('good2')], [jx, YC('good2')], [jx, axis]], 'b');
+  wire([[jx, axis], [X1('topj'), axis]], 'b', 'ab');
+  wire([[X2('topj'), axis], [X1('out'), axis]], 'b', 'ab');
+
+  /* персиковая панель: локации и персонажи сходятся в «Сборку опорных кадров» */
+  var pmx = Math.max(X2('p1'), X2('p2')) + 18;
+  wire([[X2('p1'), YC('p1')], [pmx, YC('p1')]], 'b', null, true);
+  wire([[X2('p2'), YC('p2')], [pmx, YC('p2')]], 'b', null, true);
+  wire([[pmx, YC('p1')], [pmx, YC('p2')]], 'b', null, true);
+  wire([[pmx, YC('p3')], [X1('p3'), YC('p3')]], 'b', 'ab', true);
+
+  /* размеры листа изменились — обновляем рамку прокрутки и масштаб */
+  readSheet();
+  if (manual) apply(); else fit();
+  }
+
+  /* ---------- 4б. форма имён: плюсик добавляет такую же строку ---------- */
+  var namesEl = document.getElementById('names');
+  namesEl.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('.nplus') : null;
+    if (!btn) return;
+    var row = btn.closest('.nrow');
+    var copy = row.cloneNode(true);
+    var inp = copy.querySelector('.ninput');
+    inp.value = '';
+    row.parentNode.insertBefore(copy, row.nextSibling);
+    /* лист стал выше — пересчитываем рамку прокрутки и масштаб */
+    readSheet();
+    if (manual) apply(); else fit();
+    inp.focus();
+  });
+
+  /* ---------- 5. зум ---------- */
+  var zoom = 1, manual = false, SW = 0, SH = 0;
+
+
+  function readSheet() { SW = sheetEl.offsetWidth; SH = sheetEl.offsetHeight; }
+  function apply() {
+    sheetEl.style.transform = 'scale(' + zoom + ')';
+    zoomerEl.style.width = Math.round(SW * zoom) + 'px';
+    zoomerEl.style.height = Math.round(SH * zoom) + 'px';
+  }
+  function setZoom(z) {
+    zoom = Math.max(0.25, Math.min(2, Math.round(z * 100) / 100));
+    manual = true;
+    apply();
+  }
+  function fit() {
+    var aw = scroller.clientWidth - 56;
+    var ah = scroller.clientHeight - 112;   /* 28 сверху + 84 снизу (место под кнопку «Сохранить») */
+    zoom = Math.max(0.25, Math.min(1, aw / SW, ah / SH));
+    zoom = Math.round(zoom * 100) / 100;
+    manual = false;
+    apply();
+  }
+
+  /* кнопок больше нет — зум с клавиатуры и с Ctrl+колесо */
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    /* при правке текста клавиши — это буквы, а не зум */
+    var ae = document.activeElement;
+    if (ae && (ae.isContentEditable || ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) return;
+    if (e.key === '+' || e.key === '=') { setZoom(zoom + 0.1); e.preventDefault(); }
+    else if (e.key === '-' || e.key === '_') { setZoom(zoom - 0.1); e.preventDefault(); }
+    else if (e.key === '0') { fit(); e.preventDefault(); }
+  });
+
+  scroller.addEventListener('wheel', function (e) {
+    if (e.ctrlKey) { setZoom(zoom + (e.deltaY < 0 ? 0.1 : -0.1)); e.preventDefault(); return; }
+    if (!e.shiftKey) return;
+    scroller.scrollLeft += e.deltaY;
+    e.preventDefault();
+  }, { passive: false });
+  window.addEventListener('resize', function () { readSheet(); if (!manual) fit(); });
+
+  /* ---------- 6. правка текста и сохранение в .txt рядом со схемой ---------- */
+  var toastEl = document.getElementById('toast');
+  var toastTimer = 0;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('on'); }, 2800);
+  }
+
+  /* правка меняет высоту карточки — пересобираем раскладку (с задержкой, чтобы не дёргалось) */
+  var tick = 0, dirty = false;
+  document.addEventListener('input', function (e) {
+    if (!e.target || !e.target.isContentEditable) return;
+    dirty = true;
+    if (tick) return;
+    tick = setTimeout(function () { tick = 0; layout(); }, 80);
+  });
+
+  /* не даём закрыть вкладку с несохранёнными правками молча */
+  window.addEventListener('beforeunload', function (e) {
+    if (!dirty) return;
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  });
+
+  /* Enter — не новый абзац: текст переносится сам; Esc — закончить правку */
+  document.addEventListener('keydown', function (e) {
+    if (!e.target || !e.target.isContentEditable) return;
+    if (e.key === 'Enter') { e.preventDefault(); return; }
+    if (e.key === 'Escape') e.target.blur();
+  });
+
+  /* вставка — только чистым текстом, без чужого оформления */
+  document.addEventListener('paste', function (e) {
+    if (!e.target || !e.target.isContentEditable) return;
+    var raw = '';
+    try { raw = (e.clipboardData || window.clipboardData).getData('text/plain') || ''; } catch (err) { raw = ''; }
+    e.preventDefault();
+    raw = raw.replace(/\s+/g, ' ').trim();
+    if (raw) document.execCommand('insertText', false, raw);
+  });
+
+  function two(v) { return (v < 10 ? '0' : '') + v; }
+  function stamp() {
+    var d = new Date();
+    return d.getFullYear() + '-' + two(d.getMonth() + 1) + '-' + two(d.getDate()) + ' ' +
+           two(d.getHours()) + ':' + two(d.getMinutes());
+  }
+
+  function nodeText(id) {
+    return (R[id].el.textContent || '')
+      .replace(/\u00a0/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  /* тексты по блокам, внутри блока — сверху вниз и слева направо */
+  function collect() {
+    var groups = framesOut.map(function (f) { return { l: f.l, r: f.r, items: [] }; });
+    for (var id in R) {
+      if (id.indexOf('bad') === 0 || id.indexOf('good') === 0) continue;   /* смайлики — без текста */
+      var cx = R[id].x + R[id].w / 2;
+      var best = 0, bestD = Infinity;
+      for (var gi = 0; gi < groups.length; gi++) {
+        var g = groups[gi];
+        var d0 = (cx < g.l) ? (g.l - cx) : (cx > g.r ? cx - g.r : 0);
+        if (d0 < bestD) { bestD = d0; best = gi; }
+      }
+      groups[best].items.push({ x: R[id].x, y: R[id].y, h: R[id].h, t: nodeText(id) });
+    }
+    var lines = [];
+    function byX(a, b) { return (a.x - b.x) || (a.y - b.y); }
+    lines.push('Схема пайплайна ИИ-креативов — тексты блоков');
+    lines.push('Сохранено: ' + stamp());
+    var names = [].map.call(namesEl.querySelectorAll('.ninput'), function (i) {
+      return (i.value || '').trim();
+    }).filter(function (v) { return v; });
+    lines.push('Номер креатива: ' + (names.length ? names.join(', ') : '—'));
+    lines.push('');
+    /* панель отделяем только в том блоке, где она стоит */
+    var panelGroup = -1;
+    if (panelOut) {
+      var pcx = (panelOut.l + panelOut.r) / 2;
+      for (var pi = 0; pi < groups.length; pi++) {
+        if (pcx >= groups[pi].l && pcx <= groups[pi].r) { panelGroup = pi; break; }
+      }
+    }
+    for (var i = 0; i < groups.length; i++) {
+      var items = groups[i].items;
+      if (!items.length) continue;
+      /* основной ряд и отдельно — персиковая панель (она ниже основного ряда) */
+      var usePanel = (panelOut && i === panelGroup);
+      var main = [], sub = [];
+      for (var q = 0; q < items.length; q++) {
+        var cy = items[q].y + items[q].h / 2;
+        (usePanel && cy > panelOut.t) ? sub.push(items[q]) : main.push(items[q]);
+      }
+      main.sort(byX); sub.sort(byX);
+      lines.push('Блок ' + (i + 1) + ':');
+      for (var j = 0; j < main.length; j++) lines.push('  ' + (main[j].t || '(пусто)'));
+      if (sub.length) {
+        lines.push('  · панель:');
+        for (var j2 = 0; j2 < sub.length; j2++) lines.push('  ' + (sub[j2].t || '(пусто)'));
+      }
+      lines.push('');
+    }
+    return lines.join('\r\n');
+  }
+
+  var fileName = 'ai-creative-pipeline.txt';
+
+  function saveAsDownload(text) {
+    var blob = new Blob(['\ufeff' + text], { type: 'text/plain;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+    dirty = false;
+    toast('Скачано в «Загрузки»: ' + fileName);
+  }
+
+  function save() {
+    var text = collect();
+    if (!window.showSaveFilePicker) { saveAsDownload(text); return; }
+    window.showSaveFilePicker({
+      suggestedName: fileName,
+      types: [{ description: 'Текстовый документ', accept: { 'text/plain': ['.txt'] } }]
+    }).then(function (handle) {
+      return handle.createWritable().then(function (w) {
+        return w.write(new Blob(['\ufeff' + text], { type: 'text/plain;charset=utf-8' }))
+          .then(function () { return w.close(); })
+          .then(function () { return handle.name; });
+      });
+    }).then(function (name) {
+      dirty = false;
+      toast('Сохранено: ' + name);
+    }).catch(function (err) {
+      if (err && err.name === 'AbortError') { toast('Отменено: папка не выбрана'); return; }
+      saveAsDownload(text);
+    });
+  }
+
+  document.getElementById('save').addEventListener('click', save);
+
+  /* отладочный крючок — для проверки сборки снаружи */
+  window.__pipeline = {
+    layout: layout,
+    collect: collect,
+    download: function () { saveAsDownload(collect()); }
+  };
+
+  /* первая сборка схемы */
+  layout();
+
+
+
+
+
+
+})();
+
+</script>
+</body>
+</html>
