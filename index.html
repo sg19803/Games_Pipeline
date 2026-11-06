@@ -75,10 +75,13 @@ body{
 .node{
   position:absolute; display:flex; align-items:center; justify-content:center;
   text-align:center; text-wrap:balance;
+  /* текст ломается по любой точке: длинное слово (или «ьвьвьв») не вылезает за рамку,
+     а карточка от него растёт вниз */
+  overflow-wrap:anywhere; word-break:break-word; min-width:0;
   background:#fff; border:1px solid var(--hair); border-radius:11px; padding:10px 11px;
   font-size:12px; font-weight:500; line-height:1.35; letter-spacing:-.004em; color:var(--ink);
   box-shadow:0 1px 2px rgba(0,0,0,.05);
-  transition:box-shadow .2s ease, border-color .2s ease, transform .18s ease;
+  transition:box-shadow .2s ease, border-color .2s ease, background .2s ease, color .2s ease, transform .18s ease;
 }
 .node:hover{
   border-color:#cfcfd8; transform:translateY(-1px);
@@ -99,7 +102,7 @@ body{
   box-shadow:0 1px 2px rgba(0,0,0,.05);
   transition:box-shadow .2s ease, border-color .2s ease, background .2s ease;
 }
-.diamondWrap span{position:relative; z-index:1; font-size:11px; font-weight:500; color:var(--diaInk)}
+.diamondWrap .dtx{position:relative; z-index:1; font-size:11px; font-weight:500; color:var(--diaInk)}
 .diamondWrap:hover .diamondInner{
   border-color:#b9d5f7; background:#e7f1ff;
   box-shadow:0 2px 5px rgba(0,0,0,.07), 0 10px 24px rgba(0,80,160,.14), 0 0 0 3px rgba(0,113,227,.14);
@@ -112,6 +115,33 @@ body{
 .node.smiley:hover{transform:translateY(-1px)}
 .node.smiley.bad:hover{box-shadow:0 2px 6px rgba(255,59,48,.28), 0 0 0 3px rgba(255,59,48,.16)}
 .node.smiley.good:hover{box-shadow:0 2px 6px rgba(52,199,89,.28), 0 0 0 3px rgba(52,199,89,.16)}
+/* ---- галочка «сделано» в углу каждой карточки ----
+   стоит на углу рамки (не внутри), поэтому текст остаётся ровно по центру */
+.chk{
+  position:absolute; left:-8px; top:-8px; width:16px; height:16px; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:6px; border:1.5px solid #d4d4da; background:#fff;
+  box-shadow:0 1px 2px rgba(0,0,0,.10); cursor:pointer; opacity:.5;
+  -webkit-user-select:none; user-select:none; z-index:2;
+  transition:opacity .15s ease, background .15s ease, border-color .15s ease, transform .12s ease;
+}
+.node .chk{position:absolute}
+.node:hover .chk{opacity:1}
+.chk:hover{border-color:#9ec9f5; transform:scale(1.08)}
+.chk:active{transform:scale(.95)}
+.chk svg{width:11px; height:11px; display:block; opacity:0; transition:opacity .12s ease}
+.chk svg path{stroke:#fff; stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round}
+/* нажата — карточка зелёная */
+.node.done{background:#e7f8ec; border-color:#9fd9b2; color:#126b3b}
+.node.done .chk{opacity:1; background:var(--green); border-color:var(--green)}
+.node.done .chk svg{opacity:1}
+.node.done:hover{
+  border-color:#7ecb99;
+  box-shadow:0 2px 6px rgba(52,199,89,.24), 0 10px 24px rgba(52,199,89,.18), 0 0 0 3px rgba(52,199,89,.16);
+}
+.node.peach.done{background:#e7f8ec; border-color:#9fd9b2}
+.node.diamondWrap.done .diamondInner{background:#e7f8ec; border-color:#9fd9b2}
+.node.diamondWrap.done .dtx{color:#126b3b}
 /* линии */
 .w{fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round}
 .w.b{stroke:var(--blue)}
@@ -119,7 +149,7 @@ body{
 .w.t{stroke-width:1.4}
 /* ---- правка текста прямо в карточке ---- */
 .node[contenteditable="true"]{
-  cursor:text; outline:none; overflow-wrap:break-word;
+  cursor:text; outline:none; overflow-wrap:anywhere; word-break:break-word;
   -webkit-user-modify:read-write-plaintext-only;
 }
 /* курсор-текст и отсутствие «прыжка» при правке — без перекраски рамки */
@@ -130,8 +160,8 @@ body{
 }
 .node.peach[contenteditable="true"]:focus{background:#fffaf4; border-color:#e2c8a9}
 /* ромб: правится надпись, а не повёрнутый квадрат */
-.diamondWrap span[contenteditable="true"]{cursor:text; outline:none; padding:1px 3px; border-radius:5px}
-.diamondWrap span[contenteditable="true"]:focus{background:#fff; box-shadow:0 0 0 3px rgba(0,113,227,.18)}
+.diamondWrap .dtx[contenteditable="true"]{cursor:text; outline:none; padding:1px 3px; border-radius:5px}
+.diamondWrap .dtx[contenteditable="true"]:focus{background:#fff; box-shadow:0 0 0 3px rgba(0,113,227,.18)}
 /* ---- временная кнопка «Сохранить» по центру внизу ---- */
 .savebar{position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:30}
 .savebar button{
@@ -216,8 +246,8 @@ body{
     if (w) d.style.width = w + 'px';
     if (kind === 'diamondWrap') {
       /* в ромбе правится надпись, повёрнутый квадрат остаётся фоном */
-      d.innerHTML = '<i class="diamondInner"></i><span></span>';
-      var sp = d.querySelector('span');
+      d.innerHTML = '<i class="diamondInner"></i><span class="dtx"></span>';
+      var sp = d.querySelector('.dtx');
       sp.textContent = text;
       sp.contentEditable = 'true';
       sp.spellcheck = false;
@@ -228,7 +258,46 @@ body{
       d.spellcheck = false;
     }
     nodesEl.appendChild(d);
-    R[id] = { el: d, x: 0, y: 0, w: 0, h: 0 };
+    R[id] = { el: d, x: 0, y: 0, w: 0, h: 0, done: false };
+    addChk(id);
+  }
+
+  /* галочка «сделано»: стоит в углу карточки, клик по ней не запускает правку текста */
+  function addChk(id) {
+    var d = R[id].el;
+    var b = document.createElement('span');
+    b.className = 'chk';
+    b.setAttribute('contenteditable', 'false');
+    b.setAttribute('role', 'checkbox');
+    b.setAttribute('aria-checked', R[id].done ? 'true' : 'false');
+    b.title = 'Готово — карточка станет зелёной';
+    b.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5 L8 14.5 L16 5.5"/></svg>';
+    b.addEventListener('mousedown', function (e) { e.preventDefault(); e.stopPropagation(); });
+    b.addEventListener('click', function (e) {
+      e.preventDefault(); e.stopPropagation();
+      setDone(id, !R[id].done);
+    });
+    d.appendChild(b);
+  }
+
+  function setDone(id, on) {
+    if (!R[id]) return;
+    R[id].done = !!on;
+    R[id].el.classList.toggle('done', !!on);
+    var b = R[id].el.querySelector('.chk');
+    if (b) b.setAttribute('aria-checked', on ? 'true' : 'false');
+    readSheet();
+    if (manual) apply(); else fit();
+    dirty = true;
+  }
+
+  /* запись текста в карточку так, чтобы галочка и ромб остались на месте */
+  function setText(id, t) {
+    if (!R[id]) return;
+    var sp = R[id].el.querySelector('.dtx');
+    if (sp) { sp.textContent = t; return; }
+    R[id].el.textContent = t;
+    if (!R[id].el.querySelector('.chk')) addChk(id);
   }
 
   function mkSmiley(id, kind) {
@@ -250,10 +319,12 @@ body{
   mk('in',   'ВХОД ЗАДАЧИ', KW, 'key');
   mk('b1',   'Разработка идеи', W);
   mk('b2',   'Подготовка референсов', W);
-  mk('scen', 'Создание сценария', W);
-  mk('v20',  'Создание видео gpt image 2.0 опенрус', W);
-  mk('txt',  'Создание текстов: опенрус', W);
-  mk('mont', 'Монтаж и сведение озвучки аудио', W);
+  mk('scen', 'Создание точного задания с помощью CLAUDE (skill)', W);
+  mk('v20',  'Создание сценария для видео', W);
+  mk('txt',  'Создание опорных кадров', W);
+  mk('mus0', 'Создание фоновой музыки и саунд эффектов (сырые)', W);
+  mk('mont', 'Аниматик с статическими опорными кадрами', W);
+  mk('mixo', 'Монтаж и сведение озвучки аудио', W);
   mk('d1',   'Утверждение', 0, 'diamondWrap');
   mk('vid',  'Генерация видео veo3 / kling', W);
   mk('comp', 'Композитинг VFX', W);
@@ -266,7 +337,7 @@ body{
   mk('topj', 'Утверждение Топ джинг', W);
   mk('out',  'Выход задачи', KW, 'key');
   mk('p1', 'Создание локаций в ИИ', 112, 'peach');
-  mk('p2', 'Создании персонажей ИИ', 112, 'peach');
+  mk('p2', 'Создание персонажей ИИ', 112, 'peach');
   mk('p3', 'Сборка опорных кадров', 112, 'peach');
   mkSmiley('bad1', 'bad');  mkSmiley('good1', 'good');
   mkSmiley('bad2', 'bad');  mkSmiley('good2', 'good');
@@ -292,8 +363,21 @@ body{
   for (kh in R) {
     if (FIXED[kh]) continue;
     R[kh].el.style.height = commonH + 'px';
-    R[kh].h = R[kh].el.offsetHeight;
   }
+  /* подстраховка: если карточка всё равно просит больше (совсем длинное слово,
+     редкий символ) — общая высота растёт до неё, текст никогда не обрезается */
+  var needH = 0;
+  for (kh in R) {
+    if (FIXED[kh]) continue;
+    if (R[kh].el.scrollHeight > needH) needH = R[kh].el.scrollHeight;
+  }
+  if (needH > commonH) {
+    commonH = needH;
+    for (kh in R) {
+      if (!FIXED[kh]) R[kh].el.style.height = commonH + 'px';
+    }
+  }
+  for (kh in R) { if (!FIXED[kh]) R[kh].h = R[kh].el.offsetHeight; }
   /* персиковая панель выравнивается внутри себя: три карточки одной высоты */
   var PEACH = { p1: 1, p2: 1, p3: 1 };
   var peachH = 0;
@@ -337,7 +421,7 @@ body{
   stack(['b1', 'b2'], bX, axis);
   var F1 = { l: c - PAD, r: bX + widest(['b1', 'b2']) + PAD };
 
-  /* --- блок 2: сценарий → видео / тексты → монтаж --- */
+  /* --- блок 2: задание (CLAUDE) → сценарий для видео / опорные кадры → аниматик → монтаж --- */
   var f2l = F1.r + FGAP;
   var bus2 = f2l + PAD;                        /* шина слияния перед сценарием */
   var scenX = bus2 + BUS;
@@ -345,11 +429,16 @@ body{
   var bus3 = scenX + R.scen.w + BUS;           /* шина развилки сценария */
   var vX = bus3 + BUS;
   stack(['v20', 'txt'], vX, axis);
-  var bus4 = vX + widest(['v20', 'txt']) + BUS; /* шина слияния перед монтажом */
+  var bus4 = vX + widest(['v20', 'txt']) + BUS; /* шина слияния перед аниматиком */
   var montX = bus4 + BUS;
   put('mont', montX, axis);
-  var F2 = { l: f2l, r: montX + R.mont.w + PAD };
-  F.mainBot2 = bottomOf(['scen', 'v20', 'txt', 'mont']);
+  var mixoX = montX + widest(['mont']) + HGAP;  /* монтаж озвучки — сразу за аниматиком */
+  put('mixo', mixoX, axis);
+  var F2 = { l: f2l, r: mixoX + R.mixo.w + PAD };
+  /* «сырые» музыка и звук стоят под аниматиком и входят в него снизу — как на референсе */
+  R.mus0.x = montX + (R.mont.w - R.mus0.w) / 2;
+  R.mus0.y = R.mont.y + R.mont.h + GAPY;
+  F.mainBot2 = bottomOf(['scen', 'v20', 'txt', 'mont', 'mixo', 'mus0']);
 
   /* персиковая панель — второй ряд внутри блока 2, как на референсе:
      две карточки друг над другом сходятся в одну «Сборка опорных кадров» */
@@ -380,7 +469,7 @@ body{
   R.good1.x = sm1x - SM / 2; R.good1.y = axis + SM_DY - SM / 2;
   var F3 = { l: f3l, r: sm1x + SM / 2 + PAD };
 
-  /* --- блок 4: четыре ветки → сведение --- */
+  /* --- блок 4: один блок на две части — четыре ветки → сведение → цвет и звук --- */
   var f4l = F3.r + FGAP;
   var bus5 = f4l + PAD;                        /* шина четырёх веток */
   var v4X = bus5 + BUS;
@@ -388,18 +477,15 @@ body{
   var bus6 = v4X + widest(['vid', 'comp', 'mus', 'fin']) + BUS;  /* шина слияния */
   var svedX = bus6 + BUS;
   put('sved', svedX, axis);
-  var F4 = { l: f4l, r: svedX + R.sved.w + PAD };
-
-  /* --- блок 5: цвет и звук — две ветки параллельно --- */
-  var f5l = F4.r + FGAP;
-  var bus7 = f5l + PAD;
+  /* внутри того же блока: сведение → цвет и мастеринг параллельно (раньше это были два блока) */
+  var bus7 = svedX + R.sved.w + BUS;
   var cX = bus7 + BUS;
   stack(['color', 'master'], cX, axis);
   var bus8 = cX + widest(['color', 'master']) + BUS;
-  var F5 = { l: f5l, r: bus8 + PAD };
+  var F45 = { l: f4l, r: bus8 + PAD };
 
-  /* --- блок 6: второе «Утверждение» → джингл → выход --- */
-  var f6l = F5.r + FGAP;
+  /* --- блок 5 (последний): второе «Утверждение» → джингл → выход --- */
+  var f6l = F45.r + FGAP;
   put('d2', f6l + PAD, axis);
   var br2 = R.d2.x + R.d2.w + 20;
   var sm2x = br2 + SM_GAP + SM / 2;
@@ -423,7 +509,7 @@ body{
   /* все рамки одной высоты: низ считается и по персиковой панели, иначе блок 2 торчит */
   var frameBot = Math.max(maxB, F.panel.b) + PAD;
 
-  var frames = [F1, F2, F3, F4, F5, F6].map(function (f) {
+  var frames = [F1, F2, F3, F45, F6].map(function (f) {
     return { l: f.l, r: f.r, t: frameTop, b: frameBot };
   });
 
@@ -541,8 +627,13 @@ body{
   wire([[bus4, YC('v20')], [bus4, YC('txt')]], 'b');
   wire([[bus4, axis], [X1('mont'), axis]], 'b', 'ab');
 
-  /* монтаж → утверждение */
-  wire([[X2('mont'), axis], [X1('d1'), axis]], 'b', 'ab');
+  /* аниматик → монтаж озвучки → утверждение */
+  wire([[X2('mont'), axis], [X1('mixo'), axis]], 'b', 'ab');
+  wire([[X2('mixo'), axis], [X1('d1'), axis]], 'b', 'ab');
+
+  /* «сырые» музыка и звук входят в аниматик снизу */
+  var m0x = R.mus0.x + R.mus0.w / 2;
+  wire([[m0x, YT('mus0')], [m0x, R.mont.y + R.mont.h]], 'b', 'ab');
 
   /* «Утверждение»: развилка на смайлики, красный возврат, зелёный выход */
   function gate(dId, badId, goodId, brX, targetId) {
@@ -900,14 +991,15 @@ body{
   }
 
   function snapshot() {
-    var nodes = {};
+    var nodes = {}, done = {};
     var id, t;
     for (id in R) {
       if (id.indexOf('bad') === 0 || id.indexOf('good') === 0) continue;
       t = nodeText(id);
       if (t) nodes[id] = t;
+      if (R[id].done) done[id] = true;      /* зелёные карточки тоже запоминаем */
     }
-    return { version: 1, savedAt: stamp(), creative: creativeValues(), nodes: nodes };
+    return { version: 1, savedAt: stamp(), creative: creativeValues(), nodes: nodes, done: done };
   }
 
   function applySnapshot(data) {
@@ -917,7 +1009,18 @@ body{
       if (!R[id] || id.indexOf('bad') === 0 || id.indexOf('good') === 0) continue;
       var t = String(data.nodes[id] == null ? '' : data.nodes[id])
         .replace(/\s+/g, ' ').trim();
-      if (t && nodeText(id) !== t) { R[id].el.textContent = t; changed = true; }
+      if (t && nodeText(id) !== t) { setText(id, t); changed = true; }
+    }
+    /* галочки «сделано» */
+    var dn = data.done || {};
+    for (var id2 in R) {
+      var want = !!dn[id2];
+      if (!!R[id2].done === want) continue;
+      R[id2].done = want;
+      R[id2].el.classList.toggle('done', want);
+      var cb = R[id2].el.querySelector('.chk');
+      if (cb) cb.setAttribute('aria-checked', want ? 'true' : 'false');
+      changed = true;
     }
     /* номера креативов: первый — в большое поле, остальные — строками ниже */
     var want = (data.creative || []).map(function (v) {
@@ -1060,7 +1163,17 @@ body{
     collect: collect,
     snapshot: snapshot,
     applySnapshot: applySnapshot,
-    set: function (id, text) { if (R[id]) { R[id].el.textContent = text; readSheet(); layout(); } },
+    set: function (id, text) { if (R[id]) { setText(id, text); readSheet(); layout(); } },
+    setDone: function (id, on) { setDone(id, on); dirty = false; },
+    rect: function (id) {
+      if (!R[id]) return null;
+      var r = R[id].el.getBoundingClientRect();
+      return { x: R[id].x, y: R[id].y, w: R[id].w, h: R[id].h,
+               sw: R[id].el.scrollWidth, sh: R[id].el.scrollHeight,
+               cw: R[id].el.clientWidth, ch: R[id].el.clientHeight,
+               done: !!R[id].done, text: nodeText(id) };
+    },
+    ids: function () { return Object.keys(R); },
     save: save,
     download: function () { saveAsDownload(collect()); }
   };
