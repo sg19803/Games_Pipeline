@@ -593,15 +593,15 @@ body{
     var inp = document.createElement('input');
     inp.className = 'ninput';
     inp.type = 'text';
-    inp.placeholder = 'ЕЩЁ НОМЕР';
+    inp.placeholder = 'ИМЯ';
     inp.spellcheck = false;
     inp.autocomplete = 'off';
     inp.value = value || '';
     var btn = document.createElement('button');
     btn.className = 'nplus';
     btn.type = 'button';
-    btn.title = 'Добавить ещё номер';
-    btn.setAttribute('aria-label', 'Добавить ещё номер');
+    btn.title = 'Добавить строку';
+    btn.setAttribute('aria-label', 'Добавить строку');
     btn.textContent = '+';
     row.appendChild(inp);
     row.appendChild(btn);
@@ -633,6 +633,12 @@ body{
   }
   namesEl.addEventListener('click', onPlus);
   document.getElementById('cplus').addEventListener('click', onPlus);
+
+  /* на странице всегда есть хотя бы одна строка с подсказкой «ИМЯ» */
+  function ensureRow() {
+    if (!namesEl.querySelector('.ninput')) addRow('');
+  }
+  ensureRow();
 
   /* ---------- 5. зум ---------- */
   var zoom = 1, manual = false, SW = 0, SH = 0;
@@ -899,6 +905,7 @@ body{
       cnumEl.value = want.length ? want[0] : '';
       while (namesEl.firstChild) namesEl.removeChild(namesEl.firstChild);
       for (var k = 1; k < want.length; k++) addRow(want[k]);
+      ensureRow();
       changed = true;
     }
     if (changed) { readSheet(); layout(); }
@@ -1013,17 +1020,6 @@ body{
     });
     keyBtn.title = token() ? 'Ключ есть — сохранение идёт в репозиторий' : 'Вставить ключ доступа';
   }
-
-  /* при открытии подхватываем то, что уже лежит в репозитории */
-  fetch(dataFile + '?v=' + Date.now(), { cache: 'no-store' })
-    .then(function (r) { return r.ok ? r.json() : null; })
-    .then(function (data) {
-      if (applySnapshot(data)) {
-        dirty = false;
-        toast('Загружены сохранённые тексты: ' + (data.savedAt || ''));
-      }
-    })
-    .catch(function () { /* файла нет или страница открыта локально */ });
 
   /* при открытии подхватываем то, что уже лежит в репозитории */
   fetch(dataFile + '?v=' + Date.now(), { cache: 'no-store' })
