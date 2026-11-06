@@ -432,13 +432,11 @@ body{
   var bus4 = vX + widest(['v20', 'txt']) + BUS; /* шина слияния перед аниматиком */
   var montX = bus4 + BUS;
   put('mont', montX, axis);
-  var mixoX = montX + widest(['mont']) + HGAP;  /* монтаж озвучки — сразу за аниматиком */
-  put('mixo', mixoX, axis);
-  var F2 = { l: f2l, r: mixoX + R.mixo.w + PAD };
+  var F2 = { l: f2l, r: montX + widest(['mont']) + PAD };
   /* «сырые» музыка и звук стоят под аниматиком и входят в него снизу — как на референсе */
   R.mus0.x = montX + (R.mont.w - R.mus0.w) / 2;
   R.mus0.y = R.mont.y + R.mont.h + GAPY;
-  F.mainBot2 = bottomOf(['scen', 'v20', 'txt', 'mont', 'mixo', 'mus0']);
+  F.mainBot2 = bottomOf(['scen', 'v20', 'txt', 'mont', 'mus0']);
 
   /* персиковая панель — второй ряд внутри блока 2, как на референсе:
      две карточки друг над другом сходятся в одну «Сборка опорных кадров» */
@@ -484,7 +482,7 @@ body{
   var bus8 = cX + widest(['color', 'master']) + BUS;
   var F45 = { l: f4l, r: bus8 + PAD };
 
-  /* --- блок 5 (последний): второе «Утверждение» → джингл → выход --- */
+  /* --- блок 5 (последний): второе «Утверждение» → монтаж озвучки → джингл → выход --- */
   var f6l = F45.r + FGAP;
   put('d2', f6l + PAD, axis);
   var br2 = R.d2.x + R.d2.w + 20;
@@ -492,7 +490,9 @@ body{
   R.bad2.x = sm2x - SM / 2;  R.bad2.y = axis - SM_DY - SM / 2;
   R.good2.x = sm2x - SM / 2; R.good2.y = axis + SM_DY - SM / 2;
   var jx = sm2x + SM / 2 + BUS;                /* «да» выходит вправо и поднимается на ось */
-  var topjX = jx + BUS;
+  var mixoX = jx + BUS;
+  put('mixo', mixoX, axis);
+  var topjX = mixoX + R.mixo.w + HGAP;
   put('topj', topjX, axis);
   var outX = topjX + R.topj.w + HGAP;
   put('out', outX, axis);
@@ -627,9 +627,8 @@ body{
   wire([[bus4, YC('v20')], [bus4, YC('txt')]], 'b');
   wire([[bus4, axis], [X1('mont'), axis]], 'b', 'ab');
 
-  /* аниматик → монтаж озвучки → утверждение */
-  wire([[X2('mont'), axis], [X1('mixo'), axis]], 'b', 'ab');
-  wire([[X2('mixo'), axis], [X1('d1'), axis]], 'b', 'ab');
+  /* аниматик → утверждение */
+  wire([[X2('mont'), axis], [X1('d1'), axis]], 'b', 'ab');
 
   /* «сырые» музыка и звук входят в аниматик снизу */
   var m0x = R.mus0.x + R.mus0.w / 2;
@@ -678,9 +677,10 @@ body{
   wire([[bus8, axis], [X1('d2'), axis]], 'b', 'ab');
 
 
-  /* «да» → джингл → выход */
+  /* «да» → монтаж озвучки → джингл → выход */
   wire([[X2('good2'), YC('good2')], [jx, YC('good2')], [jx, axis]], 'b');
-  wire([[jx, axis], [X1('topj'), axis]], 'b', 'ab');
+  wire([[jx, axis], [X1('mixo'), axis]], 'b', 'ab');
+  wire([[X2('mixo'), axis], [X1('topj'), axis]], 'b', 'ab');
   wire([[X2('topj'), axis], [X1('out'), axis]], 'b', 'ab');
 
   /* персиковая панель: локации и персонажи сходятся в «Сборку опорных кадров» */
