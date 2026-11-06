@@ -33,10 +33,18 @@ body{
   background:#fff; border-radius:20px; padding:14px 30px 30px;
   box-shadow:0 1px 2px rgba(0,0,0,.05), 0 12px 40px rgba(0,0,0,.07);
 }
-/* ---- заголовок: обычная надпись, стоит выше формы ---- */
+/* ---- заголовок: большое поле с номером креатива ----
+   пусто — серая подсказка «Номер креатива»; ввёл номер — текст чёрный */
+.headrow{display:flex; align-items:center; gap:10px; margin:0 0 14px}
 .headline{
-  margin:0 0 14px; font-size:40px; font-weight:600; letter-spacing:-.02em; color:var(--ink);
+  margin:0; width:420px; max-width:100%; min-width:0;
+  font-family:inherit; font-size:40px; font-weight:600; line-height:1.1; letter-spacing:-.02em;
+  color:var(--ink); background:transparent; border:0; border-bottom:1px solid var(--hair);
+  border-radius:0; padding:0 0 3px; outline:none; transition:border-color .18s ease;
 }
+.headline::placeholder{color:var(--ink3); opacity:1}
+.headline:hover{border-bottom-color:#d0d0d6}
+.headline:focus{border-bottom-color:var(--blue)}
 /* ---- форма имён: пустое поле с серой подсказкой «ИМЯ» и плюсик рядом ---- */
 .names{display:flex; flex-direction:column; gap:9px; margin:0 0 22px}
 .nrow{display:flex; align-items:center; gap:10px}
@@ -155,13 +163,11 @@ body{
 <div class="scroller" id="scroller">
   <div class="zoomer" id="zoomer">
     <div class="sheet" id="sheet">
-      <div class="headline">Номер креатива</div>
-      <div class="names" id="names">
-        <div class="nrow">
-          <input class="ninput" type="text" placeholder="ИМЯ" spellcheck="false" autocomplete="off">
-          <button class="nplus" type="button" aria-label="Добавить строку" title="Добавить строку">+</button>
-        </div>
+      <div class="headrow">
+        <input class="headline" id="cnum" type="text" placeholder="Номер креатива" spellcheck="false" autocomplete="off" aria-label="Номер креатива">
+        <button class="nplus" id="cplus" type="button" aria-label="Добавить ещё номер" title="Добавить ещё номер">+</button>
       </div>
+      <div class="names" id="names"></div>
       <div class="stage" id="stage">
         <div class="frames" id="frames"></div>
         <svg class="wires" id="wires" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -576,21 +582,57 @@ body{
   if (manual) apply(); else fit();
   }
 
-  /* ---------- 4б. форма имён: плюсик добавляет такую же строку ---------- */
+  /* ---------- 4б. номер креатива: большое поле сверху + строки под ним ---------- */
   var namesEl = document.getElementById('names');
-  namesEl.addEventListener('click', function (e) {
-    var btn = e.target.closest ? e.target.closest('.nplus') : null;
-    if (!btn) return;
-    var row = btn.closest('.nrow');
-    var copy = row.cloneNode(true);
-    var inp = copy.querySelector('.ninput');
-    inp.value = '';
-    row.parentNode.insertBefore(copy, row.nextSibling);
+  var cnumEl  = document.getElementById('cnum');
+
+  /* ещё одна строка с номером — появляется по плюсику */
+  function addRow(value) {
+    var row = document.createElement('div');
+    row.className = 'nrow';
+    var inp = document.createElement('input');
+    inp.className = 'ninput';
+    inp.type = 'text';
+    inp.placeholder = 'ЕЩЁ НОМЕР';
+    inp.spellcheck = false;
+    inp.autocomplete = 'off';
+    inp.value = value || '';
+    var btn = document.createElement('button');
+    btn.className = 'nplus';
+    btn.type = 'button';
+    btn.title = 'Добавить ещё номер';
+    btn.setAttribute('aria-label', 'Добавить ещё номер');
+    btn.textContent = '+';
+    row.appendChild(inp);
+    row.appendChild(btn);
+    namesEl.appendChild(row);
+    return inp;
+  }
+
+  /* все номера по порядку: сначала большое поле, потом строки; пустые не считаем */
+  function creativeValues() {
+    var out = [];
+    var head = (cnumEl.value || '').trim();
+    if (head) out.push(head);
+    var inputs = namesEl.querySelectorAll('.ninput');
+    for (var i = 0; i < inputs.length; i++) {
+      var v = (inputs[i].value || '').trim();
+      if (v) out.push(v);
+    }
+    return out;
+  }
+
+  function onPlus(e) {
+    if (!e.target || !e.target.closest) return;
+    if (!e.target.closest('.nplus')) return;
+    var inp = addRow('');
     /* лист стал выше — пересчитываем рамку прокрутки и масштаб */
     readSheet();
     if (manual) apply(); else fit();
     inp.focus();
-  });
+  }
+  namesEl.addEventListener('click', onPlus);
+  document.getElementById('cplus').addEventListener('click', onPlus);
 
   /* ---------- 5. зум ---------- */
   var zoom = 1, manual = false, SW = 0, SH = 0;
@@ -648,7 +690,13 @@ body{
   /* правка меняет высоту карточки — пересобираем раскладку (с задержкой, чтобы не дёргалось) */
   var tick = 0, dirty = false;
   document.addEventListener('input', function (e) {
-    if (!e.target || !e.target.isContentEditable) return;
+    var t = e.target;
+    if (!t) return;
+    if (!t.isContentEditable) {
+      /* номер креатива — тоже правка: при закрытии вкладки предупредим */
+      if (t.id === 'cnum' || String(t.className || '').indexOf('ninput') >= 0) dirty = true;
+      return;
+    }
     dirty = true;
     if (tick) return;
     tick = setTimeout(function () { tick = 0; layout(); }, 80);
@@ -711,9 +759,7 @@ body{
     function byX(a, b) { return (a.x - b.x) || (a.y - b.y); }
     lines.push('Схема пайплайна ИИ-креативов — тексты блоков');
     lines.push('Сохранено: ' + stamp());
-    var names = [].map.call(namesEl.querySelectorAll('.ninput'), function (i) {
-      return (i.value || '').trim();
-    }).filter(function (v) { return v; });
+    var names = creativeValues();
     lines.push('Номер креатива: ' + (names.length ? names.join(', ') : '—'));
     lines.push('');
     /* панель отделяем только в том блоке, где она стоит */
@@ -833,13 +879,7 @@ body{
       t = nodeText(id);
       if (t) nodes[id] = t;
     }
-    var creative = [];
-    var inputs = namesEl.querySelectorAll('.ninput');
-    for (var i = 0; i < inputs.length; i++) {
-      var v = (inputs[i].value || '').trim();
-      if (v) creative.push(v);
-    }
-    return { version: 1, savedAt: stamp(), creative: creative, nodes: nodes };
+    return { version: 1, savedAt: stamp(), creative: creativeValues(), nodes: nodes };
   }
 
   function applySnapshot(data) {
@@ -851,19 +891,15 @@ body{
         .replace(/\s+/g, ' ').trim();
       if (t && nodeText(id) !== t) { R[id].el.textContent = t; changed = true; }
     }
-    if (data.creative && data.creative.length) {
-      var inputs = namesEl.querySelectorAll('.ninput');
-      if (inputs.length) {
-        inputs[0].value = data.creative[0];
-        for (var k = 1; k < data.creative.length; k++) {
-          var row = inputs[inputs.length - 1].closest('.nrow');
-          var copy = row.cloneNode(true);
-          copy.querySelector('.ninput').value = data.creative[k];
-          row.parentNode.insertBefore(copy, row.nextSibling);
-          inputs = namesEl.querySelectorAll('.ninput');
-        }
-        changed = true;
-      }
+    /* номера креативов: первый — в большое поле, остальные — строками ниже */
+    var want = (data.creative || []).map(function (v) {
+      return String(v == null ? '' : v).replace(/\s+/g, ' ').trim();
+    }).filter(function (v) { return v; });
+    if (JSON.stringify(want) !== JSON.stringify(creativeValues())) {
+      cnumEl.value = want.length ? want[0] : '';
+      while (namesEl.firstChild) namesEl.removeChild(namesEl.firstChild);
+      for (var k = 1; k < want.length; k++) addRow(want[k]);
+      changed = true;
     }
     if (changed) { readSheet(); layout(); }
     return changed;
