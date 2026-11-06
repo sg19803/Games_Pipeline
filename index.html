@@ -481,7 +481,7 @@ body{
   var bus8 = cX + widest(['color', 'master']) + BUS;
   var F45 = { l: f4l, r: bus8 + PAD };
 
-  /* --- блок 5 (последний): второе «Утверждение» → джингл → выход --- */
+  /* --- блок 5: второе «Утверждение» со смайликами; блок 6: джингл → выход --- */
   var f6l = F45.r + FGAP;
   put('d2', f6l + PAD, axis);
   var br2 = R.d2.x + R.d2.w + 20;
@@ -489,11 +489,13 @@ body{
   R.bad2.x = sm2x - SM / 2;  R.bad2.y = axis - SM_DY - SM / 2;
   R.good2.x = sm2x - SM / 2; R.good2.y = axis + SM_DY - SM / 2;
   var jx = sm2x + SM / 2 + BUS;                /* «да» выходит вправо и поднимается на ось */
-  var topjX = jx + HGAP;
+  var F6 = { l: f6l, r: jx + PAD };            /* рамка 5: утверждение и смайлики */
+  var f7l = F6.r + FGAP;                       /* рамка 6: джингл и выход */
+  var topjX = f7l + PAD;
   put('topj', topjX, axis);
   var outX = topjX + R.topj.w + HGAP;
   put('out', outX, axis);
-  var F6 = { l: f6l, r: outX + R.out.w + PAD };
+  var F7 = { l: f7l, r: outX + R.out.w + PAD };
 
   /* ---------- 3. рамки блоков и общий сдвиг ---------- */
   var minT = Infinity, maxB = -Infinity;
@@ -506,7 +508,7 @@ body{
   /* все рамки одной высоты: низ считается и по персиковой панели, иначе блок 2 торчит */
   var frameBot = Math.max(maxB, F.panel.b) + PAD;
 
-  var frames = [F1, F2, F3, F45, F6].map(function (f) {
+  var frames = [F1, F2, F3, F45, F6, F7].map(function (f) {
     return { l: f.l, r: f.r, t: frameTop, b: frameBot };
   });
 
