@@ -879,9 +879,9 @@ body{
 
 
   /* путь 1: GitHub API — один файл pipeline-data.json = один коммит */
-  function saveViaGitHub(snap) {
+  function saveViaGitHub(snap, attempt) {
+    attempt = attempt || 0;
     var url = '/repos/' + REPO + '/contents/' + dataFile;
-    var body = null;
     return gh(url + '?ref=' + BRANCH)
       .then(function (r) {
         if (r.status === 401) throw new Error('ключ не подошёл (401) — нажми «Ключ» и вставь новый');
@@ -889,7 +889,7 @@ body{
         return r.status === 404 ? null : r.json();
       })
       .then(function (cur) {
-        body = {
+        var body = {
           message: 'Сохранить со страницы: ' + snap.savedAt,
           content: b64(JSON.stringify(snap, null, 2) + '\n'),
           branch: BRANCH
@@ -898,14 +898,20 @@ body{
         return gh(url, { method: 'PUT', body: JSON.stringify(body) });
       })
       .then(function (r) {
-        if (r.ok) return r.json();
+        /* 409 — файл успели изменить между чтением и записью: перечитываем и повторяем */
+        if (r.status === 409 && attempt < 2) {
+          return new Promise(function (res) { setTimeout(res, 1500); })
+            .then(function () { return saveViaGitHub(snap, attempt + 1); });
+        }
+        if (r.ok) {
+          return r.json().then(function (res) {
+            var sha = res && res.commit && res.commit.sha ? res.commit.sha.slice(0, 7) : '';
+            return { ok: true, commit: sha, via: 'github' };
+          });
+        }
         return r.text().then(function (t) {
           throw new Error('GitHub ' + r.status + ': ' + t.replace(/\s+/g, ' ').slice(0, 90));
         });
-      })
-      .then(function (res) {
-        var sha = res && res.commit && res.commit.sha ? res.commit.sha.slice(0, 7) : '';
-        return { ok: true, commit: sha, via: 'github' };
       });
   }
 
