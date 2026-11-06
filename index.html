@@ -170,7 +170,7 @@ body{
     </div>
   </div>
 </div>
-<div class="savebar"><button id="save" type="button">Сохранить</button></div>
+<div class="savebar"><button id="save" type="button">Сохранить</button><button id="key" type="button">Ключ</button></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 (function () {
@@ -784,12 +784,46 @@ body{
   }
 
   /* ---------- 7. сохранение прямо в репозиторий ----------
-     Страница статическая: сама в GitHub писать она не может. Поэтому рядом
-     с машиной работает «почтальон» — 01_SCRIPTS\GamesPageSaver.py на
-     127.0.0.1:8787: он кладёт тексты в pipeline-data.json, коммитит и пушит.
-     Нет почтальона — как раньше: файл скачивается в «Загрузки». ---------- */
+     Страница статическая: сам браузер в GitHub писать не может, поэтому путей три:
+     1) ключ доступа (токен) вставлен один раз и лежит в localStorage ЭТОГО браузера —
+        сохранение идёт через GitHub API, работает с любого устройства;
+     2) ключа нет — пробуем «почтальона» (01_SCRIPTS\GamesPageSaver.py на 127.0.0.1:8787),
+        если он запущен на этой машине;
+     3) ничего нет — как раньше: файл скачивается в «Загрузки». ---------- */
   var SAVER = 'http://127.0.0.1:8787';
   var dataFile = 'pipeline-data.json';
+  var REPO = 'sg19803/Games_Pipeline';
+  var BRANCH = 'main';
+  var API = 'https://api.github.com';
+  var TOKEN_KEY = 'gh_token_games_pipeline';
+
+  function token() {
+    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+  }
+  function setToken(v) {
+    try {
+      if (v) localStorage.setItem(TOKEN_KEY, v);
+      else localStorage.removeItem(TOKEN_KEY);
+    } catch (e) { /* приватный режим — ключ не запомнится */ }
+  }
+
+  /* base64 для UTF-8: btoa сам кириллицу не умеет */
+  function b64(str) {
+    var bytes = new TextEncoder().encode(str);
+    var bin = '';
+    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+  }
+
+  function gh(path, opts) {
+    var o = opts || {};
+    o.cache = 'no-store';
+    o.headers = o.headers || {};
+    o.headers['Accept'] = 'application/vnd.github+json';
+    o.headers['Authorization'] = 'Bearer ' + token();
+    o.headers['X-GitHub-Api-Version'] = '2022-11-28';
+    return fetch(API + path, o);
+  }
 
   function snapshot() {
     var nodes = {};
@@ -843,8 +877,41 @@ body{
     });
   }
 
-  function saveToRepo(snap, text) {
-    var req = fetch(SAVER + '/save', {
+
+  /* путь 1: GitHub API — один файл pipeline-data.json = один коммит */
+  function saveViaGitHub(snap) {
+    var url = '/repos/' + REPO + '/contents/' + dataFile;
+    var body = null;
+    return gh(url + '?ref=' + BRANCH)
+      .then(function (r) {
+        if (r.status === 401) throw new Error('ключ не подошёл (401) — нажми «Ключ» и вставь новый');
+        if (r.status === 403) throw new Error('ключу не хватает права Contents: Read and write (403)');
+        return r.status === 404 ? null : r.json();
+      })
+      .then(function (cur) {
+        body = {
+          message: 'Сохранить со страницы: ' + snap.savedAt,
+          content: b64(JSON.stringify(snap, null, 2) + '\n'),
+          branch: BRANCH
+        };
+        if (cur && cur.sha) body.sha = cur.sha;
+        return gh(url, { method: 'PUT', body: JSON.stringify(body) });
+      })
+      .then(function (r) {
+        if (r.ok) return r.json();
+        return r.text().then(function (t) {
+          throw new Error('GitHub ' + r.status + ': ' + t.replace(/\s+/g, ' ').slice(0, 90));
+        });
+      })
+      .then(function (res) {
+        var sha = res && res.commit && res.commit.sha ? res.commit.sha.slice(0, 7) : '';
+        return { ok: true, commit: sha, via: 'github' };
+      });
+  }
+
+  /* путь 2: местный «почтальон» на 127.0.0.1:8787 */
+  function saveToSaver(snap, text) {
+    return fetch(SAVER + '/save', {
       method: 'POST',
       mode: 'cors',
       cache: 'no-store',
@@ -858,27 +925,57 @@ body{
           var why = (json && (json.error || json.detail)) || ('HTTP ' + r.status);
           throw new Error(String(why));
         }
+        json.via = 'saver';
         return json;
       });
     });
-    return withTimeout(req, 20000, 'почтальон');
   }
 
   function save() {
     var snap = snapshot();
     var text = collect();
-    saveToRepo(snap, text).then(function (res) {
+    var p = token() ? saveViaGitHub(snap) : saveToSaver(snap, text);
+    withTimeout(p, 20000, 'сохранение').then(function (res) {
       dirty = false;
       toast(res.commit ? 'Сохранено в репозиторий, коммит ' + res.commit
                        : 'Сохранено в репозиторий: изменений не было');
     }).catch(function (err) {
       saveLocal();
-      var why = (err && err.message) ? String(err.message).slice(0, 70) : 'нет ответа';
-      toast('Не сохранилось в репозиторий (' + why + ') — файл скачан в «Загрузки»');
+      var why = (err && err.message) ? String(err.message) : 'нет ответа';
+      if (/401|403/.test(why)) setToken('');
+      toast('Файл скачан в «Загрузки». В репозиторий не ушло: ' + why.slice(0, 80));
     });
   }
 
   document.getElementById('save').addEventListener('click', save);
+
+  /* ключ лежит только в этом браузере и в файлы репозитория не попадает */
+  var keyBtn = document.getElementById('key');
+  if (keyBtn) {
+    keyBtn.addEventListener('click', function () {
+      var cur = token();
+      var hint = cur
+        ? 'Ключ уже сохранён в этом браузере.\nВставь новый ключ или оставь пусто и нажми OK — ключ удалится.'
+        : 'Вставь ключ доступа GitHub (создаётся один раз: Settings → Developer settings → Tokens).';
+      var v = window.prompt(hint, '');
+      if (v === null) return;
+      v = v.replace(/\s+/g, '');
+      if (v) { setToken(v); toast('Ключ сохранён в этом браузере'); keyBtn.title = 'Ключ есть'; }
+      else if (cur) { setToken(''); toast('Ключ удалён из этого браузера'); keyBtn.title = 'Вставить ключ'; }
+    });
+    keyBtn.title = token() ? 'Ключ есть — сохранение идёт в репозиторий' : 'Вставить ключ доступа';
+  }
+
+  /* при открытии подхватываем то, что уже лежит в репозитории */
+  fetch(dataFile + '?v=' + Date.now(), { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (data) {
+      if (applySnapshot(data)) {
+        dirty = false;
+        toast('Загружены сохранённые тексты: ' + (data.savedAt || ''));
+      }
+    })
+    .catch(function () { /* файла нет или страница открыта локально */ });
 
   /* при открытии подхватываем то, что уже лежит в репозитории */
   fetch(dataFile + '?v=' + Date.now(), { cache: 'no-store' })
