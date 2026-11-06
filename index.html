@@ -324,7 +324,6 @@ body{
   mk('txt',  'Создание опорных кадров', W);
   mk('mus0', 'Создание фоновой музыки и саунд эффектов (сырые)', W);
   mk('mont', 'Аниматик с статическими опорными кадрами', W);
-  mk('mixo', 'Монтаж и сведение озвучки аудио', W);
   mk('d1',   'Утверждение', 0, 'diamondWrap');
   mk('vid',  'Генерация видео veo3 / kling', W);
   mk('comp', 'Композитинг VFX', W);
@@ -482,7 +481,7 @@ body{
   var bus8 = cX + widest(['color', 'master']) + BUS;
   var F45 = { l: f4l, r: bus8 + PAD };
 
-  /* --- блок 5 (последний): второе «Утверждение» → монтаж озвучки → джингл → выход --- */
+  /* --- блок 5 (последний): второе «Утверждение» → джингл → выход --- */
   var f6l = F45.r + FGAP;
   put('d2', f6l + PAD, axis);
   var br2 = R.d2.x + R.d2.w + 20;
@@ -490,9 +489,7 @@ body{
   R.bad2.x = sm2x - SM / 2;  R.bad2.y = axis - SM_DY - SM / 2;
   R.good2.x = sm2x - SM / 2; R.good2.y = axis + SM_DY - SM / 2;
   var jx = sm2x + SM / 2 + BUS;                /* «да» выходит вправо и поднимается на ось */
-  var mixoX = jx + BUS;
-  put('mixo', mixoX, axis);
-  var topjX = mixoX + R.mixo.w + HGAP;
+  var topjX = jx + HGAP;
   put('topj', topjX, axis);
   var outX = topjX + R.topj.w + HGAP;
   put('out', outX, axis);
@@ -677,10 +674,9 @@ body{
   wire([[bus8, axis], [X1('d2'), axis]], 'b', 'ab');
 
 
-  /* «да» → монтаж озвучки → джингл → выход */
+  /* «да» → джингл → выход */
   wire([[X2('good2'), YC('good2')], [jx, YC('good2')], [jx, axis]], 'b');
-  wire([[jx, axis], [X1('mixo'), axis]], 'b', 'ab');
-  wire([[X2('mixo'), axis], [X1('topj'), axis]], 'b', 'ab');
+  wire([[jx, axis], [X1('topj'), axis]], 'b', 'ab');
   wire([[X2('topj'), axis], [X1('out'), axis]], 'b', 'ab');
 
   /* персиковая панель: локации и персонажи сходятся в «Сборку опорных кадров» */
