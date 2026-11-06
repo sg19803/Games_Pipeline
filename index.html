@@ -65,6 +65,16 @@ body{
 }
 .nplus:hover{background:#f4f9ff; border-color:#c9dcf8}
 .nplus:active{transform:scale(.94)}
+/* минус рядом с плюсом — удалить эту строку */
+.nminus{
+  flex:0 0 auto; width:34px; height:34px; padding:0; border-radius:50%;
+  border:1px solid var(--hair); background:#fff; color:#8e8e93; cursor:pointer;
+  font:inherit; font-size:19px; line-height:1;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .18s ease, border-color .18s ease, transform .15s ease, color .18s ease;
+}
+.nminus:hover{background:#fff2f1; border-color:#f3c8c4; color:var(--red)}
+.nminus:active{transform:scale(.94)}
 /* ---- полотно схемы ---- */
 .stage{position:relative}
 .frames,.nodes{position:absolute; left:0; top:0}
@@ -753,8 +763,15 @@ body{
     btn.title = 'Добавить строку';
     btn.setAttribute('aria-label', 'Добавить строку');
     btn.textContent = '+';
+    var bminus = document.createElement('button');
+    bminus.className = 'nminus';
+    bminus.type = 'button';
+    bminus.title = 'Удалить строку';
+    bminus.setAttribute('aria-label', 'Удалить строку');
+    bminus.textContent = '\u2212';
     row.appendChild(inp);
     row.appendChild(btn);
+    row.appendChild(bminus);
     namesEl.appendChild(row);
     return inp;
   }
@@ -803,6 +820,21 @@ body{
   }
   namesEl.addEventListener('click', onPlus);
   document.getElementById('cplus').addEventListener('click', onPlus);
+
+  /* минус — убрать строку целиком; последняя не исчезает, а просто очищается */
+  function onMinus(e) {
+    if (!e.target || !e.target.closest) return;
+    var mb = e.target.closest('.nminus');
+    if (!mb) return;
+    var row = mb.closest('.nrow');
+    if (!row || !row.parentNode) return;
+    row.parentNode.removeChild(row);
+    ensureRow();
+    dirty = true;
+    readSheet();
+    if (manual) apply(); else fit();
+  }
+  namesEl.addEventListener('click', onMinus);
 
   /* на странице всегда есть хотя бы одна строка с подсказкой «ИМЯ» */
   function ensureRow() {
@@ -1030,6 +1062,21 @@ body{
     } catch (e) { /* приватный режим — ключ не запомнится */ }
   }
 
+  /* копия последнего сохранения в этом браузере: страница открывается сразу с ней,
+     а файл из репозитория только уточняет — если он новее. Без этого обновление
+     страницы сразу после «Сохранить» показывало старый файл (GitHub раздаёт его
+     с задержкой), и казалось, что поля не сохранились */
+  var LOCAL_KEY = 'gp_snapshot_last';
+  function saveLocalSnapshot(snap) {
+    try { localStorage.setItem(LOCAL_KEY, JSON.stringify(snap)); } catch (e) { /* приватный режим */ }
+  }
+  function localSnapshot() {
+    try {
+      var raw = localStorage.getItem(LOCAL_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+
   /* base64 для UTF-8: btoa сам кириллицу не умеет */
   function b64(str) {
     var bytes = new TextEncoder().encode(str);
@@ -1202,6 +1249,7 @@ body{
       if (typed && typed.replace(/\s+/g, '')) setToken(typed.replace(/\s+/g, ''));
     }
     var snap = snapshot();
+    saveLocalSnapshot(snap);   /* обновление страницы вернёт ровно это */
     var text = collect();
     var p = token() ? saveViaGitHub(snap, 0) : saveToSaver(snap, text);
     withTimeout(p, 20000, 'сохранение').then(function (res) {
@@ -1235,19 +1283,28 @@ body{
     keyBtn.title = token() ? 'Ключ есть — сохранение идёт в репозиторий' : 'Вставить ключ доступа';
   }
 
-  /* при открытии подхватываем то, что уже лежит в репозитории */
-  fetch(dataFile + '?v=' + Date.now(), { cache: 'no-store' })
-    .then(function (r) { return r.ok ? r.json() : null; })
-    .then(function (data) {
-      if (applySnapshot(data)) {
-        dirty = false;
-        toast('Загружены сохранённые тексты: ' + (data.savedAt || ''));
-      }
-    })
-    .catch(function () { /* файла нет или страница открыта локально */ });
+  /* при открытии подхватываем сохранение: сначала свою копию из этого браузера,
+     затем файл из репозитория — но только если он новее */
+  var localSnap = localSnapshot();
+  function bootRestore() {
+    if (localSnap && applySnapshot(localSnap)) dirty = false;
+    fetch(dataFile + '?v=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data) return;
+        /* в браузере копия свежее — не затираем её старым файлом с GitHub */
+        if (localSnap && String(localSnap.savedAt || '') > String(data.savedAt || '')) return;
+        if (applySnapshot(data)) {
+          dirty = false;
+          toast('Загружены сохранённые тексты: ' + (data.savedAt || ''));
+        }
+      })
+      .catch(function () { /* файла нет или страница открыта локально */ });
+  }
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
+    build: '2026-11-06-3 (minus + local copy)',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -1269,6 +1326,8 @@ body{
 
   /* первая сборка схемы */
   layout();
+  /* и только теперь подхватываем сохранение: поля заметок уже созданы */
+  bootRestore();
 
 
 
