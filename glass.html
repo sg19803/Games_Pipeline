@@ -553,17 +553,25 @@ body{
   .node:hover::before, .node:hover::after, .diamondWrap:hover .diamondInner::before, .diamondWrap:hover .diamondInner::after{animation:none; opacity:0}
 }
 
-/* ---- хроматическая аберрация на наведённом блоке ----
-   как у настоящей линзы: край и текст расходятся на красную и голубую каймы,
-   смещение медленно «дышит» */
-.node:hover, .diamondWrap:hover .diamondInner{animation:aberr 8s ease-in-out infinite}
-.node:hover:not(.key):not(.done){text-shadow:var(--gl-ts), -0.6px 0 0 rgba(255,30,90,.30), 0.6px 0 0 rgba(0,170,255,.30)}
-.node.key:hover, .node.done:hover, .diamondWrap:hover .dtx{text-shadow:var(--gl-tsW), -1px 0 0 rgba(255,40,100,.55), 1px 0 0 rgba(0,190,255,.55)}
-.node:hover::after, .diamondWrap:hover .diamondInner::after{filter:drop-shadow(-1px 0 0 rgba(255,40,100,.75)) drop-shadow(1px 0 0 rgba(0,190,255,.75))}
-@keyframes aberr{
-  0%,100%{filter:drop-shadow(-0.7px 0 0 rgba(255,40,100,.38)) drop-shadow(0.7px 0 0 rgba(0,180,255,.38))}
-  50%{filter:drop-shadow(-1.6px 0 0 rgba(255,40,100,.42)) drop-shadow(1.6px 0 0 rgba(0,180,255,.42))}
+/* ---- хроматическая аберрация на наведённом блоке — только на стекле ----
+   красная и голубая каймы расходятся по краю стекла (снаружи и внутри кромки),
+   текст не трогается. Смещение медленно «дышит» — анимируется переменная --abx */
+@property --abx{syntax:'<length>'; inherits:true; initial-value:1px}
+:root{
+  --ab:
+    calc(-1 * var(--abx)) 0 0 0 rgba(255,40,100,.6),
+    var(--abx) 0 0 0 rgba(0,180,255,.6),
+    inset var(--abx) 0 0 0 rgba(255,40,100,.22),
+    inset calc(-1 * var(--abx)) 0 0 0 rgba(0,180,255,.22);
 }
+.node:hover, .diamondWrap:hover .diamondInner{animation:aberr 8s ease-in-out infinite}
+@keyframes aberr{0%,100%{--abx:.7px} 50%{--abx:1.6px}}
+.node:hover:not(.key):not(.done):not(.smiley){box-shadow:var(--gl-e5), 0 0 0 3px rgba(90,160,255,.22), var(--ab)}
+.node.key:hover{box-shadow:var(--gl-greenRim), 0 4px 6px rgba(20,70,40,.30), 0 16px 30px rgba(25,90,50,.32), 0 0 24px rgba(80,210,130,.40), var(--ab)}
+.node.done:hover:not(.smiley){box-shadow:inset 0 1.5px 0 rgba(255,255,255,.85), inset 0 -2px 3px rgba(215,255,228,.8), 0 0 0 1px rgba(40,130,75,.45), 0 6px 14px rgba(30,110,60,.28), 0 0 24px rgba(70,210,120,.5), var(--ab)}
+.node.smiley.bad:hover{box-shadow:var(--gl-e5), 0 0 18px rgba(224,68,60,.35), var(--ab)}
+.node.smiley.good:hover{box-shadow:var(--gl-e5), 0 0 18px rgba(47,174,92,.35), var(--ab)}
+.diamondWrap:hover .diamondInner{box-shadow:var(--gl-glowShadow), 0 0 30px rgba(90,160,255,.55), var(--ab)}
 @media (prefers-reduced-motion: reduce){ .node:hover, .diamondWrap:hover .diamondInner{animation:none} }
 
 /* кнопки «+» и «−» убраны: список профессий стал постоянным (строки по-прежнему хранятся и сохраняются) */
@@ -2163,7 +2171,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-7',
+    build: '2026-11-07-3 glass-trial-8',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
