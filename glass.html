@@ -565,6 +565,9 @@ body{
   50%{filter:drop-shadow(-1.6px 0 0 rgba(255,40,100,.42)) drop-shadow(1.6px 0 0 rgba(0,180,255,.42))}
 }
 @media (prefers-reduced-motion: reduce){ .node:hover, .diamondWrap:hover .diamondInner{animation:none} }
+
+/* кнопки «+» и «−» убраны: список профессий стал постоянным (строки по-прежнему хранятся и сохраняются) */
+#cplus, .nplus, .nminus{display:none !important}
 </style>
 </head>
 <body>
@@ -2160,7 +2163,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-6',
+    build: '2026-11-07-3 glass-trial-7',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
