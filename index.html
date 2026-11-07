@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* iPhone/iPad: без автоувеличения при касании поля (жест масштаба пальцами при этом работает) */
+if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1)){document.querySelector('meta[name=viewport]').setAttribute("content","width=device-width, initial-scale=1, maximum-scale=1")}</script>
 <title>Пайплайн ИИ-креативов</title>
 <script>/Mac|iPhone|iPad|iPod/.test(navigator.platform||navigator.userAgent)&&document.documentElement.classList.add('apple');</script>
 <style>
@@ -657,6 +659,26 @@ body{
 /* на светлом верху стекла белый текст не читается — текст тёмный, в цвет стекла */
 .node.key{color:#185a33; text-shadow:0 1px 1.5px rgba(255,255,255,.45), 0 1px 2px rgba(20,60,35,.18)}
 .diamondWrap .dtx{color:#174a8c; text-shadow:0 1px 1.5px rgba(255,255,255,.45), 0 1px 2px rgba(20,45,90,.18)}
+
+/* ---- телефон и планшет: облегчённый режим. Без плавающей каустики, размытия фона
+   и бесконечных анимаций — иначе при масштабировании пальцами мобильному браузеру
+   не хватает памяти и он перезагружает вкладку ---- */
+@media (hover: none), (pointer: coarse){
+  .caustics{display:none}
+  .savebar button, .guestbadge, .toast{-webkit-backdrop-filter:none; backdrop-filter:none}
+  .savebar button{background:rgba(70,80,90,.85)}
+  .node, .node:hover, .diamondWrap .diamondInner{animation:none !important; transition:none}
+  .node::before, .node::after, .diamondInner::before, .diamondInner::after{display:none}
+  .node:hover{transform:none}
+  .sheet{box-shadow:var(--gl-rim), 0 10px 30px rgba(0,0,0,.45)}
+}
+
+@media (hover: none), (pointer: coarse){
+  /* плашка гостя на телефоне — маленькая, в одну строку, через 4 секунды прячется */
+  .guestbadge{font-size:11px; line-height:14px; padding:5px 12px; white-space:nowrap; max-width:92vw;
+    overflow:hidden; text-overflow:ellipsis; bottom:16px; transition:opacity .6s ease}
+  .guestbadge.away{opacity:0}
+}
 </style>
 </head>
 <body>
@@ -1552,6 +1574,9 @@ body{
   }
   ensureRow();
 
+  /* телефон или планшет: нет мыши, палец вместо курсора */
+  var TOUCH = !!(window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches);
+
   /* ---------- 5. зум ---------- */
   var zoom = 1, manual = false, SW = 0, SH = 0;
 
@@ -1593,7 +1618,17 @@ body{
     scroller.scrollLeft += e.deltaY;
     e.preventDefault();
   }, { passive: false });
-  window.addEventListener('resize', function () { readSheet(); if (!manual) fit(); });
+  /* на телефоне «resize» приходит постоянно: прячется адресная строка, жест масштаба.
+     Масштаб листа пересчитываем только когда реально поменялась ширина окна (поворот, другое окно),
+     и никогда — пока человек сам увеличил страницу пальцами */
+  var lastW = window.innerWidth;
+  window.addEventListener('resize', function () {
+    var vv = window.visualViewport;
+    if (vv && vv.scale > 1.01) return;
+    if (TOUCH && Math.abs(window.innerWidth - lastW) < 40) return;
+    lastW = window.innerWidth;
+    readSheet(); if (!manual) fit();
+  });
 
   /* ---------- 6. правка текста и сохранение в .txt рядом со схемой ---------- */
   var toastEl = document.getElementById('toast');
@@ -2236,6 +2271,15 @@ body{
   }
   bindRoles();
 
+  if (TOUCH) {
+    /* касание мимо карточек снимает подсветку (на телефоне «увести мышку» нельзя) */
+    document.addEventListener('touchstart', function (e) {
+      if (!(e.target.closest && e.target.closest('.node'))) rolesOff();
+    }, { passive: true });
+    /* плашка «Только просмотр» на телефоне показывается и через 4 секунды прячется */
+    setTimeout(function () { var gb = document.querySelector('.guestbadge'); if (gb) gb.classList.add('away'); }, 4000);
+  }
+
   /* ---------- блики по стрелкам: навёл на карточку — от неё по каждой исходящей
      стрелке бегут два световых импульса (широкий медленный ореол и узкое быстрое ядро),
      дойдя до карточки-получателя, по её кромке проскальзывает блик ---------- */
@@ -2282,7 +2326,8 @@ body{
   }
   function flowStart(id) {
     flowStop();
-    if (REDUCED) return;
+    /* на телефоне наведения нет: касание не должно запускать бесконечные импульсы */
+    if (REDUCED || TOUCH) return;
     var token = {}; flowOn = token;
     FLOW.forEach(function (f) {
       if (f.from !== id) return;
@@ -2299,7 +2344,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-4 (steklo)',
+    build: '2026-11-07-5 (telefon)',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
