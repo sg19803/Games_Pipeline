@@ -185,8 +185,22 @@ body{
   box-shadow:0 2px 6px rgba(52,199,89,.24), 0 10px 24px rgba(52,199,89,.18), 0 0 0 3px rgba(52,199,89,.16);
 }
 .node.peach.done{background:#e7f8ec; border-color:#9fd9b2}
-.node.diamondWrap.done .diamondInner{background:#e7f8ec; border-color:#9fd9b2}
-.node.diamondWrap.done .dtx{color:#126b3b}
+/* ---- галочки у смайликов ----
+   у ромба «Утверждение» галочки нет; она стоит рядом с каждым кружком,
+   а подсветка у кружка своя: «хорошо» — зелёная, «плохо» — красная */
+.node.smiley .chk{left:-10px; top:-10px; width:17px; height:17px}
+.node.smiley.done{background:#fff}
+.node.smiley.done.good{
+  background:#e7f8ec; border-color:var(--green); color:var(--green);
+  box-shadow:0 2px 6px rgba(52,199,89,.28), 0 0 0 4px rgba(52,199,89,.16);
+}
+.node.smiley.done.bad{
+  background:#ffeceb; border-color:var(--red); color:var(--red);
+  box-shadow:0 2px 6px rgba(255,59,48,.28), 0 0 0 4px rgba(255,59,48,.16);
+}
+.node.smiley.done.good .chk{opacity:1; background:var(--green); border-color:var(--green)}
+.node.smiley.done.bad .chk{opacity:1; background:var(--red); border-color:var(--red)}
+.node.smiley.done .chk svg{opacity:1}
 /* линии */
 .w{fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round}
 .w.b{stroke:var(--blue)}
@@ -334,18 +348,19 @@ body.guest .ndtext{cursor:default}
     }
     nodesEl.appendChild(d);
     R[id] = { el: d, x: 0, y: 0, w: 0, h: 0, done: false };
-    addChk(id);
+    /* у ромба «Утверждение» галочки нет: принято / не принято отмечают смайлики */
+    if (kind !== 'diamondWrap') addChk(id);
   }
 
   /* галочка «сделано»: стоит в углу карточки, клик по ней не запускает правку текста */
-  function addChk(id) {
+  function addChk(id, hint) {
     var d = R[id].el;
     var b = document.createElement('span');
     b.className = 'chk';
     b.setAttribute('contenteditable', 'false');
     b.setAttribute('role', 'checkbox');
     b.setAttribute('aria-checked', R[id].done ? 'true' : 'false');
-    b.title = 'Готово — карточка станет зелёной';
+    b.title = hint || 'Готово — карточка станет зелёной';
     b.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5 L8 14.5 L16 5.5"/></svg>';
     b.addEventListener('mousedown', function (e) { e.preventDefault(); e.stopPropagation(); });
     b.addEventListener('click', function (e) {
@@ -388,7 +403,11 @@ body.guest .ndtext{cursor:default}
         : 'M6.2 14.1c1.8 3.6 9.8 3.6 11.6 0') +
       '" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
     nodesEl.appendChild(d);
-    R[id] = { el: d, x: 0, y: 0, w: 0, h: 0 };
+    R[id] = { el: d, x: 0, y: 0, w: 0, h: 0, done: false };
+    /* галочка рядом с кружком: «плохо» подсвечивается красным, «хорошо» — зелёным */
+    addChk(id, kind === 'bad'
+      ? 'Не принято — смайлик станет красным'
+      : 'Принято — смайлик станет зелёным');
   }
 
   /* ---------- 1. содержимое ---------- */
@@ -1338,7 +1357,11 @@ body.guest .ndtext{cursor:default}
     var nodes = {}, done = {};
     var id, t;
     for (id in R) {
-      if (id.indexOf('bad') === 0 || id.indexOf('good') === 0) continue;
+      if (id.indexOf('bad') === 0 || id.indexOf('good') === 0) {
+        /* у смайлика нет текста, но его галочка «принято / не принято» запоминается */
+        if (R[id].done) done[id] = true;
+        continue;
+      }
       t = nodeText(id);
       if (t) nodes[id] = t;
       if (R[id].done) done[id] = true;      /* зелёные карточки тоже запоминаем */
@@ -1359,6 +1382,8 @@ body.guest .ndtext{cursor:default}
     /* галочки «сделано» */
     var dn = data.done || {};
     for (var id2 in R) {
+      /* у ромба «Утверждение» галочки больше нет — старое значение из снимка пропускаем */
+      if (!R[id2].el.querySelector('.chk')) continue;
       var want = !!dn[id2];
       if (!!R[id2].done === want) continue;
       R[id2].done = want;
@@ -1602,7 +1627,7 @@ body.guest .ndtext{cursor:default}
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-06-7 (montazh i finalnyj montazh)',
+    build: '2026-11-06-8 (galochki-u-smalikov)',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
