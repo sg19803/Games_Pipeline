@@ -1226,6 +1226,14 @@ body{
   wire([[X2('good2'), YC('good2')], [X1('topj'), YC('topj')]], 'b', 'ab');
   wire([[X2('topj'), YC('topj')], [X1('out'), YC('out')]], 'b', 'ab');
 
+  /* обе подложки поднимаются вверх, сходятся и входят снизу в «Создание опорных кадров» */
+  var txtCx = R.txt.x + R.txt.w / 2;
+  var gmpCx = (F.panel2.l + F.panel2.r) / 2;
+  var panUpY = F.panel.t - PGAPY / 2;            /* шина слияния — посередине зазора над подложками */
+  wire([[txtCx, F.panel.t], [txtCx, panUpY]], 'b');
+  wire([[gmpCx, F.panel2.t], [gmpCx, panUpY], [txtCx, panUpY]], 'b');
+  wire([[txtCx, panUpY], [txtCx, R.txt.y + R.txt.h]], 'b', 'ab');
+
   /* персиковая панель: локации и персонажи сходятся в «Сборку опорных кадров» */
   var pmx = Math.max(X2('p1'), X2('p2')) + PGAPX / 2;
   wire([[X2('p1'), YC('p1')], [pmx, YC('p1')]], 'b', null, true);
@@ -1271,6 +1279,9 @@ body{
   route('good2', 'topj', [[X2('good2'), YC('good2')], [X1('topj'), YC('topj')]]);
   route('topj', 'out', [[X2('topj'), YC('topj')], [X1('out'), YC('out')]]);
   ['p1', 'p2'].forEach(function (k) { viaBus(k, 'p3', pmx, YC(k), YC('p3')); });
+  /* подложки → «Создание опорных кадров»: импульс идёт от карточек подложек */
+  route('p3', 'txt', [[X1('p3') + R.p3.w / 2, YT('p3')], [X1('p3') + R.p3.w / 2, F.panel.t], [txtCx, F.panel.t], [txtCx, panUpY], [txtCx, R.txt.y + R.txt.h]]);
+  route('gmp', 'txt', [[X1('gmp') + R.gmp.w / 2, YT('gmp')], [gmpCx, F.panel2.t], [gmpCx, panUpY], [txtCx, panUpY], [txtCx, R.txt.y + R.txt.h]]);
 
   /* оттенки исполнителей на карточках */
   if (typeof NODE_ROLES !== 'undefined' && NODE_ROLES) tintNodes();
@@ -2290,7 +2301,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-16',
+    build: '2026-11-07-3 glass-trial-17',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
