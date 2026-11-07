@@ -199,6 +199,17 @@ body{
 .diamondWrap .dtx[contenteditable="true"]{cursor:text; outline:none; padding:1px 3px; border-radius:5px}
 .diamondWrap .dtx[contenteditable="true"]:focus{background:#fff; box-shadow:0 0 0 3px rgba(0,113,227,.18)}
 /* ---- временная кнопка «Сохранить» по центру внизу ---- */
+/* гость только смотрит: ни правки карточек, ни полей, ни кнопок «+/−» и галочек */
+body.guest .nplus, body.guest .nminus{display:none}
+body.guest .chk{pointer-events:none; opacity:.45}
+body.guest .node, body.guest .dtx, body.guest #cnum,
+body.guest .ninput, body.guest .nperson, body.guest .note{cursor:default}
+.guestbadge{
+  position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:30;
+  font-size:12.5px; color:var(--ink3); background:rgba(255,255,255,.92);
+  border:1px solid var(--hair); border-radius:999px; padding:6px 14px; pointer-events:none;
+}
+.savebar[hidden]{display:none}
 .savebar{position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:30}
 .savebar button{
   font:inherit; font-size:13px; font-weight:600; letter-spacing:-.004em;
@@ -243,7 +254,7 @@ body{
     </div>
   </div>
 </div>
-<div class="savebar"><button id="save" type="button">Сохранить</button><button id="key" type="button">Ключ</button></div>
+<div class="savebar" id="savebar" hidden><button id="save" type="button">Сохранить</button><button id="key" type="button">Ключ</button></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 (function () {
@@ -289,12 +300,12 @@ body{
       d.innerHTML = '<i class="diamondInner"></i><span class="dtx"></span>';
       var sp = d.querySelector('.dtx');
       sp.textContent = text;
-      sp.contentEditable = 'true';
+      sp.contentEditable = isOwner() ? 'true' : 'false';
       sp.spellcheck = false;
     } else {
       d.textContent = text;
       /* текст карточки правится на месте: ширина задана, высота считается по тексту */
-      d.contentEditable = 'true';
+      d.contentEditable = isOwner() ? 'true' : 'false';
       d.spellcheck = false;
     }
     nodesEl.appendChild(d);
@@ -315,6 +326,7 @@ body{
     b.addEventListener('mousedown', function (e) { e.preventDefault(); e.stopPropagation(); });
     b.addEventListener('click', function (e) {
       e.preventDefault(); e.stopPropagation();
+      if (!isOwner()) return;
       setDone(id, !R[id].done);
     });
     d.appendChild(b);
@@ -856,6 +868,7 @@ body{
   }
 
   function onPlus(e) {
+    if (!OWNER) return;
     if (!e.target || !e.target.closest) return;
     if (!e.target.closest('.nplus')) return;
     var inp = addRow('');
@@ -869,6 +882,7 @@ body{
 
   /* минус — убрать строку целиком; последняя не исчезает, а просто очищается */
   function onMinus(e) {
+    if (!OWNER) return;
     if (!e.target || !e.target.closest) return;
     var mb = e.target.closest('.nminus');
     if (!mb) return;
@@ -1242,7 +1256,7 @@ body{
         }
       }
     }
-    if (changed) { readSheet(); layout(); }
+    if (changed) { readSheet(); layout(); applyAccess(); }
     return changed;
   }
 
@@ -1315,6 +1329,7 @@ body{
   }
 
   function save() {
+    if (!isOwner()) { toast('Только просмотр — сохранять может владелец'); return; }
     /* ключа нет — спрашиваем один раз и сразу сохраняем */
     if (!token()) {
       var typed = window.prompt('Один раз вставь ключ доступа GitHub — дальше кнопка '
@@ -1337,12 +1352,56 @@ body{
     });
   }
 
+  /* ---------- 7б. кто хозяин, а кто просто смотрит ----------
+     Страница открыта всем — смотреть может любой.
+     Сохранять и править может только владелец: запись в репозиторий без его ключа
+     невозможна в принципе (ключ лежит только в его браузере), а кнопки посторонним
+     незачем видеть. Владелец один раз открывает адрес с «?owner=1» — это
+     запоминается в его браузере; дальше достаточно ключа.
+     Гость получает тот же лист, но ни одного редактируемого поля. */
+  var OWNER_FLAG = 'gp_owner';
+  function isOwner() {
+    try {
+      if (/[?&]owner=1(&|#|$)/.test(location.search)) {
+        localStorage.setItem(OWNER_FLAG, '1');
+        return true;
+      }
+      if (localStorage.getItem(OWNER_FLAG) === '1') return true;
+    } catch (e) { /* приватный режим браузера — остаётся проверка ключа */ }
+    return !!token();
+  }
+  var OWNER = isOwner();
+
+  /* выключаем всё, чем можно что-то изменить; кнопки «Сохранить»/«Ключ» — только хозяину */
+  function applyAccess() {
+    document.body.classList.toggle('guest', !OWNER);
+    var bar = document.getElementById('savebar');
+    if (bar) bar.hidden = !OWNER;
+    if (OWNER) {
+      var old = document.querySelector('.guestbadge');
+      if (old && old.parentNode) old.parentNode.removeChild(old);
+      return;
+    }
+    var f = document.querySelectorAll('#cnum, #names .ninput, #names .nperson, #notes textarea');
+    for (var i = 0; i < f.length; i++) f[i].readOnly = true;
+    var ed = document.querySelectorAll('[contenteditable="true"]');
+    for (i = 0; i < ed.length; i++) ed[i].setAttribute('contenteditable', 'false');
+    if (!document.querySelector('.guestbadge')) {
+      var badge = document.createElement('div');
+      badge.className = 'guestbadge';
+      badge.textContent = 'Только просмотр — менять и сохранять может владелец';
+      document.body.appendChild(badge);
+    }
+  }
+  applyAccess();
+
   document.getElementById('save').addEventListener('click', save);
 
   /* ключ лежит только в этом браузере и в файлы репозитория не попадает */
   var keyBtn = document.getElementById('key');
   if (keyBtn) {
     keyBtn.addEventListener('click', function () {
+      if (!isOwner()) return;
       var cur = token();
       var hint = cur
         ? 'Ключ уже сохранён в этом браузере.\nВставь новый ключ или оставь пусто и нажми OK — ключ удалится.'
@@ -1377,7 +1436,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-06-4 (person per row)',
+    build: '2026-11-06-5 (owner only)',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -1400,6 +1459,8 @@ body{
 
   /* первая сборка схемы */
   layout();
+  /* гость/хозяин: до первого показа выключаем всё, чем можно что-то изменить */
+  applyAccess();
   /* и только теперь подхватываем сохранение: поля заметок уже созданы */
   bootRestore();
 
