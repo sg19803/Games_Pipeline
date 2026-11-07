@@ -320,22 +320,26 @@ body.guest .ndtext{cursor:default}
 .toast.on{opacity:1; transform:translate(-50%,0)}
 
 /* =====================================================================
-   ПРОБА: СТЕКЛО — по референсу (серые стеклянные плашки, синий глянец).
-   Фон средне-серый. Каждая плашка — толстое стекло почти цвета фона:
-   яркая кромка сверху, светящаяся (преломлённая) кромка снизу, внутренний
-   ободок, тонкая тёмная обводка и мягкая тень. Главное действие —
-   стальное синее стекло с глянцем; активное — голубое свечение.
-   Размытие фона — только у плавающих кнопок, у схемы стекло нарисовано
-   градиентами и тенями (иначе большая схема тормозит).
+   ПРОБА: СТЕКЛО — по референсу.
+   Иерархия слоёв (снизу вверх), у каждого своя высота:
+     0  тёмный фон окна
+     1  лист — серая плита, самая большая и самая высокая тень на фоне
+     2  рамки блоков — тонкое стекло, лежит на листе почти без зазора
+     3  подложки (персиковая, синяя) — чуть выше рамок
+     4  карточки, поля, кнопки — толстое стекло, заметная тень
+     5  поднятые: под мышкой, правка, подсвеченные строки
+     6  плавающие кнопки внизу — выше всего
+   Чем выше слой — тем ярче блик кромки и тем длиннее и мягче тень.
    ===================================================================== */
 :root{
   --gl-ink:#33363b; --gl-ink2:#5b5f65; --gl-ink3:#7f8388;
   --gl-blue:#3f6fae; --gl-red:#e0443c; --gl-green:#2fae5c;
-  /* стеклянная плашка, по замеру референса: внутри прозрачно и чуть темнее фона,
-     форму даёт кромка — тёмный волосок снаружи, яркая линия и тень под верхним краем,
-     яркий преломлённый блик по нижнему краю, под плашкой мягкая тень */
+  /* тень под текстом — буквы отделяются от стекла */
+  --gl-ts:0 1px 1.5px rgba(30,36,42,.28);
+  --gl-tsW:0 1px 2px rgba(10,30,20,.45);
+  /* стекло: внутри прозрачно и чуть темнее того, что под ним */
   --gl-tint:linear-gradient(180deg, rgba(30,40,50,.075) 0%, rgba(30,40,50,.06) 60%, rgba(30,40,50,.035) 100%);
-  --gl-fill:var(--gl-tint);
+  /* кромка толстого стекла (слои 4–6) */
   --gl-rim:
     inset 0 1px 0 rgba(255,255,255,.62),
     inset 0 4px 4px -2px rgba(50,60,70,.20),
@@ -344,164 +348,173 @@ body.guest .ndtext{cursor:default}
     inset 3px 0 4px -3px rgba(255,255,255,.45),
     inset -3px 0 4px -3px rgba(255,255,255,.45),
     0 0 0 1px rgba(104,112,120,.42);
-  --gl-slab:
-    var(--gl-rim),
-    0 2px 2px rgba(55,63,71,.22),
-    0 7px 14px rgba(55,63,71,.14);
-  --gl-slabHi:
-    var(--gl-rim),
-    0 0 0 1px rgba(104,112,120,.5),
-    0 3px 4px rgba(55,63,71,.24),
-    0 12px 24px rgba(55,63,71,.18);
-  --gl-wellFill:var(--gl-tint);
-  /* стальное синее стекло */
+  /* кромка тонкого стекла (слои 2–3): блик слабее, толщины почти нет */
+  --gl-rimThin:
+    inset 0 1px 0 rgba(255,255,255,.55),
+    inset 0 -1px 0 rgba(255,255,255,.45),
+    inset 0 2px 3px -2px rgba(50,60,70,.14),
+    0 0 0 1px rgba(104,112,120,.30);
+  --gl-e2:var(--gl-rimThin), 0 1px 1px rgba(55,63,71,.10), 0 2px 4px rgba(55,63,71,.06);
+  --gl-e3:var(--gl-rimThin), 0 1px 2px rgba(55,63,71,.14), 0 4px 8px rgba(55,63,71,.09);
+  --gl-e4:var(--gl-rim), 0 2px 2px rgba(55,63,71,.22), 0 6px 12px rgba(55,63,71,.16);
+  --gl-e5:var(--gl-rim), 0 0 0 1px rgba(104,112,120,.5), 0 4px 6px rgba(55,63,71,.22), 0 14px 26px rgba(55,63,71,.22);
+  --gl-e6:var(--gl-rim), 0 6px 10px rgba(0,0,0,.32), 0 22px 44px rgba(0,0,0,.40);
+  /* зелёное стекло — вход и выход задачи */
+  --gl-greenFill:
+    linear-gradient(180deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.10) 38%, rgba(255,255,255,0) 50%),
+    radial-gradient(70% 60% at 50% 115%, rgba(190,255,215,.75), rgba(190,255,215,0) 70%),
+    linear-gradient(180deg, #7fcf98 0%, #45a86a 48%, #36935a 74%, #57b97c 100%);
+  --gl-greenRim:
+    inset 0 1.5px 0 rgba(255,255,255,.8),
+    inset 0 0 0 1px rgba(255,255,255,.22),
+    inset 0 -2px 2px rgba(220,255,232,.95),
+    inset 0 -10px 16px rgba(180,250,205,.45),
+    inset 2px 0 4px rgba(210,255,225,.35), inset -2px 0 4px rgba(210,255,225,.35),
+    0 0 0 1px rgba(25,95,55,.45);
+  --gl-greenShadow:var(--gl-greenRim), 0 2px 3px rgba(20,70,40,.30), 0 10px 22px rgba(25,90,50,.32), 0 0 18px rgba(80,210,130,.30);
+  /* стальное синее стекло — «Сохранить» */
   --gl-primary:
     linear-gradient(180deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.10) 38%, rgba(255,255,255,0) 50%),
     radial-gradient(70% 60% at 50% 115%, rgba(170,215,255,.75), rgba(170,215,255,0) 70%),
     linear-gradient(180deg, #86a6cf 0%, #5d82b3 48%, #4a6fa2 74%, #6890c2 100%);
   --gl-primaryShadow:
-    inset 0 1.5px 0 rgba(255,255,255,.8),
-    inset 0 0 0 1px rgba(255,255,255,.22),
-    inset 0 -2px 2px rgba(215,238,255,.95),
-    inset 0 -10px 16px rgba(170,215,255,.45),
-    inset 2px 0 4px rgba(200,230,255,.35), inset -2px 0 4px rgba(200,230,255,.35),
-    0 0 0 1px rgba(40,70,110,.45),
-    0 2px 3px rgba(30,50,80,.28),
-    0 10px 22px rgba(40,70,115,.34),
-    0 0 18px rgba(110,165,235,.30);
-  /* голубое свечение (активное, подсветка) */
+    inset 0 1.5px 0 rgba(255,255,255,.8), inset 0 0 0 1px rgba(255,255,255,.22),
+    inset 0 -2px 2px rgba(215,238,255,.95), inset 0 -10px 16px rgba(170,215,255,.45),
+    0 0 0 1px rgba(40,70,110,.45), 0 6px 10px rgba(0,0,0,.30), 0 22px 44px rgba(0,0,0,.38), 0 0 20px rgba(110,165,235,.30);
+  /* голубое свечение — ромбы и раскрытые кнопки */
   --gl-glow:
     radial-gradient(90% 90% at 50% 20%, rgba(190,225,255,.55), rgba(190,225,255,0) 70%),
     linear-gradient(180deg, rgba(120,175,240,.85), rgba(70,125,200,.85));
   --gl-glowShadow:
-    inset 0 1.5px 0 rgba(255,255,255,.85),
-    inset 0 -2px 3px rgba(210,235,255,.8),
-    0 0 0 1px rgba(60,110,180,.45),
-    0 4px 10px rgba(40,90,170,.30),
-    0 0 22px rgba(90,160,255,.55);
+    inset 0 1.5px 0 rgba(255,255,255,.85), inset 0 -2px 3px rgba(210,235,255,.8),
+    0 0 0 1px rgba(60,110,180,.45), 0 4px 10px rgba(40,90,170,.30), 0 0 22px rgba(90,160,255,.55);
 }
+/* 0 — тёмный фон, как на референсе с панелью навигации */
 body{
   background:
-    radial-gradient(1400px 700px at 50% -10%, rgba(255,255,255,.35), transparent 70%),
-    linear-gradient(180deg, #ced2d6 0%, #c4c8cc 55%, #b9bdc2 100%) fixed;
+    radial-gradient(1100px 760px at 92% -8%, rgba(78,168,196,.85), rgba(40,110,135,.35) 45%, transparent 75%),
+    radial-gradient(900px 640px at 8% 112%, rgba(20,70,88,.55), transparent 65%),
+    linear-gradient(160deg, #0b1c22 0%, #050d11 55%, #020507 100%) fixed;
   color:var(--gl-ink);
 }
-.copy, .copy a{color:#7d8187} .copy .sep{color:#9a9ea3}
-.scroller::-webkit-scrollbar-thumb{background:rgba(90,96,104,.35); border-color:transparent; background-clip:padding-box}
+.copy, .copy a{color:#8ea3ab} .copy .sep{color:#5f7279} .copy a:hover{color:#bfe3ef}
+.scroller::-webkit-scrollbar-thumb{background:rgba(160,190,200,.30); border-color:transparent; background-clip:padding-box}
 
-/* лист и рамки блоков — большие стеклянные плиты, как «Info Card» */
-.sheet{background:linear-gradient(180deg, rgba(30,40,50,.03), rgba(30,40,50,.015)); border:0; box-shadow:var(--gl-rim), 0 3px 4px rgba(55,63,71,.16), 0 24px 60px rgba(55,63,71,.16)}
-.frame{background:linear-gradient(180deg, rgba(30,40,50,.035), rgba(30,40,50,.02)); border:0; box-shadow:var(--gl-slab)}
-.panel{background:linear-gradient(180deg, rgba(200,140,80,.10), rgba(200,140,80,.05)); border:0; box-shadow:var(--gl-slab)}
-.panel.blue{background:linear-gradient(180deg, rgba(70,120,200,.10), rgba(70,120,200,.05)); box-shadow:var(--gl-slab)}
+/* 1 — лист: свой серый фон, на тёмном окне не меняется; самая большая тень */
+.sheet{
+  background:
+    radial-gradient(1400px 600px at 50% -10%, rgba(255,255,255,.35), transparent 70%),
+    linear-gradient(180deg, #ced2d6 0%, #c4c8cc 55%, #b9bdc2 100%);
+  border:0;
+  box-shadow:var(--gl-rim), 0 10px 20px rgba(0,0,0,.35), 0 40px 90px rgba(0,0,0,.55);
+}
+/* 2 — рамки блоков */
+.frame{background:linear-gradient(180deg, rgba(30,40,50,.035), rgba(30,40,50,.02)); border:0; box-shadow:var(--gl-e2)}
+/* 3 — подложки */
+.panel{background:linear-gradient(180deg, rgba(200,140,80,.10), rgba(200,140,80,.05)); border:0; box-shadow:var(--gl-e3)}
+.panel.blue{background:linear-gradient(180deg, rgba(70,120,200,.10), rgba(70,120,200,.05)); box-shadow:var(--gl-e3)}
 
-/* ---- форма ---- */
-.headline{color:var(--gl-ink); border-bottom:1px solid rgba(255,255,255,.75); box-shadow:0 1px 0 rgba(98,106,114,.25)}
+/* ---- 4 — форма ---- */
+.headline{color:var(--gl-ink); border-bottom:1px solid rgba(255,255,255,.75); box-shadow:0 1px 0 rgba(98,106,114,.25); text-shadow:var(--gl-ts)}
 .headline::placeholder{color:#a3a7ac}
-.headline:hover{border-bottom-color:#fff}
 .headline:focus{border-bottom-color:var(--gl-blue)}
-/* поля — стеклянные капсулы, как «Your Name» */
 .ninput, .nperson, .ndtext, .note{
-  background:var(--gl-wellFill); color:var(--gl-ink); border:0; box-shadow:var(--gl-slab); font-weight:400;
+  background:var(--gl-tint); color:var(--gl-ink); border:0; box-shadow:var(--gl-e4);
+  font-weight:400; text-shadow:var(--gl-ts);
 }
 .ninput, .nperson{border-radius:20px}
 .ndtext{border-radius:18px; color:var(--gl-ink2)}
 .note{border-radius:16px}
-.ninput::placeholder, .nperson::placeholder, .ndtext::placeholder{color:var(--gl-ink3)}
-.ninput:hover, .nperson:hover, .ndtext:hover, .note:hover{box-shadow:var(--gl-slabHi)}
+.ninput::placeholder, .nperson::placeholder, .ndtext::placeholder{color:var(--gl-ink3); text-shadow:none}
+.ninput:hover, .nperson:hover, .ndtext:hover, .note:hover{box-shadow:var(--gl-e5)}
 .ninput:focus, .nperson:focus, .ndtext:focus, .note:focus{
-  background:var(--gl-tint);
-  box-shadow:var(--gl-slabHi), 0 0 0 3px rgba(90,160,255,.28), 0 0 18px rgba(90,160,255,.35);
+  background:var(--gl-tint); box-shadow:var(--gl-e5), 0 0 0 3px rgba(90,160,255,.28), 0 0 18px rgba(90,160,255,.35);
 }
-/* кнопки + / − / «Обязанности» — стеклянные кнопки, как «Cancel» и вкладки */
-.nplus, .nminus, .ndbtn, .chk{background:var(--gl-fill); border:0; box-shadow:var(--gl-slab)}
+.nplus, .nminus, .ndbtn, .chk{background:var(--gl-tint); border:0; box-shadow:var(--gl-e4); text-shadow:var(--gl-ts)}
 .nplus{color:var(--gl-blue)} .nminus{color:var(--gl-ink2)} .ndbtn{color:var(--gl-ink2)}
-.nplus:hover, .ndbtn:hover{background:var(--gl-fill); box-shadow:var(--gl-slabHi); color:var(--gl-blue)}
-.nminus:hover{background:var(--gl-fill); box-shadow:var(--gl-slabHi); color:var(--gl-red)}
-/* раскрытая кнопка «Обязанности» — активный сегмент: синее свечение */
-.ndbtn.open{background:var(--gl-glow); color:#fff; box-shadow:var(--gl-glowShadow); text-shadow:0 1px 1px rgba(20,50,100,.3)}
-/* строки человека под мышкой — светятся, как «Notifications» */
-.nrow.hl .ninput, .nrow.hl .nperson, .nrow.hl .ndtext{
-  background:linear-gradient(180deg, rgba(90,150,230,.22), rgba(90,150,230,.12));
-  box-shadow:var(--gl-slab), 0 0 0 1px rgba(80,140,220,.45), 0 0 20px rgba(90,160,255,.50);
-}
-.nrow.hl .ndbtn{background:var(--gl-glow); color:#fff; box-shadow:var(--gl-glowShadow)}
+.nplus:hover, .ndbtn:hover{background:var(--gl-tint); box-shadow:var(--gl-e5); color:var(--gl-blue)}
+.nminus:hover{background:var(--gl-tint); box-shadow:var(--gl-e5); color:var(--gl-red)}
+.ndbtn.open{background:var(--gl-glow); color:#fff; box-shadow:var(--gl-glowShadow); text-shadow:0 1px 1px rgba(20,50,100,.35)}
 
-/* ---- карточки схемы — стеклянные плашки ---- */
-.node{background:var(--gl-fill); border:0; color:var(--gl-ink); box-shadow:var(--gl-slab)}
-.node:hover{border:0; box-shadow:var(--gl-slabHi), 0 0 0 3px rgba(90,160,255,.22)}
-.node.peach{background:linear-gradient(180deg, rgba(200,140,80,.11), rgba(200,140,80,.06))}
-.node.peach:hover{border:0; box-shadow:var(--gl-slabHi), 0 0 0 3px rgba(90,160,255,.22)}
-/* вход и выход — главные кнопки потока: стальное синее стекло, как «Create Project» */
-.node.key{
-  background:var(--gl-primary); color:#fff; box-shadow:var(--gl-primaryShadow);
-  text-shadow:0 1px 1px rgba(20,40,70,.35);
+/* ---- подсветка людей: у каждого свой оттенок (--ph ставит скрипт) ---- */
+.nrow.hl .ninput, .nrow.hl .nperson, .nrow.hl .ndtext{
+  background:linear-gradient(180deg, hsla(var(--ph,212),78%,58%,.26), hsla(var(--ph,212),78%,58%,.13));
+  box-shadow:var(--gl-e5), 0 0 0 1px hsla(var(--ph,212),70%,45%,.55), 0 0 20px hsla(var(--ph,212),90%,60%,.55);
 }
-.node.key:hover{box-shadow:var(--gl-primaryShadow), 0 0 0 3px rgba(90,160,255,.25); border:0}
-/* ромб «Утверждение» — голубое стекло со свечением */
+.nrow.hl .ndbtn{
+  color:#fff; text-shadow:0 1px 1px rgba(0,0,0,.35);
+  background:
+    radial-gradient(90% 90% at 50% 20%, hsla(var(--ph,212),100%,90%,.55), hsla(var(--ph,212),100%,90%,0) 70%),
+    linear-gradient(180deg, hsla(var(--ph,212),70%,62%,.92), hsla(var(--ph,212),62%,46%,.92));
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.85), inset 0 -2px 3px hsla(var(--ph,212),100%,88%,.8),
+             0 0 0 1px hsla(var(--ph,212),60%,38%,.5), 0 4px 10px rgba(0,0,0,.22), 0 0 22px hsla(var(--ph,212),90%,60%,.6);
+}
+
+/* ---- 4 — карточки схемы ---- */
+.node{background:var(--gl-tint); border:0; color:var(--gl-ink); box-shadow:var(--gl-e4); text-shadow:var(--gl-ts)}
+.node:hover{border:0; transform:translateY(-2px); box-shadow:var(--gl-e5), 0 0 0 3px rgba(90,160,255,.22)}
+.node.peach{background:linear-gradient(180deg, rgba(200,140,80,.11), rgba(200,140,80,.06))}
+.node.peach:hover{border:0; box-shadow:var(--gl-e5), 0 0 0 3px rgba(90,160,255,.22)}
+/* вход и выход — зелёное стекло */
+.node.key{background:var(--gl-greenFill); color:#fff; box-shadow:var(--gl-greenRim), 0 2px 3px rgba(20,70,40,.28), 0 8px 18px rgba(25,90,50,.28), 0 0 16px rgba(80,210,130,.28); text-shadow:var(--gl-tsW)}
+.node.key:hover{border:0; box-shadow:var(--gl-greenRim), 0 4px 6px rgba(20,70,40,.30), 0 16px 30px rgba(25,90,50,.32), 0 0 24px rgba(80,210,130,.40)}
+.node.key.done{background:var(--gl-greenFill)}
+/* ромб — голубое стекло со свечением */
 .diamondInner{background:var(--gl-glow); border:0; box-shadow:var(--gl-glowShadow)}
-.diamondWrap .dtx{color:#fff; text-shadow:0 1px 1px rgba(20,50,100,.35)}
+.diamondWrap .dtx{color:#fff; text-shadow:0 1px 1.5px rgba(20,50,100,.45)}
 .diamondWrap:hover .diamondInner{background:var(--gl-glow); box-shadow:var(--gl-glowShadow), 0 0 30px rgba(90,160,255,.55)}
-/* смайлики — стеклянные кружки с цветным кольцом */
-.node.smiley{background:var(--gl-tint); border:2px solid}
-.node.smiley.bad{border-color:rgba(224,68,60,.85); color:var(--gl-red); box-shadow:var(--gl-slab)}
-.node.smiley.good{border-color:rgba(47,174,92,.85); color:var(--gl-green); box-shadow:var(--gl-slab)}
-.node.smiley.bad:hover{box-shadow:var(--gl-slabHi), 0 0 18px rgba(224,68,60,.35)}
-.node.smiley.good:hover{box-shadow:var(--gl-slabHi), 0 0 18px rgba(47,174,92,.35)}
-/* галочка — маленький стеклянный квадрат; нажата — светится, как «Checkbox Control» */
+/* смайлики */
+.node.smiley{background:var(--gl-tint); border:2px solid; text-shadow:none}
+.node.smiley svg{filter:drop-shadow(0 1px 1px rgba(30,36,42,.28))}
+.node.smiley.bad{border-color:rgba(224,68,60,.85); color:var(--gl-red); box-shadow:var(--gl-e4)}
+.node.smiley.good{border-color:rgba(47,174,92,.85); color:var(--gl-green); box-shadow:var(--gl-e4)}
+.node.smiley.bad:hover{box-shadow:var(--gl-e5), 0 0 18px rgba(224,68,60,.35)}
+.node.smiley.good:hover{box-shadow:var(--gl-e5), 0 0 18px rgba(47,174,92,.35)}
 .chk{border-radius:6px}
-.node.done{
+/* «сделано» — светящееся зелёное стекло */
+.node.done, .node.peach.done{
   background:radial-gradient(90% 90% at 50% 15%, rgba(215,255,228,.6), rgba(215,255,228,0) 70%),
              linear-gradient(180deg, rgba(120,215,155,.75), rgba(60,170,105,.70));
-  color:#fff; text-shadow:0 1px 1px rgba(10,60,30,.35);
+  color:#fff; text-shadow:var(--gl-tsW);
   box-shadow:inset 0 1.5px 0 rgba(255,255,255,.85), inset 0 -2px 3px rgba(215,255,228,.8),
              0 0 0 1px rgba(40,130,75,.45), 0 4px 10px rgba(30,110,60,.25), 0 0 20px rgba(70,210,120,.45);
 }
-.node.peach.done{background:radial-gradient(90% 90% at 50% 15%, rgba(215,255,228,.6), rgba(215,255,228,0) 70%), linear-gradient(180deg, rgba(120,215,155,.75), rgba(60,170,105,.70))}
 .node.done:hover{border:0}
 .node.done .chk, .node.smiley.done.good .chk{
   background:linear-gradient(180deg, #8fe0ad, #3fb46c); border:0;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 0 0 1px rgba(40,130,75,.5), 0 0 10px rgba(70,210,120,.6);
 }
-.node.smiley.done.good{
-  background:linear-gradient(180deg, rgba(190,245,210,.8), rgba(120,215,155,.5)); color:#1f8a47;
-  box-shadow:var(--gl-slab), 0 0 22px rgba(70,210,120,.55);
-}
-.node.smiley.done.bad{
-  background:linear-gradient(180deg, rgba(255,205,200,.8), rgba(245,140,130,.5)); color:#c22f28;
-  box-shadow:var(--gl-slab), 0 0 22px rgba(240,80,70,.5);
-}
+.node.smiley.done.good{background:linear-gradient(180deg, rgba(190,245,210,.8), rgba(120,215,155,.5)); color:#1f8a47; box-shadow:var(--gl-e4), 0 0 22px rgba(70,210,120,.55)}
+.node.smiley.done.bad{background:linear-gradient(180deg, rgba(255,205,200,.8), rgba(245,140,130,.5)); color:#c22f28; box-shadow:var(--gl-e4), 0 0 22px rgba(240,80,70,.5)}
 .node.smiley.done.bad .chk{
   background:linear-gradient(180deg, #ff9a92, #e0443c); border:0;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 0 0 1px rgba(160,40,35,.5), 0 0 10px rgba(240,80,70,.6);
 }
-/* правка текста в карточке */
+/* правка текста */
 .node[contenteditable="true"]:focus, .node.peach[contenteditable="true"]:focus{
-  background:var(--gl-tint); border:0;
-  box-shadow:var(--gl-slabHi), 0 0 0 3px rgba(90,160,255,.3), 0 0 18px rgba(90,160,255,.35);
+  background:var(--gl-tint); border:0; box-shadow:var(--gl-e5), 0 0 0 3px rgba(90,160,255,.3), 0 0 18px rgba(90,160,255,.35);
 }
-.node.key[contenteditable="true"]:focus{background:var(--gl-primary); box-shadow:var(--gl-primaryShadow), 0 0 0 3px rgba(90,160,255,.35)}
+.node.key[contenteditable="true"]:focus{background:var(--gl-greenFill); box-shadow:var(--gl-greenShadow), 0 0 0 3px rgba(80,210,130,.35)}
 .diamondWrap .dtx[contenteditable="true"]:focus{background:rgba(255,255,255,.25); box-shadow:0 0 0 2px rgba(255,255,255,.6)}
 /* линии */
 .w.b{stroke:var(--gl-blue)} .w.r{stroke:var(--gl-red)}
 .mk-b{fill:var(--gl-blue)} .mk-r{fill:var(--gl-red)}
 
-/* ---- плавающие кнопки ---- */
+/* ---- 6 — плавающие кнопки над тёмным фоном ---- */
 .savebar button{
-  background:var(--gl-fill); color:#f6f8fa; border:0; box-shadow:var(--gl-slab);
-  text-shadow:0 1px 2px rgba(40,48,56,.45);
+  background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06)); color:#eef3f5; border:0;
+  box-shadow:var(--gl-e6); text-shadow:0 1px 2px rgba(0,0,0,.5);
   -webkit-backdrop-filter:blur(18px) saturate(150%); backdrop-filter:blur(18px) saturate(150%);
 }
-.savebar button:hover{background:var(--gl-fill); box-shadow:var(--gl-slabHi)}
-.savebar #save{background:var(--gl-primary); color:#fff; box-shadow:var(--gl-primaryShadow); text-shadow:0 1px 1px rgba(20,40,70,.35)}
+.savebar button:hover{background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.08)); box-shadow:var(--gl-e6)}
+.savebar #save{background:var(--gl-primary); color:#fff; box-shadow:var(--gl-primaryShadow); text-shadow:0 1px 1px rgba(20,40,70,.4)}
 .savebar #save:hover{background:var(--gl-primary); box-shadow:var(--gl-primaryShadow), 0 0 26px rgba(110,165,235,.45)}
 .guestbadge, .trialtag{
-  background:var(--gl-fill); border:0; box-shadow:var(--gl-slab); color:var(--gl-ink2);
+  background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.05)); border:0; box-shadow:var(--gl-e6); color:#c7d6db;
   -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
 }
 .trialtag{position:fixed; top:8px; left:16px; z-index:40; font-size:12px; line-height:16px; padding:6px 12px; border-radius:999px}
-.toast{background:rgba(43,45,49,.82); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px)}
-
+.toast{background:rgba(20,24,28,.82); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px)}
 @media (prefers-reduced-transparency: reduce){
   .savebar button, .guestbadge, .trialtag, .toast{-webkit-backdrop-filter:none; backdrop-filter:none}
 }
@@ -826,29 +839,31 @@ body{
   var f4l = F3.r + FGAP;
   var bus5 = f4l + PAD;                        /* шина четырёх веток */
   var v4X = bus5 + BUS;
-  stack(['vid', 'comp', 'mus', 'fin'], v4X, axis);
+  /* с блока 4 поток идёт на уровне зелёного кружка: стрелка «да» входит ровно в середину */
+  var axis2 = axis + SM_DY;
+  stack(['vid', 'comp', 'mus', 'fin'], v4X, axis2);
   var bus6 = v4X + widest(['vid', 'comp', 'mus', 'fin']) + BUS;  /* шина слияния четырёх */
   var bus7 = bus6 + BUS;                       /* развилка на три работы */
   var workX = bus7 + BUS;
   /* монтаж, цветокоррекция и мастеринг звука стоят рядом: это параллельная работа */
-  stack(['sved', 'color', 'master'], workX, axis);
+  stack(['sved', 'color', 'master'], workX, axis2);
   var bus8 = workX + widest(['sved', 'color', 'master']) + BUS;   /* шина слияния трёх */
   var fmX = bus8 + BUS;
-  put('fmont', fmX, axis);                     /* три работы сводятся в финальный монтаж */
+  put('fmont', fmX, axis2);                     /* три работы сводятся в финальный монтаж */
   var F45 = { l: f4l, r: fmX + R.fmont.w + PAD };
 
   /* --- блок 5: второе «Утверждение» со смайликами; блок 6: джингл → выход --- */
   var f6l = F45.r + FGAP;
-  put('d2', f6l + PAD, axis);
+  put('d2', f6l + PAD, axis2);
   var br2 = R.d2.x + R.d2.w + BR_GAP;
   var sm2x = br2 + SM_GAP + SM / 2;
-  R.bad2.x = sm2x - SM / 2;  R.bad2.y = axis - SM_DY - SM / 2;
-  R.good2.x = sm2x - SM / 2; R.good2.y = axis + SM_DY - SM / 2;
+  R.bad2.x = sm2x - SM / 2;  R.bad2.y = axis2 - SM_DY - SM / 2;
+  R.good2.x = sm2x - SM / 2; R.good2.y = axis2 + SM_DY - SM / 2;
   /* рамка 5 — точная копия рамки 3: ромб, развилка, два кружка */
   var F6 = { l: f6l, r: sm2x + SM / 2 + PAD };
   var f7l = F6.r + FGAP;                       /* рамка 6: джингл и выход */
   /* ряд рамки 6 опущен на уровень зелёного кружка: стрелка «да» идёт прямо, без изломов */
-  var rowY6 = axis + SM_DY;
+  var rowY6 = axis2 + SM_DY;
   var topjX = f7l + PAD;
   put('topj', topjX, rowY6);
   var outX = topjX + R.topj.w + HGAP;
@@ -1023,7 +1038,7 @@ body{
   /* «Утверждение»: развилка на смайлики, красный возврат, зелёный выход */
   function gate(dId, badId, goodId, brX, targetId) {
     var bcx = R[badId].x + R[badId].w / 2;         /* центр красного кружка */
-    wire([[X2(dId) - DI, axis], [brX, axis]], 'b');
+    wire([[X2(dId) - DI, YC(dId)], [brX, YC(dId)]], 'b');
     wire([[brX, YC(badId)], [brX, YC(goodId)]], 'b');
     /* стрелки входят в кружки слева — как на референсе */
     wire([[brX, YC(badId)], [X1(badId), YC(badId)]], 'b', 'ab');
@@ -1050,7 +1065,7 @@ body{
   wire([[bus6, YC('vid')], [bus6, YC('fin')]], 'b');
 
   /* шина → три работы рядом: монтаж, цветокоррекция, мастеринг звука */
-  wire([[bus6, axis], [bus7, axis]], 'b');
+  wire([[bus6, YC('fmont')], [bus7, YC('fmont')]], 'b');
   wire([[bus7, YC('sved')], [bus7, YC('master')]], 'b');
   ['sved', 'color', 'master'].forEach(function (k) {
     wire([[bus7, YC(k)], [X1(k), YC(k)]], 'b', 'ab');
@@ -1061,8 +1076,8 @@ body{
     wire([[X2(k), YC(k)], [bus8, YC(k)]], 'b');
   });
   wire([[bus8, YC('sved')], [bus8, YC('master')]], 'b');
-  wire([[bus8, axis], [X1('fmont'), axis]], 'b', 'ab');
-  wire([[X2('fmont'), axis], [X1('d2') + DI, axis]], 'b', 'ab');
+  wire([[bus8, YC('fmont')], [X1('fmont'), YC('fmont')]], 'b', 'ab');
+  wire([[X2('fmont'), YC('fmont')], [X1('d2') + DI, YC('d2')]], 'b', 'ab');
 
 
   /* «да» → джингл → выход */
@@ -1937,7 +1952,7 @@ body{
 
   var hlRows = [];
   function rolesOff() {
-    for (var i = 0; i < hlRows.length; i++) hlRows[i].classList.remove('hl');
+    for (var i = 0; i < hlRows.length; i++) { hlRows[i].classList.remove('hl'); hlRows[i].style.removeProperty('--ph'); }
     hlRows = [];
   }
   /* мышка на карточке — подсветка строк; строк может быть две (например 8 и 9) */
@@ -1967,6 +1982,18 @@ body{
       if (rows[i].classList.contains('hl')) continue;
       if (people[who(rows[i])]) { rows[i].classList.add('hl'); hlRows.push(rows[i]); }
     }
+    /* у каждого человека свой цвет подсветки: оттенки разнесены «золотым углом» (137.5°),
+       поэтому соседние люди никогда не получают похожий цвет. Строка без имени —
+       отдельный «человек» со своим цветом */
+    var order = {}, cnt = 0;
+    for (i = 0; i < rows.length; i++) {
+      var key = who(rows[i]) || ('#' + i);
+      if (!(key in order)) order[key] = cnt++;
+      if (rows[i].classList.contains('hl')) {
+        var hue = Math.round((212 + order[key] * 137.508) % 360);
+        rows[i].style.setProperty('--ph', hue);
+      }
+    }
     return hlRows.length;
   }
   function bindRoles() {
@@ -1984,7 +2011,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-3',
+    build: '2026-11-07-3 glass-trial-4',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
