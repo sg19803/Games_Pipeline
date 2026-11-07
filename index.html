@@ -3304,7 +3304,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-6 papki-programmy-yazyki',
+    build: '2026-11-07-7 svezhaya-kopiya',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3338,6 +3338,24 @@ body{
   /* и только теперь подхватываем сохранение: поля заметок уже созданы */
   bootRestore();
   langInit();
+  /* браузер держит копию страницы до 10 минут (так настроен GitHub Pages).
+     Поэтому при открытии тихо сверяем номер сборки с сервером: вышла новая —
+     обновляем копию в кэше и один раз перезагружаемся. Адрес остаётся простым */
+  (function freshCheck() {
+    if (!window.fetch || !window.__pipeline) return;
+    var mine = window.__pipeline.build;
+    var url = location.pathname + location.search;
+    fetch(url + (url.indexOf('?') === -1 ? '?' : '&') + 'nc=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.text() : ''; })
+      .then(function (t) {
+        var m = /build: '([^']+)'/.exec(t || '');
+        if (!m || m[1] === mine) return;
+        var key = 'gp_reloaded_' + m[1];
+        try { if (sessionStorage.getItem(key)) return; sessionStorage.setItem(key, '1'); } catch (e) {}
+        return fetch(url, { cache: 'reload' }).then(function () { location.reload(); });
+      })
+      .catch(function () {});
+  })();
 
 
 
