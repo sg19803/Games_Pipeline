@@ -44,27 +44,30 @@ body{
 .zoomer{position:relative; margin:auto}
 .sheet{
   position:absolute; left:0; top:0; transform-origin:0 0;
-  background:#fff; border-radius:20px; padding:14px 30px 30px;
+  background:#fff; border-radius:28px; padding:32px;
   box-shadow:0 1px 2px rgba(0,0,0,.05), 0 12px 40px rgba(0,0,0,.07);
 }
 /* ---- заголовок: большое поле с номером креатива ----
    пусто — серая подсказка «Номер креатива»; ввёл номер — текст чёрный */
-.headrow{display:flex; align-items:center; gap:10px; margin:0 0 14px}
+/* ---- одна сетка колонок для всей формы: профессия 336 · имя 232 · обязанности 144 · + 40 · − 40,
+   зазор 8. Все контролы одной высоты 40px, поэтому строки ровные, а плюсы стоят одной колонкой ---- */
+.headrow{display:flex; align-items:center; gap:8px; margin:0 0 24px; height:48px}
 .headline{
-  margin:0; width:420px; max-width:100%; min-width:0;
+  margin:0; width:728px; max-width:100%; min-width:0; height:48px;
   font-family:inherit; font-size:40px; font-weight:600; line-height:1.1; letter-spacing:-.02em;
   color:var(--ink); background:transparent; border:0; border-bottom:1px solid var(--hair);
-  border-radius:0; padding:0 0 3px; outline:none; transition:border-color .18s ease;
+  border-radius:0; padding:0 0 4px; outline:none; transition:border-color .18s ease;
 }
 .headline::placeholder{color:var(--ink3); opacity:1}
 .headline:hover{border-bottom-color:#d0d0d6}
 .headline:focus{border-bottom-color:var(--blue)}
 /* ---- форма имён: пустое поле с серой подсказкой «ИМЯ» и плюсик рядом ---- */
-.names{display:flex; flex-direction:column; gap:9px; margin:0 0 22px}
-.nrow{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+/* низ формы → верх схемы: 56px, красная шина возврата идёт ровно посередине (28px) */
+.names{display:flex; flex-direction:column; gap:8px; margin:0 0 56px}
+.nrow{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
 .ninput{
-  width:340px; max-width:100%; font:inherit; font-size:15px; letter-spacing:-.004em; color:var(--ink);
-  padding:10px 14px; border:1px solid var(--hair); border-radius:11px; background:#fff;
+  width:336px; max-width:100%; height:40px; font:inherit; font-size:15px; letter-spacing:-.004em; color:var(--ink);
+  padding:0 14px; border:1px solid var(--hair); border-radius:12px; background:#fff;
   outline:none; transition:border-color .18s ease, box-shadow .18s ease;
 }
 .ninput::placeholder{color:var(--ink3)}
@@ -73,8 +76,8 @@ body{
 /* второе поле строки — человек, который отвечает за эту профессию;
    одно и то же имя в двух строках склеивает профессии в одного человека */
 .nperson{
-  width:230px; max-width:100%; font:inherit; font-size:15px; letter-spacing:-.004em; color:var(--ink);
-  padding:10px 14px; border:1px solid var(--hair); border-radius:11px; background:#fff;
+  width:232px; max-width:100%; height:40px; font:inherit; font-size:15px; letter-spacing:-.004em; color:var(--ink);
+  padding:0 14px; border:1px solid var(--hair); border-radius:12px; background:#fff;
   outline:none; transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
 }
 .nperson::placeholder{color:var(--ink3)}
@@ -90,7 +93,7 @@ body{
 .nrow.hl .ndbtn{background:#f2f8ff; border-color:#a9cdf6; color:var(--blue)}
 .nrow.hl .ndtext{border-color:#a9cdf6; background:#f2f8ff}
 .nplus{
-  flex:0 0 auto; width:34px; height:34px; padding:0; border-radius:50%;
+  flex:0 0 auto; width:40px; height:40px; padding:0; border-radius:50%;
   border:1px solid var(--hair); background:#fff; color:var(--blue); cursor:pointer;
   font:inherit; font-size:19px; line-height:1;
   display:flex; align-items:center; justify-content:center;
@@ -100,7 +103,7 @@ body{
 .nplus:active{transform:scale(.94)}
 /* минус рядом с плюсом — удалить эту строку */
 .nminus{
-  flex:0 0 auto; width:34px; height:34px; padding:0; border-radius:50%;
+  flex:0 0 auto; width:40px; height:40px; padding:0; border-radius:50%;
   border:1px solid var(--hair); background:#fff; color:#8e8e93; cursor:pointer;
   font:inherit; font-size:19px; line-height:1;
   display:flex; align-items:center; justify-content:center;
@@ -111,9 +114,9 @@ body{
 /* третье поле строки — обязанности. Свёрнуто: маленькая кнопка «Обязанности».
    Клик — под строкой раскрывается текст (профессия не повторяется, всё через запятую) */
 .ndbtn{
-  flex:0 0 auto; display:inline-flex; align-items:center; gap:6px;
-  padding:9px 14px; border-radius:999px; border:1px solid var(--hair); background:#fff;
-  color:var(--ink2); cursor:pointer; font:inherit; font-size:13.5px; letter-spacing:-.004em;
+  flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  width:144px; height:40px; padding:0 14px; border-radius:999px; border:1px solid var(--hair); background:#fff;
+  color:var(--ink2); cursor:pointer; font:inherit; font-size:14px; letter-spacing:-.004em;
   transition:background .18s ease, border-color .18s ease, color .18s ease;
 }
 .ndbtn:hover{background:#f4f9ff; border-color:#c9dcf8; color:var(--blue)}
@@ -121,10 +124,10 @@ body{
 .ndbtn.open{background:#f6fbff; border-color:#a9cdf6; color:var(--blue)}
 .ndar{font-size:12px; line-height:1; transform:translateY(-1px)}
 .ndtext{
-  flex:0 0 700px; order:20; box-sizing:border-box; width:700px; max-width:100%; margin:1px 0 3px;
+  flex:0 0 728px; order:20; box-sizing:border-box; width:728px; max-width:100%; margin:0;
   font:inherit; font-size:14px; line-height:1.45; letter-spacing:-.004em; color:var(--ink2);
-  padding:11px 14px; border:1px solid var(--hair); border-radius:12px; background:#fbfbfd;
-  outline:none; resize:vertical; min-height:46px; overflow:hidden;
+  padding:10px 14px; border:1px solid var(--hair); border-radius:12px; background:#fbfbfd;
+  outline:none; resize:vertical; min-height:40px; overflow:hidden;
   transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
 }
 .ndtext[hidden]{display:none}
@@ -134,7 +137,8 @@ body{
 /* ---- полотно схемы ---- */
 .stage{position:relative}
 .frames,.nodes{position:absolute; left:0; top:0}
-.frame{position:absolute; background:#fafafb; border:1px solid #ececf1; border-radius:18px}
+/* радиусы вложены по-эпловски: лист 28 → рамка 20 → подложка 16 → карточка 12 */
+.frame{position:absolute; background:#fafafb; border:1px solid #ececf1; border-radius:20px}
 .panel{position:absolute; background:#fdf7f0; border:1px solid #f4e4d1; border-radius:16px}
 /* вторая подложка — синяя: «Запись геймплеев» стоит отдельной группой */
 .panel.blue{background:#eef5fd; border-color:#d6e6fa}
@@ -146,7 +150,7 @@ body{
   /* текст ломается по любой точке: длинное слово (или «ьвьвьв») не вылезает за рамку,
      а карточка от него растёт вниз */
   overflow-wrap:anywhere; word-break:break-word; min-width:0;
-  background:#fff; border:1px solid var(--hair); border-radius:11px; padding:10px 11px;
+  background:#fff; border:1px solid var(--hair); border-radius:12px; padding:12px;
   font-size:12px; font-weight:500; line-height:1.35; letter-spacing:-.004em; color:var(--ink);
   box-shadow:0 1px 2px rgba(0,0,0,.05);
   transition:box-shadow .2s ease, border-color .2s ease, background .2s ease, color .2s ease, transform .18s ease;
@@ -155,22 +159,24 @@ body{
   border-color:#cfcfd8; transform:translateY(-1px);
   box-shadow:0 2px 5px rgba(0,0,0,.07), 0 10px 24px rgba(0,0,0,.10), 0 0 0 3px rgba(0,113,227,.12);
 }
-.node.key{font-size:13px; font-weight:600; letter-spacing:.055em; padding:14px 12px; border-radius:12px}
+/* вход и выход — одинаково: заглавные, жирнее, с разрядкой */
+.node.key{font-size:13px; font-weight:600; letter-spacing:.055em; text-transform:uppercase; padding:16px 12px}
 .node.peach{background:var(--peach); border-color:var(--peachLine)}
 .node.peach:hover{
   border-color:#e2c8a9;
   box-shadow:0 2px 5px rgba(0,0,0,.06), 0 10px 24px rgba(120,80,30,.13), 0 0 0 3px rgba(214,150,80,.18);
 }
 /* ромб «Утверждение» */
+/* размеры ромба продублированы в скрипте (DIA_BOX / DIA_SIDE / DIA_R) — стрелки упираются в его острия */
 .node.diamondWrap{width:136px; height:136px; background:none; border:0; box-shadow:none; padding:0}
 .diamondInner{
-  position:absolute; left:50%; top:50%; width:92px; height:92px;
+  position:absolute; left:50%; top:50%; width:96px; height:96px;
   transform:translate(-50%,-50%) rotate(45deg);
   background:var(--dia); border:1px solid var(--diaLine); border-radius:12px;
   box-shadow:0 1px 2px rgba(0,0,0,.05);
   transition:box-shadow .2s ease, border-color .2s ease, background .2s ease;
 }
-.diamondWrap .dtx{position:relative; z-index:1; font-size:11px; font-weight:500; color:var(--diaInk)}
+.diamondWrap .dtx{position:relative; z-index:1; font-size:12px; font-weight:500; color:var(--diaInk)}
 .diamondWrap:hover .diamondInner{
   border-color:#b9d5f7; background:#e7f1ff;
   box-shadow:0 2px 5px rgba(0,0,0,.07), 0 10px 24px rgba(0,80,160,.14), 0 0 0 3px rgba(0,113,227,.14);
@@ -211,7 +217,8 @@ body{
 /* ---- галочки у смайликов ----
    у ромба «Утверждение» галочки нет; она стоит рядом с каждым кружком,
    а подсветка у кружка своя: «хорошо» — зелёная, «плохо» — красная */
-.node.smiley .chk{left:-10px; top:-10px; width:17px; height:17px; opacity:.75}
+/* галочка у кружка — бейдж на самой окружности (точка 45°), того же размера, что у карточек */
+.node.smiley .chk{left:1px; top:1px; opacity:.75}
 .node.smiley.done{background:#fff}
 .node.smiley.done.good{
   background:#e7f8ec; border-color:var(--green); color:var(--green);
@@ -225,17 +232,17 @@ body{
 .node.smiley.done.bad .chk{opacity:1; background:var(--red); border-color:var(--red)}
 .node.smiley.done .chk svg{opacity:1}
 /* линии */
-.w{fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round}
+.w{fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round}
 .w.b{stroke:var(--blue)}
 .w.r{stroke:var(--red)}
-.w.t{stroke-width:1.4}
+.w.t{stroke-width:1.5}
 /* ---- пустое поле для заметок внизу каждого блока ----
    высота задана числом: текст внутри поля не растит ни поле, ни блок,
    вместо этого появляется ползунок прокрутки */
 .notes{position:absolute; left:0; top:0}
 .note{
-  position:absolute; margin:0; padding:9px 11px;
-  border:1px solid var(--hair); border-radius:11px; background:#fff; color:var(--ink);
+  position:absolute; margin:0; padding:12px;
+  border:1px solid var(--hair); border-radius:12px; background:#fff; color:var(--ink);
   font:inherit; font-size:12px; font-weight:500; line-height:1.4; letter-spacing:-.004em;
   white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word;
   resize:none; overflow:auto; outline:none;
@@ -266,15 +273,15 @@ body.guest .node, body.guest .dtx, body.guest #cnum,
 body.guest .ninput, body.guest .nperson, body.guest .note,
 body.guest .ndtext{cursor:default}
 .guestbadge{
-  position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:30;
+  position:fixed; left:50%; bottom:24px; transform:translateX(-50%); z-index:30;
   font-size:12.5px; color:var(--ink3); background:rgba(255,255,255,.92);
   border:1px solid var(--hair); border-radius:999px; padding:6px 14px; pointer-events:none;
 }
 .savebar[hidden]{display:none}
-.savebar{position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:30}
+.savebar{position:fixed; left:50%; bottom:24px; transform:translateX(-50%); z-index:30; display:flex; gap:8px}
 .savebar button{
   font:inherit; font-size:13px; font-weight:600; letter-spacing:-.004em;
-  padding:9px 24px; border-radius:980px; border:1px solid #d8d8de;
+  height:40px; padding:0 24px; border-radius:980px; border:1px solid #d8d8de;
   background:rgba(255,255,255,.94); color:var(--ink); cursor:pointer;
   box-shadow:0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.10);
   -webkit-backdrop-filter:saturate(180%) blur(12px); backdrop-filter:saturate(180%) blur(12px);
@@ -287,7 +294,7 @@ body.guest .ndtext{cursor:default}
 .savebar button:active{transform:translateY(0) scale(.98)}
 /* всплывающее подтверждение */
 .toast{
-  position:fixed; left:50%; bottom:72px; transform:translate(-50%,8px);
+  position:fixed; left:50%; bottom:76px; transform:translate(-50%,8px);
   padding:8px 16px; border-radius:980px; background:#1d1d1f; color:#fff;
   font-size:12.5px; font-weight:500; letter-spacing:-.004em; white-space:nowrap;
   opacity:0; pointer-events:none; z-index:31;
@@ -332,24 +339,34 @@ body.guest .ndtext{cursor:default}
 
   /* сетка: один шаг у всех — карточки одной ширины и высоты,
      шины строго посередине между столбцами, стрелки только горизонтальные */
-  var W    = 138;     // ширина обычной карточки
-  var KW   = 152;     // ширина «ВХОД ЗАДАЧИ» / «Выход задачи»
+  /* все размеры — кратные 8 (сетка 8pt, как у Apple): отступы, зазоры и ширины
+     складываются без остатка, поэтому края карточек, шины и рамки встают в одну линию */
+  var W    = 144;     // ширина обычной карточки
+  var KW   = 160;     // ширина «ВХОД ЗАДАЧИ» / «Выход задачи»
+  var PW   = 120;     // ширина карточек на подложках
   var BUS  = 24;      // от края карточки до вертикальной шины
-  var PAD  = 30;      // поле внутри рамки блока
-  var FGAP = 34;      // между рамками блоков
-  var HGAP = 42;      // между карточками внутри блока (прямая стрелка)
-  var GAPY = 26;      // между карточками в столбце
+  var PAD  = 32;      // поле внутри рамки блока
+  var FGAP = 32;      // между рамками блоков
+  var HGAP = 48;      // между карточками внутри блока (прямая стрелка)
+  var GAPY = 24;      // между карточками в столбце
   var SM   = 64;      // диаметр смайлика
-  var SM_DY = 62;     // смайлик: насколько выше/ниже оси потока
-  var SM_GAP = 18;    // от точки развилки до края кружка
-  var PGAP = 26;      // между персиковыми карточками
-  var PPAD = 14;      // поле внутри персиковой панели
-  var PGAPY = 44;     // от основного ряда до персиковой панели
+  var SM_DY = 64;     // смайлик: насколько выше/ниже оси потока
+  var SM_GAP = 16;    // от точки развилки до края кружка
+  var BR_GAP = 16;    // от обёртки ромба до точки развилки
+  var PGAP = 24;      // между персиковыми карточками
+  var PPAD = 16;      // поле внутри персиковой панели
+  var PGAPY = 48;     // от основного ряда до персиковой панели
   var PGAPX = 48;     // зазор под вертикальную перемычку в персиковой панели
+  var PNGAP = 16;     // между персиковой и синей подложкой
+  var RET  = 28;      // красная шина возврата: на столько выше рамок (= половина зазора над схемой)
+  /* ромб: квадрат 96px со скруглением 12px, повёрнутый на 45°, в обёртке 136px.
+     Скруглённый угол «съедает» острие — стрелки упираются ровно в видимый край */
+  var DIA_BOX = 136, DIA_SIDE = 96, DIA_R = 12;
+  var DI = (DIA_BOX - DIA_SIDE * Math.SQRT2) / 2 + DIA_R * (Math.SQRT2 - 1);
 
   var R = {};
   /* поле заметок внизу блока: высота постоянная, текст её не меняет */
-  var NOTE_H = 160, NOTE_GAP = 26;
+  var NOTE_H = 160, NOTE_GAP = 24;
   var framesOut = [];   /* границы блоков — нужны для сохранения текстов по порядку */
   var panelOut = null;  /* границы персиковой панели — чтобы отделить её от основного ряда */
   var panel2Out = null; /* границы синей панели — «Запись геймплеев» */
@@ -456,10 +473,10 @@ body.guest .ndtext{cursor:default}
   mk('d2',   'Утверждение', 0, 'diamondWrap');
   mk('topj', 'Утверждение Топ джинг', W);
   mk('out',  'Выход задачи', KW, 'key');
-  mk('p1', 'Создание локаций в ИИ', 112, 'peach');
-  mk('p2', 'Создание персонажей ИИ', 112, 'peach');
-  mk('p3', 'Сборка опорных кадров', 112, 'peach');
-  mk('gmp', 'Запись геймплеев', 112);
+  mk('p1', 'Создание локаций в ИИ', PW, 'peach');
+  mk('p2', 'Создание персонажей ИИ', PW, 'peach');
+  mk('p3', 'Сборка опорных кадров', PW, 'peach');
+  mk('gmp', 'Запись геймплеев', PW);
   mkSmiley('bad1', 'bad');  mkSmiley('good1', 'good');
   mkSmiley('bad2', 'bad');  mkSmiley('good2', 'good');
 
@@ -579,14 +596,15 @@ body.guest .ndtext{cursor:default}
     b: panelTop + PPAD * 2 + pColH
   };
   /* синяя подложка с «Записью геймплеев» — справа от персиковой, по её верху */
-  var blueL = F.panel.r + 18;
+  /* обе подложки одной высоты, карточка в синей стоит по её середине */
+  var blueL = F.panel.r + PNGAP;
   R.gmp.x = blueL + PPAD;
-  R.gmp.y = panelTop + PPAD;
+  R.gmp.y = F.panel.t + (F.panel.b - F.panel.t - R.gmp.h) / 2;
   F.panel2 = {
     l: blueL,
     r: blueL + PPAD * 2 + R.gmp.w,
-    t: panelTop,
-    b: panelTop + PPAD * 2 + R.gmp.h
+    t: F.panel.t,
+    b: F.panel.b
   };
   /* если подложка не влезла — блок 2 растягивается, но ничего не торчит */
   if (F.panel2.r + PAD > F2.r) F2.r = F.panel2.r + PAD;
@@ -594,7 +612,7 @@ body.guest .ndtext{cursor:default}
   /* --- блок 3: первое «Утверждение» и два смайлика --- */
   var f3l = F2.r + FGAP;
   put('d1', f3l + PAD, axis);
-  var br1 = R.d1.x + R.d1.w + 20;              /* точка развилки сразу после ромба */
+  var br1 = R.d1.x + R.d1.w + BR_GAP;          /* точка развилки после ромба: ширина рамки остаётся кратной 8 */
   var sm1x = br1 + SM_GAP + SM / 2;            /* центр красного и зелёного кружка */
   R.bad1.x = sm1x - SM / 2;  R.bad1.y = axis - SM_DY - SM / 2;
   R.good1.x = sm1x - SM / 2; R.good1.y = axis + SM_DY - SM / 2;
@@ -618,14 +636,16 @@ body.guest .ndtext{cursor:default}
   /* --- блок 5: второе «Утверждение» со смайликами; блок 6: джингл → выход --- */
   var f6l = F45.r + FGAP;
   put('d2', f6l + PAD, axis);
-  var br2 = R.d2.x + R.d2.w + 20;
+  var br2 = R.d2.x + R.d2.w + BR_GAP;
   var sm2x = br2 + SM_GAP + SM / 2;
   R.bad2.x = sm2x - SM / 2;  R.bad2.y = axis - SM_DY - SM / 2;
   R.good2.x = sm2x - SM / 2; R.good2.y = axis + SM_DY - SM / 2;
-  var jx = sm2x + SM / 2 + BUS;                /* «да» выходит вправо и поднимается на ось */
-  var F6 = { l: f6l, r: jx + PAD };            /* рамка 5: утверждение и смайлики */
+  /* рамка 5 — точная копия рамки 3: ромб, развилка, два кружка */
+  var F6 = { l: f6l, r: sm2x + SM / 2 + PAD };
   var f7l = F6.r + FGAP;                       /* рамка 6: джингл и выход */
-  var topjX = f7l + PAD;
+  /* «да» поднимается на ось по шине у левого края рамки 6 — как вход в рамки 2 и 4 */
+  var jx = f7l + PAD;
+  var topjX = jx + BUS;
   put('topj', topjX, axis);
   var outX = topjX + R.topj.w + HGAP;
   put('out', outX, axis);
@@ -660,7 +680,7 @@ body.guest .ndtext{cursor:default}
   }
   var OX = -fL, OY = -frameTop;
   var stageW = Math.round(fR - fL), stageH = Math.round(fB - frameTop);
-  var busY = frameTop - 28;   /* шина возврата — над рамками */
+  var busY = frameTop - RET;  /* шина возврата — над рамками, ровно посередине зазора */
 
   /* ставим всё на свои места */
   for (var k2 in R) {
@@ -790,7 +810,7 @@ body.guest .ndtext{cursor:default}
   wire([[bus4, axis], [X1('mont'), axis]], 'b', 'ab');
 
   /* аниматик → утверждение */
-  wire([[X2('mont'), axis], [X1('d1'), axis]], 'b', 'ab');
+  wire([[X2('mont'), axis], [X1('d1') + DI, axis]], 'b', 'ab');
 
   /* «сырые» музыка и звук входят в аниматик снизу */
   var m0x = R.mus0.x + R.mus0.w / 2;
@@ -799,7 +819,7 @@ body.guest .ndtext{cursor:default}
   /* «Утверждение»: развилка на смайлики, красный возврат, зелёный выход */
   function gate(dId, badId, goodId, brX, targetId) {
     var bcx = R[badId].x + R[badId].w / 2;         /* центр красного кружка */
-    wire([[X2(dId) - 3, axis], [brX, axis]], 'b');
+    wire([[X2(dId) - DI, axis], [brX, axis]], 'b');
     wire([[brX, YC(badId)], [brX, YC(goodId)]], 'b');
     /* стрелки входят в кружки слева — как на референсе */
     wire([[brX, YC(badId)], [X1(badId), YC(badId)]], 'b', 'ab');
@@ -838,7 +858,7 @@ body.guest .ndtext{cursor:default}
   });
   wire([[bus8, YC('sved')], [bus8, YC('master')]], 'b');
   wire([[bus8, axis], [X1('fmont'), axis]], 'b', 'ab');
-  wire([[X2('fmont'), axis], [X1('d2'), axis]], 'b', 'ab');
+  wire([[X2('fmont'), axis], [X1('d2') + DI, axis]], 'b', 'ab');
 
 
   /* «да» → джингл → выход */
@@ -847,7 +867,7 @@ body.guest .ndtext{cursor:default}
   wire([[X2('topj'), axis], [X1('out'), axis]], 'b', 'ab');
 
   /* персиковая панель: локации и персонажи сходятся в «Сборку опорных кадров» */
-  var pmx = Math.max(X2('p1'), X2('p2')) + 18;
+  var pmx = Math.max(X2('p1'), X2('p2')) + PGAPX / 2;
   wire([[X2('p1'), YC('p1')], [pmx, YC('p1')]], 'b', null, true);
   wire([[X2('p2'), YC('p2')], [pmx, YC('p2')]], 'b', null, true);
   wire([[pmx, YC('p1')], [pmx, YC('p2')]], 'b', null, true);
@@ -961,7 +981,7 @@ body.guest .ndtext{cursor:default}
   function autoGrow(ta) {
     if (!ta || ta.hasAttribute('hidden')) return;
     ta.style.height = 'auto';
-    ta.style.height = Math.max(46, ta.scrollHeight) + 'px';
+    ta.style.height = Math.max(40, ta.scrollHeight) + 'px';
   }
 
   /* все номера по порядку: сначала большое поле, потом строки; пустые не считаем */
@@ -1743,7 +1763,7 @@ body.guest .ndtext{cursor:default}
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-06-11 (podpis-avtora-sverhu)',
+    build: '2026-11-07-1 (setka-8pt)',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
