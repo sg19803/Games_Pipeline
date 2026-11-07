@@ -518,6 +518,40 @@ body{
 @media (prefers-reduced-transparency: reduce){
   .savebar button, .guestbadge, .trialtag, .toast{-webkit-backdrop-filter:none; backdrop-filter:none}
 }
+
+/* ---- оптические блики ----
+   по поверхности — широкий, мягкий, медленный; по кромке — узкий, яркий, быстрый */
+.node::before, .node::after, .diamondInner::before, .diamondInner::after{
+  content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0;
+  transition:opacity .35s ease;
+}
+.node::before, .diamondInner::before{
+  z-index:1;
+  background:linear-gradient(105deg, transparent 34%, rgba(255,255,255,.10) 40%, rgba(255,255,255,.42) 47%,
+             rgba(255,255,255,.58) 50%, rgba(255,255,255,.42) 53%, rgba(255,255,255,.10) 60%, transparent 66%);
+  background-size:320% 100%; background-position:100% 0;
+}
+.node::after, .diamondInner::after{
+  z-index:2; padding:1.5px;
+  background:linear-gradient(100deg, transparent 45%, rgba(255,255,255,.35) 48%, #fff 50%, rgba(255,255,255,.35) 52%, transparent 55%);
+  background-size:360% 100%; background-position:100% 0;
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+}
+.node:hover::before, .diamondWrap:hover .diamondInner::before{opacity:1; animation:glareWide 2.6s cubic-bezier(.45,.05,.3,1) infinite}
+.node:hover::after, .diamondWrap:hover .diamondInner::after{opacity:1; animation:glareRim 1.15s cubic-bezier(.5,0,.4,1) infinite}
+.node.glint::after, .diamondInner.glint::after{opacity:1; animation:glareRim .75s cubic-bezier(.5,0,.4,1) 1}
+@keyframes glareWide{0%{background-position:100% 0} 72%,100%{background-position:0% 0}}
+@keyframes glareRim{0%{background-position:100% 0} 100%{background-position:0% 0}}
+/* световые импульсы по стрелкам */
+.pulse{fill:none; stroke-linecap:round; stroke-linejoin:round; pointer-events:none}
+.pulse.core{stroke:#fff; stroke-width:2.4; filter:drop-shadow(0 0 3px rgba(150,205,255,.95)) drop-shadow(0 0 7px rgba(110,175,255,.7))}
+.pulse.wide{stroke:rgba(150,205,255,.45); stroke-width:8; filter:blur(3px)}
+.pulse.core.r{filter:drop-shadow(0 0 3px rgba(255,150,140,.95)) drop-shadow(0 0 7px rgba(255,90,80,.7))}
+.pulse.wide.r{stroke:rgba(255,150,140,.45)}
+@media (prefers-reduced-motion: reduce){
+  .node:hover::before, .node:hover::after, .diamondWrap:hover .diamondInner::before, .diamondWrap:hover .diamondInner::after{animation:none; opacity:0}
+}
 </style>
 </head>
 <body>
@@ -582,6 +616,8 @@ body{
   var DI = (DIA_BOX - DIA_SIDE * Math.SQRT2) / 2 + DIA_R * (Math.SQRT2 - 1);
 
   var R = {};
+  /* маршруты стрелок «откуда → куда» для анимации бликов при наведении */
+  var FLOW = [], wireG = null;
   /* поле заметок внизу блока: высота постоянная, текст её не меняет */
   var NOTE_H = 160, NOTE_GAP = 24;
   var framesOut = [];   /* границы блоков — нужны для сохранения текстов по порядку */
@@ -1090,6 +1126,45 @@ body{
   wire([[X2('p2'), YC('p2')], [pmx, YC('p2')]], 'b', null, true);
   wire([[pmx, YC('p1')], [pmx, YC('p2')]], 'b', null, true);
   wire([[pmx, YC('p3')], [X1('p3'), YC('p3')]], 'b', 'ab', true);
+
+  /* ---------- 4в. маршруты для бликов: те же точки, что у линий выше ---------- */
+  wireG = g;
+  FLOW = [];
+  function route(from, to, pts, colour) { FLOW.push({ from: from, to: to, pts: pts, c: colour || 'b' }); }
+  function viaBus(from, to, busX, y0, y1) {
+    route(from, to, [[X2(from), y0], [busX, y0], [busX, y1], [X1(to), y1]]);
+  }
+  ['b1', 'b2'].forEach(function (k) {
+    viaBus('in', k, bus1, YC('in'), YC(k));
+    viaBus(k, 'scen', bus2, YC(k), YC('scen'));
+  });
+  ['v20', 'txt'].forEach(function (k) {
+    viaBus('scen', k, bus3, YC('scen'), YC(k));
+    viaBus(k, 'mont', bus4, YC(k), YC('mont'));
+  });
+  route('mus0', 'mont', [[m0x, YT('mus0')], [m0x, R.mont.y + R.mont.h]]);
+  route('mont', 'd1', [[X2('mont'), YC('mont')], [X1('d1') + DI, YC('d1')]]);
+  function gateFlow(dId, badId, goodId, brX, targetId) {
+    ['bad', 'good'].forEach(function (w) {
+      var sid = w === 'bad' ? badId : goodId;
+      route(dId, sid, [[X2(dId) - DI, YC(dId)], [brX, YC(dId)], [brX, YC(sid)], [X1(sid), YC(sid)]]);
+    });
+    var bcx = R[badId].x + R[badId].w / 2, tx = X1(targetId) + R[targetId].w / 2;
+    route(badId, targetId, [[bcx, YT(badId)], [bcx, busY], [tx, busY], [tx, YT(targetId)]], 'r');
+  }
+  gateFlow('d1', 'bad1', 'good1', br1, 'scen');
+  gateFlow('d2', 'bad2', 'good2', br2, 'vid');
+  ['vid', 'comp', 'mus', 'fin'].forEach(function (k) {
+    viaBus('good1', k, bus5, YC('good1'), YC(k));
+    ['sved', 'color', 'master'].forEach(function (w) {
+      route(k, w, [[X2(k), YC(k)], [bus6, YC(k)], [bus6, YC('fmont')], [bus7, YC('fmont')], [bus7, YC(w)], [X1(w), YC(w)]]);
+    });
+  });
+  ['sved', 'color', 'master'].forEach(function (w) { viaBus(w, 'fmont', bus8, YC(w), YC('fmont')); });
+  route('fmont', 'd2', [[X2('fmont'), YC('fmont')], [X1('d2') + DI, YC('d2')]]);
+  route('good2', 'topj', [[X2('good2'), YC('good2')], [X1('topj'), YC('topj')]]);
+  route('topj', 'out', [[X2('topj'), YC('topj')], [X1('out'), YC('out')]]);
+  ['p1', 'p2'].forEach(function (k) { viaBus(k, 'p3', pmx, YC(k), YC('p3')); });
 
   /* размеры листа изменились — обновляем рамку прокрутки и масштаб */
   readSheet();
@@ -2009,9 +2084,69 @@ body{
   }
   bindRoles();
 
+  /* ---------- блики по стрелкам: навёл на карточку — от неё по каждой исходящей
+     стрелке бегут два световых импульса (широкий медленный ореол и узкое быстрое ядро),
+     дойдя до карточки-получателя, по её кромке проскальзывает блик ---------- */
+  var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var flowOn = null, flowEls = [], flowTimers = [];
+  function flowStop() {
+    flowOn = null;
+    flowTimers.forEach(clearTimeout); flowTimers = [];
+    flowEls.forEach(function (e) { if (e.parentNode) e.parentNode.removeChild(e); });
+    flowEls = [];
+  }
+  function glint(id) {
+    var el = R[id] && R[id].el;
+    if (!el) return;
+    var t = el.classList.contains('diamondWrap') ? el.querySelector('.diamondInner') : el;
+    t.classList.remove('glint'); void t.offsetWidth; t.classList.add('glint');
+    flowTimers.push(setTimeout(function () { t.classList.remove('glint'); }, 800));
+  }
+  function pulse(f, wide, token) {
+    if (flowOn !== token || !wireG) return;
+    var d = (function (pts) {
+      var o = 'M' + pts[0][0] + ' ' + pts[0][1];
+      for (var i = 1; i < pts.length; i++) o += 'L' + pts[i][0] + ' ' + pts[i][1];
+      return o;
+    })(f.pts);
+    var p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', d);
+    p.setAttribute('class', 'pulse ' + (wide ? 'wide ' : 'core ') + f.c);
+    wireG.appendChild(p); flowEls.push(p);
+    var len = p.getTotalLength();
+    var seg = wide ? 110 : 34;
+    p.style.strokeDasharray = seg + ' ' + (len + seg * 2);
+    var dur = Math.max(520, len * (wide ? 3.4 : 1.9));
+    var a = p.animate([{ strokeDashoffset: seg, opacity: 0 }, { opacity: 1, offset: .12 },
+                       { opacity: 1, offset: .86 }, { strokeDashoffset: -len, opacity: 0 }],
+                      { duration: dur, easing: 'cubic-bezier(.45,.05,.3,1)' });
+    a.onfinish = function () {
+      if (p.parentNode) p.parentNode.removeChild(p);
+      if (flowOn !== token) return;
+      if (!wide) glint(f.to);
+      flowTimers.push(setTimeout(function () { pulse(f, wide, token); }, wide ? 380 : 620));
+    };
+  }
+  function flowStart(id) {
+    flowStop();
+    if (REDUCED) return;
+    var token = {}; flowOn = token;
+    FLOW.forEach(function (f) {
+      if (f.from !== id) return;
+      pulse(f, true, token);
+      pulse(f, false, token);
+    });
+  }
+  for (var fid in R) {
+    (function (id) {
+      R[id].el.addEventListener('mouseenter', function () { flowStart(id); });
+      R[id].el.addEventListener('mouseleave', flowStop);
+    })(fid);
+  }
+
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-4',
+    build: '2026-11-07-3 glass-trial-5',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
