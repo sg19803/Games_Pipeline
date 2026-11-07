@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Пайплайн ИИ-креативов — проба: стекло</title>
-<script>(function(){var t='light';try{t=localStorage.getItem('gp_glass_theme')||'light'}catch(e){}document.documentElement.setAttribute('data-theme',t)})();</script>
 <script>/Mac|iPhone|iPad|iPod/.test(navigator.platform||navigator.userAgent)&&document.documentElement.classList.add('apple');</script>
 <style>
 /* ---- шрифт. На Mac/iPhone — системный SF Pro (-apple-system), как на apple.com.
@@ -321,230 +320,194 @@ body.guest .ndtext{cursor:default}
 .toast.on{opacity:1; transform:translate(-50%,0)}
 
 /* =====================================================================
-   ПРОБА: СТЕКЛО. Всё оформление стекла — в этом блоке, поверх базовых стилей.
-   Две темы: светлое стекло и тёмное (переключатель справа сверху).
-   Размытие (backdrop-filter) только у листа и плавающих кнопок —
-   у карточек стекло сделано прозрачностью, бликом по кромке и тенями,
-   иначе на большой схеме будет тормозить.
+   ПРОБА: СТЕКЛО — по референсу (серые стеклянные плашки, синий глянец).
+   Фон средне-серый. Каждая плашка — толстое стекло почти цвета фона:
+   яркая кромка сверху, светящаяся (преломлённая) кромка снизу, внутренний
+   ободок, тонкая тёмная обводка и мягкая тень. Главное действие —
+   стальное синее стекло с глянцем; активное — голубое свечение.
+   Размытие фона — только у плавающих кнопок, у схемы стекло нарисовано
+   градиентами и тенями (иначе большая схема тормозит).
    ===================================================================== */
-html[data-theme="light"]{
-  --g-bg:
-    radial-gradient(1200px 700px at 85% -10%, rgba(110,165,240,.50), transparent 60%),
-    radial-gradient(1000px 700px at 5% 115%, rgba(150,185,225,.65), transparent 60%),
-    linear-gradient(180deg, #eef1f5 0%, #dfe4ea 100%);
-  --g-ink:#1d1d1f; --g-ink2:#55555c; --g-ink3:#9a9aa3;
-  --g-sheet:rgba(255,255,255,.42); --g-sheetEdge:rgba(255,255,255,.75);
-  --g-frame:rgba(255,255,255,.30); --g-frameEdge:rgba(255,255,255,.65);
-  --g-card-top:rgba(255,255,255,.92); --g-card-bot:rgba(255,255,255,.60);
-  --g-cardEdge:rgba(255,255,255,.95); --g-cardLine:rgba(20,40,70,.08);
-  --g-shadow:0 1px 2px rgba(20,40,70,.06), 0 8px 24px rgba(20,40,70,.10);
-  --g-shadowHi:0 2px 6px rgba(20,40,70,.08), 0 14px 34px rgba(20,40,70,.16);
-  --g-field:rgba(255,255,255,.55); --g-fieldEdge:rgba(255,255,255,.9);
-  --g-inset:inset 0 1px 2px rgba(20,40,70,.08);
-  --g-blue1:#6fa3ea; --g-blue2:#2f6fd6; --g-glow:rgba(47,111,214,.38);
-  --g-wb:#2f6fd6; --g-wr:#ff3b30;
-  --g-peach:rgba(255,226,196,.34); --g-peachEdge:rgba(255,236,214,.9);
-  --g-cool:rgba(196,222,255,.34); --g-coolEdge:rgba(222,236,255,.9);
-  --g-dia1:rgba(220,236,255,.95); --g-dia2:rgba(170,205,250,.75); --g-diaInk:#0b4a96;
-  --g-hl:rgba(47,111,214,.14); --g-hlEdge:rgba(47,111,214,.45);
-  --g-done1:rgba(214,246,224,.95); --g-done2:rgba(170,230,192,.75); --g-doneInk:#11673a;
+:root{
+  --gl-ink:#2b2d31; --gl-ink2:#55595f; --gl-ink3:#8b8f95;
+  --gl-blue:#3f6fae; --gl-red:#e0443c; --gl-green:#2fae5c;
+  /* стеклянная плашка */
+  --gl-fill:linear-gradient(180deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.16) 55%, rgba(255,255,255,.24) 100%);
+  --gl-slab:
+    inset 0 1.5px 0 rgba(255,255,255,.95),
+    inset 0 0 0 1px rgba(255,255,255,.38),
+    inset 0 -1.5px 0 rgba(255,255,255,.55),
+    inset 0 -6px 10px rgba(255,255,255,.16),
+    inset 0 3px 6px rgba(255,255,255,.18),
+    0 0 0 1px rgba(98,106,114,.28),
+    0 1px 1px rgba(50,58,66,.16),
+    0 4px 8px rgba(50,58,66,.10),
+    0 10px 22px rgba(50,58,66,.16);
+  --gl-slabHi:
+    inset 0 1.5px 0 rgba(255,255,255,1),
+    inset 0 0 0 1px rgba(255,255,255,.5),
+    inset 0 -1.5px 0 rgba(255,255,255,.7),
+    inset 0 -6px 10px rgba(255,255,255,.22),
+    0 0 0 1px rgba(98,106,114,.32),
+    0 2px 3px rgba(50,58,66,.18),
+    0 12px 24px rgba(50,58,66,.22);
+  /* утопленное поле ввода: та же кромка, внутри чуть темнее */
+  --gl-wellFill:linear-gradient(180deg, rgba(255,255,255,.30), rgba(255,255,255,.14));
+  /* стальное синее стекло */
+  --gl-primary:
+    linear-gradient(180deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.10) 38%, rgba(255,255,255,0) 50%),
+    radial-gradient(70% 60% at 50% 115%, rgba(170,215,255,.75), rgba(170,215,255,0) 70%),
+    linear-gradient(180deg, #86a6cf 0%, #5d82b3 48%, #4a6fa2 74%, #6890c2 100%);
+  --gl-primaryShadow:
+    inset 0 1.5px 0 rgba(255,255,255,.8),
+    inset 0 0 0 1px rgba(255,255,255,.22),
+    inset 0 -2px 2px rgba(215,238,255,.95),
+    inset 0 -10px 16px rgba(170,215,255,.45),
+    inset 2px 0 4px rgba(200,230,255,.35), inset -2px 0 4px rgba(200,230,255,.35),
+    0 0 0 1px rgba(40,70,110,.45),
+    0 2px 3px rgba(30,50,80,.28),
+    0 10px 22px rgba(40,70,115,.34),
+    0 0 18px rgba(110,165,235,.30);
+  /* голубое свечение (активное, подсветка) */
+  --gl-glow:
+    radial-gradient(90% 90% at 50% 20%, rgba(190,225,255,.55), rgba(190,225,255,0) 70%),
+    linear-gradient(180deg, rgba(120,175,240,.85), rgba(70,125,200,.85));
+  --gl-glowShadow:
+    inset 0 1.5px 0 rgba(255,255,255,.85),
+    inset 0 -2px 3px rgba(210,235,255,.8),
+    0 0 0 1px rgba(60,110,180,.45),
+    0 4px 10px rgba(40,90,170,.30),
+    0 0 22px rgba(90,160,255,.55);
 }
-html[data-theme="dark"]{
-  --g-bg:
-    radial-gradient(1100px 700px at 88% -12%, rgba(60,170,200,.55), transparent 60%),
-    radial-gradient(900px 600px at 10% 120%, rgba(20,80,100,.45), transparent 60%),
-    linear-gradient(180deg, #071318 0%, #02070a 100%);
-  --g-ink:#f5f5f7; --g-ink2:#b9c2c7; --g-ink3:#7d888e;
-  --g-sheet:rgba(255,255,255,.06); --g-sheetEdge:rgba(255,255,255,.16);
-  --g-frame:rgba(255,255,255,.035); --g-frameEdge:rgba(255,255,255,.10);
-  --g-card-top:rgba(255,255,255,.16); --g-card-bot:rgba(255,255,255,.06);
-  --g-cardEdge:rgba(255,255,255,.22); --g-cardLine:rgba(0,0,0,.25);
-  --g-shadow:0 1px 2px rgba(0,0,0,.30), 0 10px 26px rgba(0,0,0,.35);
-  --g-shadowHi:0 2px 6px rgba(0,0,0,.35), 0 16px 36px rgba(0,0,0,.45);
-  --g-field:rgba(255,255,255,.07); --g-fieldEdge:rgba(255,255,255,.18);
-  --g-inset:inset 0 1px 2px rgba(0,0,0,.35);
-  --g-blue1:#4fa3ff; --g-blue2:#1e6fe0; --g-glow:rgba(70,160,255,.45);
-  --g-wb:#64b5ff; --g-wr:#ff6b62;
-  --g-peach:rgba(255,190,140,.06); --g-peachEdge:rgba(255,200,160,.20);
-  --g-cool:rgba(100,170,255,.10); --g-coolEdge:rgba(140,190,255,.24);
-  --g-dia1:rgba(110,180,255,.30); --g-dia2:rgba(60,130,230,.14); --g-diaInk:#cfe6ff;
-  --g-hl:rgba(100,180,255,.16); --g-hlEdge:rgba(100,180,255,.55);
-  --g-done1:rgba(80,220,130,.32); --g-done2:rgba(40,160,90,.14); --g-doneInk:#c9f7d8;
-}
-body{background:var(--g-bg) fixed; color:var(--g-ink)}
-.copy, .copy a{color:var(--g-ink3)}
-.copy .sep{color:var(--g-ink3)}
-.scroller::-webkit-scrollbar-thumb{background:rgba(128,128,140,.35); border-color:transparent; background-clip:padding-box}
-
-/* лист — главная стеклянная плита: размытие фона, светлая кромка, мягкая тень */
-.sheet{
-  background:var(--g-sheet);
-  -webkit-backdrop-filter:blur(40px) saturate(170%); backdrop-filter:blur(40px) saturate(170%);
-  border:1px solid var(--g-sheetEdge);
-  box-shadow:inset 0 1px 0 var(--g-sheetEdge), 0 30px 80px rgba(0,0,0,.18);
-}
-/* рамки блоков — тонкий слой стекла внутри листа (без второго размытия) */
-.frame{background:var(--g-frame); border:1px solid var(--g-frameEdge); box-shadow:inset 0 1px 0 var(--g-frameEdge)}
-.panel{background:var(--g-peach); border-color:var(--g-peachEdge); box-shadow:inset 0 1px 0 var(--g-peachEdge)}
-.panel.blue{background:var(--g-cool); border-color:var(--g-coolEdge); box-shadow:inset 0 1px 0 var(--g-coolEdge)}
-
-/* ---- форма: стеклянные капсулы ---- */
-.headline{color:var(--g-ink); border-bottom-color:var(--g-cardEdge)}
-.headline::placeholder{color:var(--g-ink3)}
-.headline:focus{border-bottom-color:var(--g-blue2)}
-.ninput, .nperson, .ndtext{
-  background:var(--g-field); color:var(--g-ink); border:1px solid var(--g-fieldEdge);
-  border-radius:20px; box-shadow:var(--g-inset);
-}
-.ndtext{border-radius:16px; color:var(--g-ink2)}
-.ninput::placeholder, .nperson::placeholder, .ndtext::placeholder{color:var(--g-ink3)}
-.ninput:hover, .nperson:hover, .ndtext:hover{border-color:var(--g-cardEdge)}
-.ninput:focus, .nperson:focus, .ndtext:focus{
-  background:var(--g-field); border-color:var(--g-hlEdge);
-  box-shadow:var(--g-inset), 0 0 0 4px var(--g-hl);
-}
-.nplus, .nminus, .ndbtn{
-  background:linear-gradient(180deg, var(--g-card-top), var(--g-card-bot));
-  border:1px solid var(--g-cardEdge); color:var(--g-ink2);
-  box-shadow:inset 0 1px 0 var(--g-cardEdge), var(--g-shadow);
-}
-.nplus{color:var(--g-blue2)}
-html[data-theme="dark"] .nplus{color:var(--g-wb)}
-.nplus:hover, .ndbtn:hover{border-color:var(--g-hlEdge); color:var(--g-blue2); background:linear-gradient(180deg, var(--g-card-top), var(--g-card-bot))}
-html[data-theme="dark"] .nplus:hover, html[data-theme="dark"] .ndbtn:hover{color:var(--g-wb)}
-.nminus:hover{border-color:rgba(255,59,48,.45); color:var(--g-wr); background:linear-gradient(180deg, var(--g-card-top), var(--g-card-bot))}
-.ndbtn.open{border-color:var(--g-hlEdge); color:var(--g-blue2); background:var(--g-hl)}
-html[data-theme="dark"] .ndbtn.open{color:var(--g-wb)}
-/* строки того, кто отвечает за карточку под мышкой — голубое свечение */
-.nrow.hl .ninput, .nrow.hl .nperson, .nrow.hl .ndtext, .nrow.hl .ndbtn{
-  background:var(--g-hl); border-color:var(--g-hlEdge);
-  box-shadow:0 0 0 4px var(--g-hl), 0 0 18px var(--g-hl);
-}
-.nrow.hl .ndbtn{color:var(--g-blue2)}
-html[data-theme="dark"] .nrow.hl .ndbtn{color:#cfe6ff}
-
-/* ---- карточки схемы: стекло = полупрозрачная заливка + блик по верхней кромке ---- */
-.node{
-  background:linear-gradient(180deg, var(--g-card-top), var(--g-card-bot));
-  border:1px solid var(--g-cardEdge); color:var(--g-ink);
-  box-shadow:inset 0 1px 0 var(--g-cardEdge), inset 0 -1px 0 var(--g-cardLine), var(--g-shadow);
-}
-.node:hover{
-  border-color:var(--g-hlEdge);
-  box-shadow:inset 0 1px 0 var(--g-cardEdge), var(--g-shadowHi), 0 0 0 4px var(--g-hl);
-}
-.node.peach{background:linear-gradient(180deg, var(--g-card-top), var(--g-peach)); border-color:var(--g-peachEdge)}
-.node.peach:hover{border-color:var(--g-hlEdge); box-shadow:inset 0 1px 0 var(--g-cardEdge), var(--g-shadowHi), 0 0 0 4px var(--g-hl)}
-/* вход и выход — главные кнопки потока: синее стекло со свечением, как «Create Project» на референсе */
-.node.key{
-  color:#fff; border-color:rgba(255,255,255,.45);
+body{
   background:
-    linear-gradient(180deg, rgba(255,255,255,.38) 0%, rgba(255,255,255,0) 52%),
-    linear-gradient(180deg, var(--g-blue1), var(--g-blue2));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.6), inset 0 -2px 6px rgba(0,30,90,.25),
-             0 6px 18px var(--g-glow), 0 0 0 1px rgba(47,111,214,.25);
-  text-shadow:0 1px 1px rgba(0,30,90,.25);
+    radial-gradient(1400px 700px at 50% -10%, rgba(255,255,255,.35), transparent 70%),
+    linear-gradient(180deg, #ced2d6 0%, #c4c8cc 55%, #b9bdc2 100%) fixed;
+  color:var(--gl-ink);
 }
-.node.key:hover{
-  border-color:rgba(255,255,255,.6);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), inset 0 -2px 6px rgba(0,30,90,.25),
-             0 10px 28px var(--g-glow), 0 0 0 4px var(--g-hl);
+.copy, .copy a{color:#7d8187} .copy .sep{color:#9a9ea3}
+.scroller::-webkit-scrollbar-thumb{background:rgba(90,96,104,.35); border-color:transparent; background-clip:padding-box}
+
+/* лист и рамки блоков — большие стеклянные плиты, как «Info Card» */
+.sheet{background:var(--gl-fill); border:0; box-shadow:var(--gl-slab), 0 24px 60px rgba(50,58,66,.18)}
+.frame{background:linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.08)); border:0; box-shadow:var(--gl-slab)}
+.panel{background:linear-gradient(180deg, rgba(255,232,205,.40), rgba(255,226,196,.16)); border:0; box-shadow:var(--gl-slab)}
+.panel.blue{background:linear-gradient(180deg, rgba(210,228,255,.45), rgba(190,214,250,.18)); box-shadow:var(--gl-slab)}
+
+/* ---- форма ---- */
+.headline{color:var(--gl-ink); border-bottom:1px solid rgba(255,255,255,.75); box-shadow:0 1px 0 rgba(98,106,114,.25)}
+.headline::placeholder{color:#a3a7ac}
+.headline:hover{border-bottom-color:#fff}
+.headline:focus{border-bottom-color:var(--gl-blue)}
+/* поля — стеклянные капсулы, как «Your Name» */
+.ninput, .nperson, .ndtext, .note{
+  background:var(--gl-wellFill); color:var(--gl-ink); border:0; box-shadow:var(--gl-slab);
 }
-/* ромб «Утверждение»: голубое стекло со свечением */
-.diamondInner{
-  background:linear-gradient(135deg, var(--g-dia1), var(--g-dia2));
-  border:1px solid var(--g-cardEdge);
-  box-shadow:inset 1px 1px 0 var(--g-cardEdge), 0 8px 24px var(--g-glow);
+.ninput, .nperson{border-radius:20px}
+.ndtext{border-radius:18px; color:var(--gl-ink2)}
+.note{border-radius:16px}
+.ninput::placeholder, .nperson::placeholder, .ndtext::placeholder{color:var(--gl-ink3)}
+.ninput:hover, .nperson:hover, .ndtext:hover, .note:hover{box-shadow:var(--gl-slabHi)}
+.ninput:focus, .nperson:focus, .ndtext:focus, .note:focus{
+  background:linear-gradient(180deg, rgba(255,255,255,.5), rgba(255,255,255,.26));
+  box-shadow:var(--gl-slabHi), 0 0 0 3px rgba(90,160,255,.28), 0 0 18px rgba(90,160,255,.35);
 }
-.diamondWrap .dtx{color:var(--g-diaInk)}
-.diamondWrap:hover .diamondInner{
-  background:linear-gradient(135deg, var(--g-dia1), var(--g-dia2)); border-color:var(--g-hlEdge);
-  box-shadow:inset 1px 1px 0 var(--g-cardEdge), 0 12px 32px var(--g-glow), 0 0 0 4px var(--g-hl);
+/* кнопки + / − / «Обязанности» — стеклянные кнопки, как «Cancel» и вкладки */
+.nplus, .nminus, .ndbtn, .chk{background:var(--gl-fill); border:0; box-shadow:var(--gl-slab)}
+.nplus{color:var(--gl-blue)} .nminus{color:var(--gl-ink2)} .ndbtn{color:var(--gl-ink2)}
+.nplus:hover, .ndbtn:hover{background:var(--gl-fill); box-shadow:var(--gl-slabHi); color:var(--gl-blue)}
+.nminus:hover{background:var(--gl-fill); box-shadow:var(--gl-slabHi); color:var(--gl-red)}
+/* раскрытая кнопка «Обязанности» — активный сегмент: синее свечение */
+.ndbtn.open{background:var(--gl-glow); color:#fff; box-shadow:var(--gl-glowShadow); text-shadow:0 1px 1px rgba(20,50,100,.3)}
+/* строки человека под мышкой — светятся, как «Notifications» */
+.nrow.hl .ninput, .nrow.hl .nperson, .nrow.hl .ndtext{
+  background:linear-gradient(180deg, rgba(200,226,255,.75), rgba(150,195,250,.45));
+  box-shadow:var(--gl-slab), 0 0 0 1px rgba(80,140,220,.45), 0 0 20px rgba(90,160,255,.50);
 }
-/* смайлики: стеклянный кружок, цветное кольцо с мягким свечением */
-.node.smiley{background:linear-gradient(180deg, var(--g-card-top), var(--g-card-bot))}
-.node.smiley.bad{border-color:var(--g-wr); color:var(--g-wr); box-shadow:inset 0 1px 0 var(--g-cardEdge), 0 4px 16px rgba(255,59,48,.22)}
-.node.smiley.good{border-color:#34c759; color:#34c759; box-shadow:inset 0 1px 0 var(--g-cardEdge), 0 4px 16px rgba(52,199,89,.22)}
-html[data-theme="dark"] .node.smiley.good{border-color:#4cd97b; color:#4cd97b}
-.node.smiley.bad:hover{box-shadow:inset 0 1px 0 var(--g-cardEdge), 0 6px 22px rgba(255,59,48,.38), 0 0 0 4px rgba(255,59,48,.16)}
-.node.smiley.good:hover{box-shadow:inset 0 1px 0 var(--g-cardEdge), 0 6px 22px rgba(52,199,89,.38), 0 0 0 4px rgba(52,199,89,.16)}
-/* галочка — маленькая стеклянная кнопка */
-.chk{background:linear-gradient(180deg, var(--g-card-top), var(--g-card-bot)); border-color:var(--g-cardEdge); box-shadow:var(--g-shadow)}
-/* «сделано» — зелёное стекло */
-.node.done, .node.peach.done{
-  background:linear-gradient(180deg, var(--g-done1), var(--g-done2));
-  border-color:rgba(52,199,89,.55); color:var(--g-doneInk);
-  box-shadow:inset 0 1px 0 var(--g-cardEdge), 0 6px 20px rgba(52,199,89,.22);
+.nrow.hl .ndbtn{background:var(--gl-glow); color:#fff; box-shadow:var(--gl-glowShadow)}
+
+/* ---- карточки схемы — стеклянные плашки ---- */
+.node{background:var(--gl-fill); border:0; color:var(--gl-ink); box-shadow:var(--gl-slab)}
+.node:hover{border:0; box-shadow:var(--gl-slabHi), 0 0 0 3px rgba(90,160,255,.22)}
+.node.peach{background:linear-gradient(180deg, rgba(255,240,222,.65), rgba(255,226,196,.28))}
+.node.peach:hover{border:0; box-shadow:var(--gl-slabHi), 0 0 0 3px rgba(90,160,255,.22)}
+/* вход и выход — главные кнопки потока: стальное синее стекло, как «Create Project» */
+.node.key{
+  background:var(--gl-primary); color:#fff; box-shadow:var(--gl-primaryShadow);
+  text-shadow:0 1px 1px rgba(20,40,70,.35);
 }
-.node.done:hover{border-color:rgba(52,199,89,.75); box-shadow:inset 0 1px 0 var(--g-cardEdge), 0 10px 28px rgba(52,199,89,.30), 0 0 0 4px rgba(52,199,89,.16)}
-.node.key.done{color:var(--g-doneInk); text-shadow:none}
-.node.smiley.done.good{background:linear-gradient(180deg, var(--g-done1), var(--g-done2)); box-shadow:0 6px 22px rgba(52,199,89,.40), 0 0 0 4px rgba(52,199,89,.16)}
-.node.smiley.done.bad{background:linear-gradient(180deg, rgba(255,214,210,.95), rgba(255,170,160,.6)); box-shadow:0 6px 22px rgba(255,59,48,.40), 0 0 0 4px rgba(255,59,48,.16)}
-html[data-theme="dark"] .node.smiley.done.bad{background:linear-gradient(180deg, rgba(255,100,90,.35), rgba(255,60,50,.14))}
+.node.key:hover{box-shadow:var(--gl-primaryShadow), 0 0 0 3px rgba(90,160,255,.25); border:0}
+/* ромб «Утверждение» — голубое стекло со свечением */
+.diamondInner{background:var(--gl-glow); border:0; box-shadow:var(--gl-glowShadow)}
+.diamondWrap .dtx{color:#fff; text-shadow:0 1px 1px rgba(20,50,100,.35)}
+.diamondWrap:hover .diamondInner{background:var(--gl-glow); box-shadow:var(--gl-glowShadow), 0 0 30px rgba(90,160,255,.55)}
+/* смайлики — стеклянные кружки с цветным кольцом */
+.node.smiley{background:var(--gl-fill); border:2px solid}
+.node.smiley.bad{border-color:rgba(224,68,60,.85); color:var(--gl-red); box-shadow:var(--gl-slab)}
+.node.smiley.good{border-color:rgba(47,174,92,.85); color:var(--gl-green); box-shadow:var(--gl-slab)}
+.node.smiley.bad:hover{box-shadow:var(--gl-slabHi), 0 0 18px rgba(224,68,60,.35)}
+.node.smiley.good:hover{box-shadow:var(--gl-slabHi), 0 0 18px rgba(47,174,92,.35)}
+/* галочка — маленький стеклянный квадрат; нажата — светится, как «Checkbox Control» */
+.chk{border-radius:6px}
+.node.done{
+  background:radial-gradient(90% 90% at 50% 15%, rgba(215,255,228,.6), rgba(215,255,228,0) 70%),
+             linear-gradient(180deg, rgba(120,215,155,.75), rgba(60,170,105,.70));
+  color:#fff; text-shadow:0 1px 1px rgba(10,60,30,.35);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.85), inset 0 -2px 3px rgba(215,255,228,.8),
+             0 0 0 1px rgba(40,130,75,.45), 0 4px 10px rgba(30,110,60,.25), 0 0 20px rgba(70,210,120,.45);
+}
+.node.peach.done{background:radial-gradient(90% 90% at 50% 15%, rgba(215,255,228,.6), rgba(215,255,228,0) 70%), linear-gradient(180deg, rgba(120,215,155,.75), rgba(60,170,105,.70))}
+.node.done:hover{border:0}
+.node.done .chk, .node.smiley.done.good .chk{
+  background:linear-gradient(180deg, #8fe0ad, #3fb46c); border:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 0 0 1px rgba(40,130,75,.5), 0 0 10px rgba(70,210,120,.6);
+}
+.node.smiley.done.good{
+  background:linear-gradient(180deg, rgba(190,245,210,.8), rgba(120,215,155,.5)); color:#1f8a47;
+  box-shadow:var(--gl-slab), 0 0 22px rgba(70,210,120,.55);
+}
+.node.smiley.done.bad{
+  background:linear-gradient(180deg, rgba(255,205,200,.8), rgba(245,140,130,.5)); color:#c22f28;
+  box-shadow:var(--gl-slab), 0 0 22px rgba(240,80,70,.5);
+}
+.node.smiley.done.bad .chk{
+  background:linear-gradient(180deg, #ff9a92, #e0443c); border:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 0 0 1px rgba(160,40,35,.5), 0 0 10px rgba(240,80,70,.6);
+}
 /* правка текста в карточке */
-.node[contenteditable="true"]:focus{
-  background:linear-gradient(180deg, var(--g-card-top), var(--g-card-bot));
-  border-color:var(--g-hlEdge); box-shadow:inset 0 1px 0 var(--g-cardEdge), 0 0 0 4px var(--g-hl), var(--g-shadow);
+.node[contenteditable="true"]:focus, .node.peach[contenteditable="true"]:focus{
+  background:linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.3)); border:0;
+  box-shadow:var(--gl-slabHi), 0 0 0 3px rgba(90,160,255,.3), 0 0 18px rgba(90,160,255,.35);
 }
-.node.peach[contenteditable="true"]:focus{background:linear-gradient(180deg, var(--g-card-top), var(--g-peach)); border-color:var(--g-hlEdge)}
-.diamondWrap .dtx[contenteditable="true"]:focus{background:var(--g-field); box-shadow:0 0 0 3px var(--g-hl)}
-/* линии и наконечники — цвет из темы */
-.w.b{stroke:var(--g-wb)} .w.r{stroke:var(--g-wr)}
-.mk-b{fill:var(--g-wb)} .mk-r{fill:var(--g-wr)}
-/* заметки — утопленное стекло */
-.note{background:var(--g-field); color:var(--g-ink); border:1px solid var(--g-fieldEdge); box-shadow:var(--g-inset)}
-.note:hover{border-color:var(--g-cardEdge)}
-.note:focus{border-color:var(--g-hlEdge); box-shadow:var(--g-inset), 0 0 0 4px var(--g-hl)}
+.node.key[contenteditable="true"]:focus{background:var(--gl-primary); box-shadow:var(--gl-primaryShadow), 0 0 0 3px rgba(90,160,255,.35)}
+.diamondWrap .dtx[contenteditable="true"]:focus{background:rgba(255,255,255,.25); box-shadow:0 0 0 2px rgba(255,255,255,.6)}
+/* линии */
+.w.b{stroke:var(--gl-blue)} .w.r{stroke:var(--gl-red)}
+.mk-b{fill:var(--gl-blue)} .mk-r{fill:var(--gl-red)}
 
-/* ---- плавающие кнопки внизу ---- */
-.savebar button, .guestbadge, .themebar{
-  -webkit-backdrop-filter:blur(24px) saturate(180%); backdrop-filter:blur(24px) saturate(180%);
-}
+/* ---- плавающие кнопки ---- */
 .savebar button{
-  background:linear-gradient(180deg, var(--g-card-top), var(--g-card-bot));
-  color:var(--g-ink); border:1px solid var(--g-cardEdge);
-  box-shadow:inset 0 1px 0 var(--g-cardEdge), var(--g-shadow);
+  background:var(--gl-fill); color:#f6f8fa; border:0; box-shadow:var(--gl-slab);
+  text-shadow:0 1px 2px rgba(40,48,56,.45);
+  -webkit-backdrop-filter:blur(18px) saturate(150%); backdrop-filter:blur(18px) saturate(150%);
 }
-.savebar button:hover{background:linear-gradient(180deg, var(--g-card-top), var(--g-card-bot)); box-shadow:inset 0 1px 0 var(--g-cardEdge), var(--g-shadowHi)}
-/* «Сохранить» — главное действие: синее стекло */
-.savebar #save{
-  color:#fff; border-color:rgba(255,255,255,.45);
-  background:linear-gradient(180deg, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 55%), linear-gradient(180deg, var(--g-blue1), var(--g-blue2));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 6px 18px var(--g-glow);
+.savebar button:hover{background:var(--gl-fill); box-shadow:var(--gl-slabHi)}
+.savebar #save{background:var(--gl-primary); color:#fff; box-shadow:var(--gl-primaryShadow); text-shadow:0 1px 1px rgba(20,40,70,.35)}
+.savebar #save:hover{background:var(--gl-primary); box-shadow:var(--gl-primaryShadow), 0 0 26px rgba(110,165,235,.45)}
+.guestbadge, .trialtag{
+  background:var(--gl-fill); border:0; box-shadow:var(--gl-slab); color:var(--gl-ink2);
+  -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
 }
-.savebar #save:hover{background:linear-gradient(180deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,0) 55%), linear-gradient(180deg, var(--g-blue1), var(--g-blue2)); box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 10px 26px var(--g-glow)}
-.guestbadge{background:var(--g-sheet); border-color:var(--g-sheetEdge); color:var(--g-ink2)}
-.toast{background:rgba(29,29,31,.78); -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px)}
+.trialtag{position:fixed; top:8px; left:16px; z-index:40; font-size:12px; line-height:16px; padding:6px 12px; border-radius:999px}
+.toast{background:rgba(43,45,49,.82); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px)}
 
-/* ---- переключатель темы: стеклянный сегмент, как «Messages | Tasks | Files» на референсе ---- */
-.themebar{
-  position:fixed; top:8px; right:16px; z-index:40; display:flex; gap:2px; padding:3px;
-  border-radius:999px; background:var(--g-sheet); border:1px solid var(--g-sheetEdge);
-  box-shadow:inset 0 1px 0 var(--g-sheetEdge), var(--g-shadow);
-}
-.themebar button{
-  font:inherit; font-size:12px; line-height:16px; letter-spacing:-.01em; color:var(--g-ink2);
-  height:28px; padding:0 14px; border:0; border-radius:999px; background:transparent; cursor:pointer;
-}
-.themebar button[aria-pressed="true"]{
-  color:#fff; background:linear-gradient(180deg, var(--g-blue1), var(--g-blue2));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 3px 10px var(--g-glow);
-}
-.trialtag{position:fixed; top:8px; left:16px; z-index:40; font-size:12px; line-height:16px; padding:6px 12px;
-  border-radius:999px; color:var(--g-ink2); background:var(--g-sheet); border:1px solid var(--g-sheetEdge);
-  -webkit-backdrop-filter:blur(24px); backdrop-filter:blur(24px)}
-
-/* настройки системы: «меньше прозрачности» — стекло становится матовым */
 @media (prefers-reduced-transparency: reduce){
-  .sheet, .savebar button, .guestbadge, .themebar, .toast{-webkit-backdrop-filter:none; backdrop-filter:none}
-  html[data-theme="light"] .sheet{background:#f4f6f9}
-  html[data-theme="dark"] .sheet{background:#0d1a20}
+  .savebar button, .guestbadge, .trialtag, .toast{-webkit-backdrop-filter:none; backdrop-filter:none}
 }
 </style>
 </head>
 <body>
 <div class="trialtag">Пробная страница · сохранение выключено</div>
-<div class="themebar" role="group" aria-label="Тема"><button type="button" data-t="light">Светлое стекло</button><button type="button" data-t="dark">Тёмное стекло</button></div>
 <div class="copy" id="copy"><span>&copy; 2026 Serhii Horbunov</span><span class="sep">&middot;</span><a href="https://sergiovida.com" target="_blank" rel="noopener">sergiovida.com</a></div>
 <div class="scroller" id="scroller">
   <div class="zoomer" id="zoomer">
@@ -2020,7 +1983,7 @@ html[data-theme="dark"] .node.smiley.done.bad{background:linear-gradient(180deg,
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-1',
+    build: '2026-11-07-3 glass-trial-2',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -2046,25 +2009,6 @@ html[data-theme="dark"] .node.smiley.done.bad{background:linear-gradient(180deg,
     save: save,
     download: function () { saveAsDownload(collect()); }
   };
-
-  /* переключатель темы пробной страницы */
-  (function () {
-    var bar = document.querySelector('.themebar');
-    if (!bar) return;
-    function mark() {
-      var t = document.documentElement.getAttribute('data-theme');
-      var bs = bar.querySelectorAll('button');
-      for (var i = 0; i < bs.length; i++) bs[i].setAttribute('aria-pressed', bs[i].getAttribute('data-t') === t ? 'true' : 'false');
-    }
-    bar.addEventListener('click', function (e) {
-      var b = e.target.closest && e.target.closest('button[data-t]');
-      if (!b) return;
-      document.documentElement.setAttribute('data-theme', b.getAttribute('data-t'));
-      try { localStorage.setItem('gp_glass_theme', b.getAttribute('data-t')); } catch (er) {}
-      mark();
-    });
-    mark();
-  })();
 
   /* первая сборка схемы */
   layout();
