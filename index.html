@@ -2200,14 +2200,10 @@ body{
      Гость получает тот же лист, но ни одного редактируемого поля. */
   var OWNER_FLAG = 'gp_owner';
   function isOwner() {
-    try {
-      if (/[?&]owner=1(&|#|$)/.test(location.search)) {
-        localStorage.setItem(OWNER_FLAG, '1');
-        return true;
-      }
-      if (localStorage.getItem(OWNER_FLAG) === '1') return true;
-    } catch (e) { /* приватный режим браузера — остаётся проверка ключа */ }
-    return !!token();
+    /* владелец — только по адресу с ?owner=1. Простой адрес у всех, включая хозяина, —
+       просмотр без кнопок «Сохранить» и «Ключ». Старую отметку владельца в браузере стираем */
+    try { localStorage.removeItem(OWNER_FLAG); } catch (e) {}
+    return /[?&]owner=1(&|#|$)/.test(location.search);
   }
   var OWNER = isOwner();
 
@@ -3311,7 +3307,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-8 ochered-papki-ispolniteli',
+    build: '2026-11-07-9 owner-tolko-po-adresu',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
