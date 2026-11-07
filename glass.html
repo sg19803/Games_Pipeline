@@ -707,10 +707,10 @@ body{
 .tkids[hidden]{display:none}
 
 /* список программ */
-.prow{display:flex; align-items:center; gap:10px; height:26px; padding:0 8px; border-radius:8px;
+.prow{display:flex; align-items:center; gap:10px; height:22px; padding:0 8px; border-radius:8px;
   font-size:14px; line-height:18px; letter-spacing:-.016em; color:var(--gl-ink); text-shadow:var(--gl-ts);
   cursor:pointer; white-space:nowrap; transition:background .15s ease, box-shadow .15s ease}
-.prow img{flex:0 0 20px; width:20px; height:20px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.22))}
+.prow img{flex:0 0 18px; width:18px; height:18px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.22))}
 .prow .pn{flex:1 1 auto; overflow:hidden; text-overflow:ellipsis}
 .pp{flex:0 0 auto; font-size:12px; line-height:16px; padding:1px 8px; border-radius:999px; text-shadow:none;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.55)}
@@ -2717,6 +2717,13 @@ body{
       cat: { ru: 'Аудиоплагины', en: 'Audio plug-ins', es: 'Plugins de audio', uk: 'Аудіоплагіни' },
       d: { ru: 'Профессиональные плагины для сведения и мастеринга: эквалайзер Pro-Q, компрессоры, лимитер.', en: 'Professional mixing and mastering plug-ins: Pro-Q equalizer, compressors, limiter.', es: 'Plugins profesionales de mezcla y masterización: ecualizador Pro-Q, compresores, limitador.', uk: 'Професійні плагіни для зведення й мастерингу: еквалайзер Pro-Q, компресори, лімітер.' },
       p: { ru: 'Платно: Pro-Q 4 — $199, весь набор — $1 069', en: 'Paid: Pro-Q 4 — $199, Total Bundle — $1,069', es: 'De pago: Pro-Q 4, 199 $; paquete completo, 1069 $', uk: 'Платно: Pro-Q 4 — $199, увесь набір — $1 069' } },
+    { id: 'filmcraft', shot: true, name: 'FilmCraft', url: 'https://getartcraft.com/apps/filmcraft',
+      cat: { ru: 'Монтаж и цвет', en: 'Editing and color', es: 'Montaje y color', uk: 'Монтаж і колір' },
+      d: { ru: 'Монтажная программа из набора ArtCraft — бесплатная замена DaVinci Resolve: мониторы исходника и программы, полноценный таймлайн со всеми режимами подрезки, цветокоррекция, ключевые кадры, экспорт с пресетами.',
+           en: 'Video editor from the ArtCraft suite — a free DaVinci Resolve alternative: source and program monitors, a real timeline with every trim mode, color grading, keyframes, export presets.',
+           es: 'Editor de vídeo de la suite ArtCraft, alternativa gratuita a DaVinci Resolve: monitores de origen y de programa, línea de tiempo completa con todos los modos de recorte, etalonaje, fotogramas clave y exportación con presets.',
+           uk: 'Монтажна програма з набору ArtCraft — безкоштовна заміна DaVinci Resolve: монітори вихідника й програми, повноцінний таймлайн з усіма режимами підрізання, кольорокорекція, ключові кадри, експорт із пресетами.' },
+      p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
     { id: 'inkscape', shot: true, name: 'Inkscape', url: 'https://inkscape.org',
       cat: { ru: 'Векторная графика', en: 'Vector graphics', es: 'Gráficos vectoriales', uk: 'Векторна графіка' },
       d: { ru: 'Векторный редактор для логотипов, иконок и графики — замена Illustrator.', en: 'Vector editor for logos, icons and graphics — an Illustrator alternative.', es: 'Editor vectorial para logotipos, iconos y gráficos: alternativa a Illustrator.', uk: 'Векторний редактор для логотипів, іконок і графіки — заміна Illustrator.' },
@@ -2758,6 +2765,13 @@ body{
       cat: { ru: 'Конвертация видео', en: 'Video conversion', es: 'Conversión de vídeo', uk: 'Конвертація відео' },
       d: { ru: 'Конвертирует и сжимает видео, звук и картинки, делает прокси.', en: 'Converts and compresses video, audio and images, makes proxies.', es: 'Convierte y comprime vídeo, audio e imágenes, y crea proxies.', uk: 'Конвертує й стискає відео, звук і картинки, робить проксі.' },
       p: { ru: 'Бесплатно, открытый код (пожертвования)', en: 'Free, open source (donations)', es: 'Gratis, código abierto (donaciones)', uk: 'Безкоштовно, відкритий код (пожертви)' } },
+    { id: 'soundcraft', shot: true, name: 'SoundCraft', url: 'https://getartcraft.com/apps/soundcraft',
+      cat: { ru: 'Работа со звуком', en: 'Audio workstation', es: 'Estación de audio', uk: 'Робота зі звуком' },
+      d: { ru: 'Звуковая станция из набора ArtCraft — бесплатная замена платным DAW: отдельные окна монтажа и микшера, многодорожечный звук и MIDI, по десять вставок и посылов на дорожку, автоматизация, работает и в браузере.',
+           en: 'Audio workstation from the ArtCraft suite — a free alternative to paid DAWs: separate Edit and Mix windows, multitrack audio and MIDI, ten inserts and sends per track, automation, also runs in the browser.',
+           es: 'Estación de audio de la suite ArtCraft, alternativa gratuita a los DAW de pago: ventanas separadas de edición y mezcla, audio multipista y MIDI, diez inserciones y envíos por pista, automatización; también funciona en el navegador.',
+           uk: 'Звукова станція з набору ArtCraft — безкоштовна заміна платним DAW: окремі вікна монтажу й мікшера, багатодоріжковий звук і MIDI, по десять вставок і посилів на доріжку, автоматизація, працює і в браузері.' },
+      p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
     { id: 'youtube-download', name: 'YouTube-Download', url: 'https://github.com/yt-dlp/yt-dlp',
       cat: { ru: 'Скачивание видео · свой скрипт', en: 'Video download · in-house script', es: 'Descarga de vídeo · script propio', uk: 'Завантаження відео · власний скрипт' },
       d: { ru: 'Свой скрипт, сделан в VS Code с DeepSeek. Кидаешь ссылку — скачивает видео со звуком в максимальном качестве ролика с YouTube и ещё примерно 1800 сайтов, без перекодирования. Внутри — yt-dlp и ffmpeg.',
@@ -2765,6 +2779,13 @@ body{
            es: 'Script propio hecho en VS Code con DeepSeek. Pegas el enlace y descarga el vídeo con sonido en la máxima calidad del clip desde YouTube y unos 1800 sitios más, sin recodificar. Por dentro: yt-dlp y ffmpeg.',
            uk: 'Власний скрипт, зроблений у VS Code з DeepSeek. Кидаєш посилання — завантажує відео зі звуком у максимальній якості ролика з YouTube і ще приблизно 1800 сайтів, без перекодування. Всередині — yt-dlp і ffmpeg.' },
       p: { ru: 'Бесплатно: свой скрипт, движок yt-dlp с открытым кодом', en: 'Free: in-house script, open-source yt-dlp engine', es: 'Gratis: script propio, motor yt-dlp de código abierto', uk: 'Безкоштовно: власний скрипт, рушій yt-dlp з відкритим кодом' } },
+    { id: 'vectorcraft', shot: true, name: 'VectorCraft', url: 'https://getartcraft.com/apps/vectorcraft',
+      cat: { ru: 'Векторная графика', en: 'Vector graphics', es: 'Gráficos vectoriales', uk: 'Векторна графіка' },
+      d: { ru: 'Векторный редактор из набора ArtCraft — бесплатная замена Adobe Illustrator: привычные панели и горячие клавиши, работает и в браузере. Есть свой MCP-сервер: ИИ-агент рисует в нём по описанию.',
+           en: 'Vector editor from the ArtCraft suite — a free Adobe Illustrator alternative: familiar panels and shortcuts, also runs in the browser. Has its own MCP server, so an AI agent can draw in it from a description.',
+           es: 'Editor vectorial de la suite ArtCraft, alternativa gratuita a Adobe Illustrator: paneles y atajos habituales, también funciona en el navegador. Tiene su propio servidor MCP: un agente de IA dibuja en él a partir de una descripción.',
+           uk: 'Векторний редактор з набору ArtCraft — безкоштовна заміна Adobe Illustrator: звичні панелі й гарячі клавіші, працює і в браузері. Має власний MCP-сервер: ШІ-агент малює в ньому за описом.' },
+      p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
     { id: 'vscode', shot: true, name: 'VS Code', url: 'https://code.visualstudio.com',
       cat: { ru: 'Редактор кода', en: 'Code editor', es: 'Editor de código', uk: 'Редактор коду' },
       d: { ru: 'Вместе с DeepSeek V4 Flash по API — для обслуживания и настройки пайплайна.', en: 'Together with DeepSeek V4 Flash via API — used to maintain and configure the pipeline.', es: 'Junto con DeepSeek V4 Flash por API: sirve para mantener y configurar el pipeline.', uk: 'Разом із DeepSeek V4 Flash через API — для обслуговування й налаштування пайплайна.' },
@@ -2772,7 +2793,7 @@ body{
       p: { ru: 'Бесплатно', en: 'Free', es: 'Gratis', uk: 'Безкоштовно' } }
   ];
   /* версия скриншотов: меняется при замене картинок, чтобы браузер не показывал старые из кэша */
-  var SHOT_V = '20261107b';
+  var SHOT_V = '20261107c';
   var PROG = {};
   PROGS.forEach(function (p) { PROG[p.id] = p; });
 
@@ -2788,22 +2809,22 @@ body{
            [4, ['f:003_Sources/Video/Gameplay', 'p:bluestacks', 'p:nox-player', 'p:obs-studio']]],
     p1:   [[2, ['f:003_Sources/Photo/Generate', 'f:004_Project/ComfyUI', 'p:comfyui']]],
     p2:   [[2, ['f:003_Sources/Photo/Generate', 'f:004_Project/ComfyUI', 'p:comfyui']]],
-    p3:   [[2, ['f:004_Project/Photoshop', 'f:004_Project/AI', 'f:003_Sources/Photo', 'f:003_Sources/Fonts', 'p:photocraft', 'p:inkscape']]],
+    p3:   [[2, ['f:004_Project/Photoshop', 'f:004_Project/AI', 'f:003_Sources/Photo', 'f:003_Sources/Fonts', 'p:photocraft', 'p:inkscape', 'p:vectorcraft']]],
     gmp:  [[4, ['f:003_Sources/Video/Gameplay', 'p:bluestacks', 'p:nox-player', 'p:obs-studio']]],
-    mus0: [[3, ['f:004_Project/Reaper', 'f:003_Sources/Sound/Music', 'f:003_Sources/Sound/SFX', 'p:reaper', 'p:izotope', 'p:fabfilter', 'p:davinci-resolve']]],
-    mont: [[6, ['f:004_Project/DaVinci', 'f:005_DAYlease/Year.Month.Day', 'p:davinci-resolve']]],
+    mus0: [[3, ['f:004_Project/Reaper', 'f:003_Sources/Sound/Music', 'f:003_Sources/Sound/SFX', 'p:reaper', 'p:soundcraft', 'p:izotope', 'p:fabfilter', 'p:davinci-resolve']]],
+    mont: [[6, ['f:004_Project/DaVinci', 'f:005_DAYlease/Year.Month.Day', 'p:davinci-resolve', 'p:filmcraft']]],
     d1:   [[7, ['f:005_DAYlease']]], d2: [[7, ['f:005_DAYlease']]],
     bad1: [[7, ['f:005_DAYlease']]], good1: [[7, ['f:005_DAYlease']]],
     bad2: [[7, ['f:005_DAYlease']]], good2: [[7, ['f:005_DAYlease']]],
     vid:  [[2, ['f:003_Sources/Video/Generate', 'f:004_Project/ComfyUI', 'p:comfyui']]],
     comp: [[8, ['f:004_Project/AE', 'f:004_Project/AE/Proxy', 'f:004_Project/DaVinci', 'p:effectcraft', 'p:davinci-resolve']]],
-    mus:  [[3, ['f:004_Project/Reaper', 'f:003_Sources/Sound/Music', 'f:003_Sources/Sound/SFX', 'f:003_Sources/Sound/VoiceOver', 'p:reaper', 'p:izotope', 'p:fabfilter', 'p:davinci-resolve']]],
+    mus:  [[3, ['f:004_Project/Reaper', 'f:003_Sources/Sound/Music', 'f:003_Sources/Sound/SFX', 'f:003_Sources/Sound/VoiceOver', 'p:reaper', 'p:soundcraft', 'p:izotope', 'p:fabfilter', 'p:davinci-resolve']]],
     fin:  [[4, ['f:003_Sources/Video/Gameplay', 'p:bluestacks', 'p:nox-player', 'p:obs-studio']]],
-    sved: [[6, ['f:004_Project/DaVinci', 'p:davinci-resolve']]],
-    color:[[6, ['f:004_Project/DaVinci', 'p:davinci-resolve']]],
-    master:[[3, ['f:004_Project/Reaper', 'p:reaper', 'p:fabfilter', 'p:izotope']]],
-    fmont:[[6, ['f:004_Project/DaVinci', 'f:005_DAYlease/Year.Month.Day', 'p:davinci-resolve']]],
-    topj: [[6, ['f:006_OUT/Video', 'f:006_OUT/Image', 'p:davinci-resolve', 'p:shutter-encoder']]],
+    sved: [[6, ['f:004_Project/DaVinci', 'p:davinci-resolve', 'p:filmcraft']]],
+    color:[[6, ['f:004_Project/DaVinci', 'p:davinci-resolve', 'p:filmcraft']]],
+    master:[[3, ['f:004_Project/Reaper', 'p:reaper', 'p:soundcraft', 'p:fabfilter', 'p:izotope']]],
+    fmont:[[6, ['f:004_Project/DaVinci', 'f:005_DAYlease/Year.Month.Day', 'p:davinci-resolve', 'p:filmcraft']]],
+    topj: [[6, ['f:006_OUT/Video', 'f:006_OUT/Image', 'p:davinci-resolve', 'p:filmcraft', 'p:shutter-encoder']]],
     out:  [[1, ['f:006_OUT']]]
   };
   /* обратная связь: программа → карточки, где она нужна (для строки «В пайплайне») */
