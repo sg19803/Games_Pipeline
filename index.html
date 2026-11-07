@@ -405,9 +405,10 @@ body.guest .ndtext{cursor:default}
   mk('comp', 'Композитинг VFX', W);
   mk('mus',  'Разработка музыки и эффектов', W);
   mk('fin',  'Финальный продакшн', W);
-  mk('sved', 'Сведение в один трек', W);
+  mk('sved', 'Монтаж', W);
   mk('color','Цветокоррекция', W);
   mk('master','Мастеринг звука', W);
+  mk('fmont','Финальный монтаж', W);
   mk('d2',   'Утверждение', 0, 'diamondWrap');
   mk('topj', 'Утверждение Топ джинг', W);
   mk('out',  'Выход задачи', KW, 'key');
@@ -542,20 +543,20 @@ body.guest .ndtext{cursor:default}
   R.good1.x = sm1x - SM / 2; R.good1.y = axis + SM_DY - SM / 2;
   var F3 = { l: f3l, r: sm1x + SM / 2 + PAD };
 
-  /* --- блок 4: один блок на две части — четыре ветки → сведение → цвет и звук --- */
+  /* --- блок 4: четыре ветки → три работы рядом (монтаж, цвет, звук) → финальный монтаж --- */
   var f4l = F3.r + FGAP;
   var bus5 = f4l + PAD;                        /* шина четырёх веток */
   var v4X = bus5 + BUS;
   stack(['vid', 'comp', 'mus', 'fin'], v4X, axis);
-  var bus6 = v4X + widest(['vid', 'comp', 'mus', 'fin']) + BUS;  /* шина слияния */
-  var svedX = bus6 + BUS;
-  put('sved', svedX, axis);
-  /* внутри того же блока: сведение → цвет и мастеринг параллельно (раньше это были два блока) */
-  var bus7 = svedX + R.sved.w + BUS;
-  var cX = bus7 + BUS;
-  stack(['color', 'master'], cX, axis);
-  var bus8 = cX + widest(['color', 'master']) + BUS;
-  var F45 = { l: f4l, r: bus8 + PAD };
+  var bus6 = v4X + widest(['vid', 'comp', 'mus', 'fin']) + BUS;  /* шина слияния четырёх */
+  var bus7 = bus6 + BUS;                       /* развилка на три работы */
+  var workX = bus7 + BUS;
+  /* монтаж, цветокоррекция и мастеринг звука стоят рядом: это параллельная работа */
+  stack(['sved', 'color', 'master'], workX, axis);
+  var bus8 = workX + widest(['sved', 'color', 'master']) + BUS;   /* шина слияния трёх */
+  var fmX = bus8 + BUS;
+  put('fmont', fmX, axis);                     /* три работы сводятся в финальный монтаж */
+  var F45 = { l: f4l, r: fmX + R.fmont.w + PAD };
 
   /* --- блок 5: второе «Утверждение» со смайликами; блок 6: джингл → выход --- */
   var f6l = F45.r + FGAP;
@@ -753,24 +754,26 @@ body.guest .ndtext{cursor:default}
     wire([[bus5, YC(k)], [X1(k), YC(k)]], 'b', 'ab');
   });
 
-  /* четыре ветки → сведение */
+  /* четыре ветки сходятся в одну шину */
   ['vid', 'comp', 'mus', 'fin'].forEach(function (k) {
     wire([[X2(k), YC(k)], [bus6, YC(k)]], 'b');
   });
   wire([[bus6, YC('vid')], [bus6, YC('fin')]], 'b');
-  wire([[bus6, axis], [X1('sved'), axis]], 'b', 'ab');
 
-  /* сведение → развилка → цвет и звук (параллельно) → слияние → второе утверждение */
-  wire([[X2('sved'), axis], [bus7, axis]], 'b');
-  wire([[bus7, YC('color')], [bus7, YC('master')]], 'b');
-  ['color', 'master'].forEach(function (k) {
+  /* шина → три работы рядом: монтаж, цветокоррекция, мастеринг звука */
+  wire([[bus6, axis], [bus7, axis]], 'b');
+  wire([[bus7, YC('sved')], [bus7, YC('master')]], 'b');
+  ['sved', 'color', 'master'].forEach(function (k) {
     wire([[bus7, YC(k)], [X1(k), YC(k)]], 'b', 'ab');
   });
-  ['color', 'master'].forEach(function (k) {
+
+  /* три работы снова сходятся → финальный монтаж → второе утверждение */
+  ['sved', 'color', 'master'].forEach(function (k) {
     wire([[X2(k), YC(k)], [bus8, YC(k)]], 'b');
   });
-  wire([[bus8, YC('color')], [bus8, YC('master')]], 'b');
-  wire([[bus8, axis], [X1('d2'), axis]], 'b', 'ab');
+  wire([[bus8, YC('sved')], [bus8, YC('master')]], 'b');
+  wire([[bus8, axis], [X1('fmont'), axis]], 'b', 'ab');
+  wire([[X2('fmont'), axis], [X1('d2'), axis]], 'b', 'ab');
 
 
   /* «да» → джингл → выход */
@@ -1599,7 +1602,7 @@ body.guest .ndtext{cursor:default}
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-06-6 (objazannosti v strokah)',
+    build: '2026-11-06-7 (montazh i finalnyj montazh)',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
