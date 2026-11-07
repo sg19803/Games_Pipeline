@@ -519,27 +519,61 @@ body{
   .savebar button, .guestbadge, .trialtag, .toast{-webkit-backdrop-filter:none; backdrop-filter:none}
 }
 
+
+/* ---- глобальное освещение: бирюзовый свет тёмного фона (справа сверху) ложится на лист
+   и отражается в кромках стекла со стороны источника ---- */
+.sheet{
+  background:
+    radial-gradient(900px 520px at 100% 0%, rgba(90,185,212,.30), rgba(90,185,212,.10) 45%, transparent 72%),
+    radial-gradient(700px 420px at 0% 100%, rgba(30,95,115,.14), transparent 70%),
+    radial-gradient(1400px 600px at 50% -10%, rgba(255,255,255,.30), transparent 70%),
+    linear-gradient(180deg, #ced2d6 0%, #c4c8cc 55%, #b9bdc2 100%);
+  box-shadow:var(--gl-rim), inset -2px 2px 0 rgba(140,220,240,.45), inset -14px 14px 40px -20px rgba(110,200,225,.45),
+             0 10px 20px rgba(0,0,0,.35), 0 40px 90px rgba(0,0,0,.55), 30px -20px 90px -30px rgba(70,170,200,.35);
+}
+.node, .ninput, .nperson, .ndtext, .note, .ndbtn, .frame{
+  --env:inset -1px 1px 0 rgba(130,215,238,.32);
+}
+.node:not(.key):not(.done):not(.smiley):not(.diamondWrap), .ninput, .nperson, .ndtext, .note, .ndbtn{box-shadow:var(--env), var(--gl-e4)}
+.frame{box-shadow:var(--env), var(--gl-e2)}
+.panel, .panel.blue{box-shadow:inset -1px 1px 0 rgba(130,215,238,.28), var(--gl-e3)}
+
+/* ---- каустика: световые разводы медленно плавают по листу и просвечивают сквозь стекло.
+   Два слоя одного рисунка разного масштаба идут в разные стороны — узор всё время меняется.
+   Двигается только слой целиком (transform), поэтому нагрузки почти нет ---- */
+.caustics{position:absolute; inset:0; border-radius:inherit; overflow:hidden; z-index:-1; pointer-events:none}
+.caustics i{
+  position:absolute; left:-520px; top:-1040px; right:0; bottom:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520'%3E%3Cfilter id='f' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0135' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 .86  0 0 0 0 1  0 0 0 0 1  1 0 0 0 0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0 .03 .45 .85 .45 .03 0 0 .03 .45 .85 .45 .03 0 0 .03 .45 .85 .45 .03 0'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url%28%23f%29'/%3E%3C/svg%3E"); background-size:520px 520px;
+  opacity:.16; will-change:transform;
+  animation:cau1 90s linear infinite;
+}
+.caustics i + i{left:0; top:-780px; right:-780px; bottom:0; background-size:780px 780px; opacity:.10; animation:cau2 130s linear infinite}
+@keyframes cau1{from{transform:translate3d(0,0,0)} to{transform:translate3d(520px,1040px,0)}}
+@keyframes cau2{from{transform:translate3d(0,0,0)} to{transform:translate3d(-780px,780px,0)}}
+@media (prefers-reduced-motion: reduce){ .caustics i{animation:none} }
+
 /* ---- оптические блики ----
    по поверхности — широкий, мягкий, медленный; по кромке — узкий, яркий, быстрый */
-.node::before, .node::after, .diamondInner::before, .diamondInner::after{
+.node:not(.diamondWrap)::before, .node:not(.diamondWrap)::after, .diamondInner::before, .diamondInner::after{
   content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:0;
   transition:opacity .35s ease;
 }
-.node::before, .diamondInner::before{
+.node:not(.diamondWrap)::before, .diamondInner::before{
   z-index:1;
   background:linear-gradient(105deg, transparent 34%, rgba(255,255,255,.10) 40%, rgba(255,255,255,.42) 47%,
              rgba(255,255,255,.58) 50%, rgba(255,255,255,.42) 53%, rgba(255,255,255,.10) 60%, transparent 66%);
   background-size:320% 100%; background-position:100% 0;
 }
-.node::after, .diamondInner::after{
+.node:not(.diamondWrap)::after, .diamondInner::after{
   z-index:2; padding:1.5px;
   background:linear-gradient(100deg, transparent 45%, rgba(255,255,255,.35) 48%, #fff 50%, rgba(255,255,255,.35) 52%, transparent 55%);
   background-size:360% 100%; background-position:100% 0;
   -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite:xor; mask-composite:exclude;
 }
-.node:hover::before, .diamondWrap:hover .diamondInner::before{opacity:1; animation:glareWide 10.4s cubic-bezier(.45,.05,.3,1) infinite}
-.node:hover::after, .diamondWrap:hover .diamondInner::after{opacity:1; animation:glareRim 4.6s cubic-bezier(.5,0,.4,1) infinite}
+.node:not(.diamondWrap):hover::before, .diamondWrap:hover .diamondInner::before{opacity:1; animation:glareWide 10.4s cubic-bezier(.45,.05,.3,1) infinite}
+.node:not(.diamondWrap):hover::after, .diamondWrap:hover .diamondInner::after{opacity:1; filter:drop-shadow(-1px 0 0 rgba(255,40,100,.7)) drop-shadow(1px 0 0 rgba(0,190,255,.7)); animation:glareRim 4.6s cubic-bezier(.5,0,.4,1) infinite}
 .node.glint::after, .diamondInner.glint::after{opacity:1; animation:glareRim 3s cubic-bezier(.5,0,.4,1) 1}
 @keyframes glareWide{0%{background-position:100% 0} 72%,100%{background-position:0% 0}}
 @keyframes glareRim{0%{background-position:100% 0} 100%{background-position:0% 0}}
@@ -566,7 +600,7 @@ body{
 }
 .node:hover, .diamondWrap:hover .diamondInner{animation:aberr 8s ease-in-out infinite}
 @keyframes aberr{0%,100%{--abx:.7px} 50%{--abx:1.6px}}
-.node:hover:not(.key):not(.done):not(.smiley){box-shadow:var(--gl-e5), 0 0 0 3px rgba(90,160,255,.22), var(--ab)}
+.node:hover:not(.key):not(.done):not(.smiley):not(.diamondWrap){box-shadow:var(--gl-e5), 0 0 0 3px rgba(90,160,255,.22), var(--ab)}
 .node.key:hover{box-shadow:var(--gl-greenRim), 0 4px 6px rgba(20,70,40,.30), 0 16px 30px rgba(25,90,50,.32), 0 0 24px rgba(80,210,130,.40), var(--ab)}
 .node.done:hover:not(.smiley){box-shadow:inset 0 1.5px 0 rgba(255,255,255,.85), inset 0 -2px 3px rgba(215,255,228,.8), 0 0 0 1px rgba(40,130,75,.45), 0 6px 14px rgba(30,110,60,.28), 0 0 24px rgba(70,210,120,.5), var(--ab)}
 .node.smiley.bad:hover{box-shadow:var(--gl-e5), 0 0 18px rgba(224,68,60,.35), var(--ab)}
@@ -576,6 +610,8 @@ body{
 
 /* кнопки «+» и «−» убраны: список профессий стал постоянным (строки по-прежнему хранятся и сохраняются) */
 #cplus, .nplus, .nminus{display:none !important}
+.node:not(.key):not(.done):not(.smiley)[contenteditable="true"]:focus{box-shadow:var(--gl-e5), 0 0 0 3px rgba(90,160,255,.3), 0 0 18px rgba(90,160,255,.35)}
+.node.diamondWrap, .node.diamondWrap:hover{background:none !important; box-shadow:none !important; transform:none}
 </style>
 </head>
 <body>
@@ -584,6 +620,7 @@ body{
 <div class="scroller" id="scroller">
   <div class="zoomer" id="zoomer">
     <div class="sheet" id="sheet">
+      <div class="caustics" aria-hidden="true"><i></i><i></i></div>
       <div class="headrow">
         <input class="headline" id="cnum" type="text" placeholder="Номер креатива" spellcheck="false" autocomplete="off" aria-label="Номер креатива">
         <button class="nplus" id="cplus" type="button" aria-label="Добавить ещё номер" title="Добавить ещё номер">+</button>
@@ -2171,7 +2208,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-8',
+    build: '2026-11-07-3 glass-trial-10',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
