@@ -679,10 +679,113 @@ body{
     overflow:hidden; text-overflow:ellipsis; bottom:16px; transition:opacity .6s ease}
   .guestbadge.away{opacity:0}
 }
+
+/* ---- верхний ряд: слева люди и профессии, справа папка проекта, описание программы, программы ---- */
+.toprow{display:flex; align-items:flex-start; gap:48px; margin:0 0 56px}
+.toprow .names{margin:0; flex:0 0 728px; width:728px}
+.side{flex:0 0 auto; display:flex; gap:24px; height:520px}
+.scol{display:flex; flex-direction:column; min-width:0; height:100%}
+.tcol{flex:0 0 600px} .pcol{flex:0 0 480px} .icol{flex:1 1 0}
+.scap{margin:0 0 8px 4px; height:24px; font-size:14px; line-height:24px; font-weight:600; letter-spacing:-.016em;
+  color:var(--gl-ink2); text-shadow:var(--gl-ts)}
+.spanel{flex:1 1 auto; min-height:0; border-radius:20px; background:var(--gl-tint); box-shadow:var(--gl-e3);
+  padding:12px; overflow:auto; scrollbar-width:thin; scrollbar-color:rgba(90,100,110,.3) transparent}
+.spanel::-webkit-scrollbar{width:8px} .spanel::-webkit-scrollbar-thumb{background:rgba(90,100,110,.28); border-radius:4px}
+
+/* дерево папок — как в проводнике */
+.trow{display:flex; align-items:center; gap:6px; height:22px; padding:0 10px 0 calc(6px + var(--d,0) * 20px);
+  border-radius:8px; font-size:14px; line-height:18px; letter-spacing:-.016em; color:var(--gl-ink);
+  text-shadow:var(--gl-ts); white-space:nowrap; user-select:none; -webkit-user-select:none; cursor:default;
+  transition:background .15s ease, box-shadow .15s ease}
+.trow.has{cursor:pointer}
+.trow:hover{background:rgba(255,255,255,.30); box-shadow:inset 0 1px 0 rgba(255,255,255,.65), 0 1px 2px rgba(55,63,71,.12)}
+.tchev{flex:0 0 14px; width:14px; height:14px; display:flex; align-items:center; justify-content:center; color:var(--gl-ink3)}
+.tchev svg{width:9px; height:9px; transition:transform .18s ease}
+.trow.open .tchev svg{transform:rotate(90deg)}
+.trow:not(.has) .tchev{visibility:hidden}
+.tico{flex:0 0 20px; width:20px; height:16px; filter:drop-shadow(0 1px 1px rgba(40,30,0,.18))}
+.tkids[hidden]{display:none}
+
+/* список программ */
+.prow{display:flex; align-items:center; gap:10px; height:26px; padding:0 8px; border-radius:8px;
+  font-size:14px; line-height:18px; letter-spacing:-.016em; color:var(--gl-ink); text-shadow:var(--gl-ts);
+  cursor:pointer; white-space:nowrap; transition:background .15s ease, box-shadow .15s ease}
+.prow img{flex:0 0 20px; width:20px; height:20px; filter:drop-shadow(0 1px 1px rgba(0,0,0,.22))}
+.prow .pn{flex:1 1 auto; overflow:hidden; text-overflow:ellipsis}
+.pp{flex:0 0 auto; font-size:12px; line-height:16px; padding:1px 8px; border-radius:999px; text-shadow:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55)}
+.pp.free{color:#1d6b3c; background:rgba(60,175,105,.16)}
+.pp.paid{color:#8a5512; background:rgba(230,160,40,.20)}
+.prow:hover, .prow.on{background:rgba(255,255,255,.30); box-shadow:inset 0 1px 0 rgba(255,255,255,.65), 0 1px 2px rgba(55,63,71,.12)}
+
+/* наведение на карточку схемы: папки и программы горят цветом её исполнителя */
+.trow.hl, .prow.hl{
+  background:linear-gradient(180deg, hsla(var(--ph,212),78%,58%,.30), hsla(var(--ph,212),78%,58%,.15));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 0 0 1px hsla(var(--ph,212),70%,45%,.55), 0 0 16px hsla(var(--ph,212),90%,60%,.55)}
+/* нужная папка внутри свёрнутой — горит свёрнутая, пунктиром */
+.trow.hlc{
+  background:linear-gradient(180deg, hsla(var(--ph,212),78%,58%,.16), hsla(var(--ph,212),78%,58%,.06));
+  box-shadow:0 0 0 1px hsla(var(--ph,212),70%,45%,.45); outline:1px dashed hsla(var(--ph,212),70%,40%,.55); outline-offset:2px}
+
+/* описание программы */
+.info{display:flex; flex-direction:column; gap:14px; padding:20px 24px}
+.ihead{display:flex; align-items:center; gap:16px}
+.ihead img{width:56px; height:56px; flex:0 0 56px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}
+.iname{font-size:24px; line-height:28px; font-weight:600; letter-spacing:-.02em; color:var(--gl-ink); text-shadow:var(--gl-ts)}
+.icat{font-size:14px; line-height:18px; letter-spacing:-.016em; color:var(--gl-ink3); margin-top:2px}
+.idesc{margin:0; font-size:17px; line-height:25px; letter-spacing:-.022em; color:var(--gl-ink); text-shadow:var(--gl-ts)}
+.iprice{align-self:flex-start; font-size:15px; line-height:21px; letter-spacing:-.016em; padding:8px 14px; border-radius:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 0 0 1px rgba(80,90,100,.12)}
+.iprice.free{color:#195f35; background:rgba(60,175,105,.16)}
+.iprice.paid{color:#7c4c0e; background:rgba(230,160,40,.18)}
+.iwho{font-size:15px !important; line-height:21px !important; font-weight:600; color:var(--gl-ink) !important}
+.iuse{font-size:14px; line-height:18px; color:var(--gl-ink2)}
+.ichip{display:inline-block; margin:6px 6px 0 0; padding:3px 10px; border-radius:999px; font-size:13px; line-height:18px;
+  color:var(--gl-ink); background:rgba(255,255,255,.32); box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 0 0 1px rgba(80,90,100,.12)}
+.ilink{align-self:flex-start; margin-top:auto; display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 16px;
+  border-radius:999px; font-size:15px; line-height:20px; font-weight:500; color:#fff; text-decoration:none;
+  background:var(--gl-primary); box-shadow:var(--gl-primaryShadow); text-shadow:0 1px 1px rgba(20,40,70,.4)}
+.ilink:hover{box-shadow:var(--gl-primaryShadow), 0 0 22px rgba(110,165,235,.45)}
+.isum{display:flex; flex-wrap:wrap; gap:10px; margin-top:4px}
+.isum img{width:36px; height:36px; filter:drop-shadow(0 1px 2px rgba(0,0,0,.22))}
+
+/* стеклянная подсказка у папки */
+.gtip{position:fixed; z-index:60; max-width:320px; padding:10px 14px; border-radius:14px; pointer-events:none;
+  font-size:13px; line-height:18px; letter-spacing:-.01em; color:var(--gl-ink);
+  background:linear-gradient(180deg, rgba(236,241,244,.78), rgba(220,227,232,.70));
+  -webkit-backdrop-filter:blur(16px) saturate(160%); backdrop-filter:blur(16px) saturate(160%);
+  box-shadow:var(--gl-e5); opacity:0; transform:translateY(4px) scale(.98); transition:opacity .16s ease, transform .2s ease}
+.gtip.on{opacity:1; transform:none}
+.gtip b{display:block; font-weight:600; margin-bottom:2px}
+
+/* флаги языков — над листом справа */
+.langbar{position:fixed; top:8px; right:16px; z-index:40; display:flex; gap:8px}
+.lflag{width:44px; height:28px; padding:0; border:0; border-radius:999px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; opacity:.6;
+  background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.05)); box-shadow:var(--gl-e6);
+  -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); transition:opacity .18s ease, box-shadow .18s ease}
+.lflag svg{width:22px; height:15px; border-radius:3px; box-shadow:0 0 0 .5px rgba(0,0,0,.35)}
+.lflag:hover{opacity:1}
+.lflag.on{opacity:1; box-shadow:var(--gl-e6), 0 0 0 2px rgba(120,180,255,.6), 0 0 16px rgba(110,170,255,.45)}
+
+@media (hover: none), (pointer: coarse){
+  .gtip, .lflag{-webkit-backdrop-filter:none; backdrop-filter:none}
+  .gtip{background:rgba(232,237,241,.96)}
+  .lflag{background:rgba(70,80,90,.85)}
+}
+@media (max-width: 760px){
+  .langbar{top:42px; right:12px; gap:6px}
+  .lflag{width:38px; height:26px}
+}
+@media (prefers-reduced-transparency: reduce){
+  .gtip, .lflag{-webkit-backdrop-filter:none; backdrop-filter:none}
+  .gtip{background:rgba(232,237,241,.97)}
+}
 </style>
 </head>
 <body>
-<div class="trialtag">Пробная страница · сохранение выключено</div>
+<div class="trialtag" data-i18n="trial">Пробная страница · сохранение выключено</div>
+<div class="langbar" id="langbar" role="group" aria-label="Language"></div>
 <div class="copy" id="copy"><span>&copy; 2026 Serhii Horbunov</span><span class="sep">&middot;</span><a href="https://sergiovida.com" target="_blank" rel="noopener">sergiovida.com</a></div>
 <div class="scroller" id="scroller">
   <div class="zoomer" id="zoomer">
@@ -692,7 +795,14 @@ body{
         <input class="headline" id="cnum" type="text" placeholder="Номер креатива" spellcheck="false" autocomplete="off" aria-label="Номер креатива">
         <button class="nplus" id="cplus" type="button" aria-label="Добавить ещё номер" title="Добавить ещё номер">+</button>
       </div>
-      <div class="names" id="names"></div>
+      <div class="toprow">
+        <div class="names" id="names"></div>
+        <div class="side" id="side">
+          <section class="scol tcol"><h3 class="scap" data-i18n="folder">Папка проекта</h3><div class="spanel tree" id="tree"></div></section>
+          <section class="scol icol"><h3 class="scap" data-i18n="about">О программе</h3><div class="spanel info" id="pinfo"></div></section>
+          <section class="scol pcol"><h3 class="scap" data-i18n="programs">Программы</h3><div class="spanel plist" id="plist"></div></section>
+        </div>
+      </div>
       <div class="stage" id="stage">
         <div class="frames" id="frames"></div>
         <div class="notes" id="notes"></div>
@@ -1113,6 +1223,7 @@ body{
   }
 
   stageEl.style.width = stageW + 'px';
+  if (typeof sizeSide === 'function') sizeSide(stageW);
   stageEl.style.height = stageH + 'px';
   wiresEl.setAttribute('width', stageW);
   wiresEl.setAttribute('height', stageH);
@@ -1426,7 +1537,7 @@ body{
     if (head) out.push(head);
     var inputs = namesEl.querySelectorAll('.ninput');
     for (var i = 0; i < inputs.length; i++) {
-      var v = (inputs[i].value || '').trim();
+      var v = (bv(inputs[i]) || '').trim();
       if (v) out.push(v);
     }
     return out;
@@ -1440,9 +1551,7 @@ body{
       var ri = rows[i].querySelector('.ninput');
       var pi = rows[i].querySelector('.nperson');
       var di = rows[i].querySelector('.ndtext');
-      out.push({ role: ri ? (ri.value || '') : '',
-                 person: pi ? (pi.value || '') : '',
-                 duties: di ? (di.value || '') : '' });
+      out.push({ role: bv(ri), person: bv(pi), duties: bv(di) });
     }
     return out;
   }
@@ -1470,7 +1579,7 @@ body{
     var out = {};
     if (!notesEl) return out;
     for (var i = 0; i < notesEl.children.length; i++) {
-      var v = notesEl.children[i].value;
+      var v = bv(notesEl.children[i]);
       if (v && v.replace(/\s+/g, ' ').trim()) out[String(i + 1)] = v;
     }
     return out;
@@ -1514,7 +1623,7 @@ body{
     }
     var els = namesEl.querySelectorAll('.nperson');
     for (i = 0; i < els.length; i++) {
-      who = (els[i].value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      who = (bv(els[i]) || '').replace(/\s+/g, ' ').trim().toLowerCase();
       var n = who ? (seen[who] || 0) : 0;
       els[i].classList.toggle('shared', n > 1);
       els[i].title = n > 1
@@ -1697,7 +1806,14 @@ body{
            two(d.getHours()) + ':' + two(d.getMinutes());
   }
 
+  /* текст поля «как есть» по-русски: при другом языке перевод только показывается,
+     а сохраняется и сравнивается исходный русский (он лежит в data-base) */
+  function bv(el) {
+    if (!el) return '';
+    return (el.dataset && el.dataset.base != null) ? el.dataset.base : (el.value || '');
+  }
   function nodeText(id) {
+    if (R[id].el.dataset.base != null) return R[id].el.dataset.base;
     return (R[id].el.textContent || '')
       .replace(/\u00a0/g, ' ')
       .replace(/\s+/g, ' ')
@@ -1884,7 +2000,14 @@ body{
              names: nameState(), notes: noteValues(), nodes: nodes, done: done };
   }
 
+  /* перевод снимаем, кладём снимок, перевод возвращаем */
   function applySnapshot(data) {
+    if (typeof langReset === 'function') langReset();
+    var r = applySnapshotRaw(data);
+    if (typeof langApply === 'function') langApply();
+    return r;
+  }
+  function applySnapshotRaw(data) {
     if (!data || !data.nodes) return false;
     var changed = false;
     for (var id in data.nodes) {
@@ -2135,7 +2258,7 @@ body{
         if (localSnap && String(localSnap.savedAt || '') > String(data.savedAt || '')) return;
         if (applySnapshot(data)) {
           dirty = false;
-          toast('Загружены сохранённые тексты: ' + (data.savedAt || ''));
+          toast(L(UI.loaded) + ': ' + (data.savedAt || ''));
         }
       })
       .catch(function () { /* файла нет или страница открыта локально */ });
@@ -2193,13 +2316,13 @@ body{
     var rows = namesEl.querySelectorAll('.nrow');
     function who(row) {
       var pi = row.querySelector('.nperson');
-      return pi ? (pi.value || '').replace(/\s+/g, ' ').trim().toLowerCase() : '';
+      return (bv(pi) || '').replace(/\s+/g, ' ').trim().toLowerCase();
     }
     /* 1) строки профессий, которые отвечают за карточку; 2) их люди */
     var people = {}, i;
     for (i = 0; i < rows.length; i++) {
       var inp = rows[i].querySelector('.ninput');
-      var n = roleNum(inp ? inp.value : '');
+      var n = roleNum(bv(inp));
       if (nums.indexOf(n) !== -1) {
         rows[i].classList.add('hl'); hlRows.push(rows[i]);
         var w = who(rows[i]);
@@ -2228,7 +2351,7 @@ body{
     var rows = namesEl.querySelectorAll('.nrow'), order = {}, cnt = 0, out = { row: [], rows: rows };
     for (var i = 0; i < rows.length; i++) {
       var pi = rows[i].querySelector('.nperson');
-      var key = (pi ? (pi.value || '') : '').replace(/\s+/g, ' ').trim().toLowerCase() || ('#' + i);
+      var key = (bv(pi) || '').replace(/\s+/g, ' ').trim().toLowerCase() || ('#' + i);
       if (!(key in order)) order[key] = cnt++;
       out.row.push(Math.round((212 + order[key] * 137.508) % 360));
     }
@@ -2246,7 +2369,7 @@ body{
       var nums = NODE_ROLES[id], seen = {}, list = [];
       for (var i = 0; i < h.rows.length; i++) {
         var inp = h.rows[i].querySelector('.ninput');
-        if (nums.indexOf(roleNum(inp ? inp.value : '')) !== -1 && !seen[h.row[i]]) { seen[h.row[i]] = 1; list.push(h.row[i]); }
+        if (nums.indexOf(roleNum(bv(inp))) !== -1 && !seen[h.row[i]]) { seen[h.row[i]] = 1; list.push(h.row[i]); }
       }
       if (!list.length) { el.classList.remove('tinted'); el.style.removeProperty('--tintbg'); continue; }
       var a = list[0], b = list[list.length > 1 ? 1 : 0];
@@ -2345,9 +2468,688 @@ body{
     })(fid);
   }
 
+
+  /* =====================================================================
+     ПАПКА ПРОЕКТА · ПРОГРАММЫ · ПОДСВЕТКА ИНСТРУМЕНТОВ · 4 ЯЗЫКА
+     ===================================================================== */
+  var LANGS = ['es', 'en', 'ru', 'uk'];
+  var LANG = 'ru';
+  function L(o) { return o ? (o[LANG] || o.en || o.ru || '') : ''; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  /* ---------- надписи интерфейса ---------- */
+  var UI = {
+    title:    { ru: 'Пайплайн ИИ-креативов — проба: стекло', en: 'AI creatives pipeline', es: 'Pipeline de creatividades con IA', uk: 'Пайплайн ШІ-креативів' },
+    trial:    { ru: 'Пробная страница · сохранение выключено', en: 'Trial page · saving is off', es: 'Página de prueba · guardado desactivado', uk: 'Пробна сторінка · збереження вимкнено' },
+    cnum:     { ru: 'Номер креатива', en: 'Creative number', es: 'Número de creatividad', uk: 'Номер креативу' },
+    role:     { ru: 'Профессия', en: 'Role', es: 'Puesto', uk: 'Професія' },
+    person:   { ru: 'Имя человека', en: 'Person', es: 'Persona', uk: 'Ім’я людини' },
+    duties:   { ru: 'Обязанности', en: 'Duties', es: 'Funciones', uk: 'Обов’язки' },
+    folder:   { ru: 'Папка проекта', en: 'Project folder', es: 'Carpeta del proyecto', uk: 'Папка проєкту' },
+    about:    { ru: 'О программе', en: 'About the software', es: 'Sobre el programa', uk: 'Про програму' },
+    programs: { ru: 'Программы', en: 'Software', es: 'Programas', uk: 'Програми' },
+    free:     { ru: 'бесплатно', en: 'free', es: 'gratis', uk: 'безкоштовно' },
+    site:     { ru: 'Официальный сайт', en: 'Official site', es: 'Sitio oficial', uk: 'Офіційний сайт' },
+    used:     { ru: 'В пайплайне:', en: 'In the pipeline:', es: 'En el pipeline:', uk: 'У пайплайні:' },
+    guest:    { ru: 'Только просмотр — менять и сохранять может владелец', en: 'View only — only the owner can edit and save',
+                es: 'Solo lectura: editar y guardar solo puede el propietario', uk: 'Лише перегляд — змінювати й зберігати може власник' },
+    save:     { ru: 'Сохранить', en: 'Save', es: 'Guardar', uk: 'Зберегти' },
+    key:      { ru: 'Ключ', en: 'Key', es: 'Clave', uk: 'Ключ' },
+    loaded:   { ru: 'Загружены сохранённые тексты', en: 'Saved texts loaded', es: 'Textos guardados cargados', uk: 'Завантажено збережені тексти' },
+    ownerRo:  { ru: 'Тексты правятся только на русском', en: 'Texts can be edited in Russian only', es: 'Los textos solo se editan en ruso', uk: 'Тексти редагуються лише російською' }
+  };
+
+  /* ---------- перевод текстов схемы, профессий, обязанностей и заметок ----------
+     Ключ — русский текст (регистр, «ё», дефисы и точка в конце не важны).
+     Нет перевода — показывается русский текст как есть. */
+  var TX = [
+    { ru: 'ВХОД ЗАДАЧИ', en: 'TASK INPUT', es: 'ENTRADA DE TAREA', uk: 'ВХІД ЗАДАЧІ' },
+    { ru: 'Получение сырого брифа', en: 'Raw brief intake', es: 'Recepción del brief inicial', uk: 'Отримання сирого брифу' },
+    { ru: 'Получение референсов', en: 'Gathering references', es: 'Recopilación de referencias', uk: 'Отримання референсів' },
+    { ru: 'Создание точного задания', en: 'Writing the precise task', es: 'Definición precisa de la tarea', uk: 'Створення точного завдання' },
+    { ru: 'Создание сценария', en: 'Writing the script', es: 'Creación del guion', uk: 'Створення сценарію' },
+    { ru: 'Создание опорных кадров или выбор из геймплеев', en: 'Key frames or picks from gameplay', es: 'Fotogramas clave o selección del gameplay', uk: 'Створення опорних кадрів або вибір із геймплеїв' },
+    { ru: 'Создание фоновой музыки и саунд-эффектов (сырые)', en: 'Background music and sound effects (rough)', es: 'Música de fondo y efectos de sonido (borrador)', uk: 'Фонова музика та саунд-ефекти (чорнові)' },
+    { ru: 'Аниматик со статическими опорными кадрами', en: 'Animatic with static key frames', es: 'Animatic con fotogramas clave estáticos', uk: 'Аніматик зі статичними опорними кадрами' },
+    { ru: 'УТВЕРЖДЕНИЕ', en: 'APPROVAL', es: 'APROBACIÓN', uk: 'ЗАТВЕРДЖЕННЯ' },
+    { ru: 'Генерация видео', en: 'Video generation', es: 'Generación de vídeo', uk: 'Генерація відео' },
+    { ru: 'Композитинг и VFX', en: 'Compositing and VFX', es: 'Composición y VFX', uk: 'Композитинг і VFX' },
+    { ru: 'Создание музыки и эффектов', en: 'Music and sound effects', es: 'Música y efectos de sonido', uk: 'Створення музики та ефектів' },
+    { ru: 'Финальные геймплеи', en: 'Final gameplay', es: 'Gameplay final', uk: 'Фінальні геймплеї' },
+    { ru: 'Монтаж', en: 'Editing', es: 'Montaje', uk: 'Монтаж' },
+    { ru: 'Цветокоррекция', en: 'Color grading', es: 'Etalonaje', uk: 'Кольорокорекція' },
+    { ru: 'Мастеринг звука', en: 'Audio mastering', es: 'Masterización de audio', uk: 'Мастеринг звуку' },
+    { ru: 'Финальный монтаж', en: 'Final edit', es: 'Montaje final', uk: 'Фінальний монтаж' },
+    { ru: 'Рендер ресайзов и выгрузка', en: 'Rendering resizes and upload', es: 'Render de formatos y subida', uk: 'Рендер ресайзів і вивантаження' },
+    { ru: 'ВЫХОД ЗАДАЧИ', en: 'TASK OUTPUT', es: 'SALIDA DE TAREA', uk: 'ВИХІД ЗАДАЧІ' },
+    { ru: 'Создание локаций в ИИ', en: 'AI locations', es: 'Escenarios con IA', uk: 'Створення локацій у ШІ' },
+    { ru: 'Создание тернараундов персонажей в ИИ', en: 'AI character turnarounds', es: 'Turnarounds de personajes con IA', uk: 'Тернараунди персонажів у ШІ' },
+    { ru: 'Сборка опорных кадров', en: 'Assembling key frames', es: 'Montaje de fotogramas clave', uk: 'Збирання опорних кадрів' },
+    { ru: 'Запись геймплеев', en: 'Gameplay recording', es: 'Grabación de gameplay', uk: 'Запис геймплеїв' },
+    /* профессии */
+    { ru: 'Трафик-менеджер', en: 'Traffic manager', es: 'Traffic manager', uk: 'Трафік-менеджер' },
+    { ru: 'ИИ-артист', en: 'AI artist', es: 'Artista de IA', uk: 'ШІ-артист' },
+    { ru: 'Саунд-артист', en: 'Sound artist', es: 'Artista de sonido', uk: 'Саунд-артист' },
+    { ru: 'Геймплей-артист', en: 'Gameplay artist', es: 'Artista de gameplay', uk: 'Геймплей-артист' },
+    { ru: 'Режиссёр', en: 'Director', es: 'Director', uk: 'Режисер' },
+    { ru: 'Режиссёр монтажа', en: 'Editor', es: 'Editor de montaje', uk: 'Режисер монтажу' },
+    { ru: 'Ответственный за задачу', en: 'Task owner', es: 'Responsable de la tarea', uk: 'Відповідальний за задачу' },
+    { ru: 'Композитинг-артист', en: 'Compositing artist', es: 'Artista de composición', uk: 'Композитинг-артист' },
+    { ru: 'VFX-артист', en: 'VFX artist', es: 'Artista VFX', uk: 'VFX-артист' },
+    { ru: 'Контент-менеджер', en: 'Content manager', es: 'Content manager', uk: 'Контент-менеджер' },
+    /* обязанности */
+    { ru: 'Принимает задачу от заказчика в Asana, запрашивает и собирает входные данные: бриф, референсы, примеры, ставит задачу команде и следит за сроками, по запросу режиссёра передаёт недостающие материалы, принимает готовую работу на выходе',
+      en: 'Takes the task from the client in Asana, requests and gathers the inputs: brief, references, examples; assigns the task to the team and watches the deadlines; passes missing materials on the director’s request; accepts the finished work at the output',
+      es: 'Recibe la tarea del cliente en Asana, solicita y reúne los datos de entrada: brief, referencias, ejemplos; asigna la tarea al equipo y vigila los plazos; a petición del director le pasa los materiales que faltan; recibe el trabajo terminado a la salida',
+      uk: 'Приймає задачу від замовника в Asana, запитує та збирає вхідні дані: бриф, референси, приклади, ставить задачу команді й стежить за термінами, на запит режисера передає матеріали, яких бракує, приймає готову роботу на виході' },
+    { ru: 'Создаёт локации и персонажей, собирает опорные кадры для аниматика, генерирует видео на продакшне, следит, чтобы персонажи и стиль не менялись от кадра к кадру',
+      en: 'Creates locations and characters, assembles key frames for the animatic, generates video in production, keeps characters and style consistent from shot to shot',
+      es: 'Crea escenarios y personajes, monta los fotogramas clave del animatic, genera el vídeo en producción y cuida que los personajes y el estilo no cambien de un plano a otro',
+      uk: 'Створює локації та персонажів, збирає опорні кадри для аніматика, генерує відео на продакшні, стежить, щоб персонажі й стиль не змінювалися від кадру до кадру' },
+    { ru: 'Делает музыку и звуковые эффекты под монтаж, записывает или генерирует закадровый голос, делает мастеринг звука',
+      en: 'Makes music and sound effects for the edit, records or generates the voice-over, masters the audio',
+      es: 'Hace la música y los efectos de sonido para el montaje, graba o genera la voz en off y masteriza el audio',
+      uk: 'Робить музику та звукові ефекти під монтаж, записує або генерує закадровий голос, робить мастеринг звуку' },
+    { ru: 'Записывает геймплей для опорных кадров, делает финальные геймплеи под утверждённый сценарий',
+      en: 'Records gameplay for key frames, captures the final gameplay to the approved script',
+      es: 'Graba el gameplay para los fotogramas clave y el gameplay final según el guion aprobado',
+      uk: 'Записує геймплей для опорних кадрів, робить фінальні геймплеї під затверджений сценарій' },
+    { ru: 'Собирает всю информацию для сценария (недостающее запрашивает у трафик-менеджера и у контент-менеджера), составляет точное задание и сценарий, принимает решения на препродакшне и продакшне, отвечает за аниматик перед утверждением; по оценке ответственного решает, что править и на какой этап вернуться, сам вносит правки',
+      en: 'Gathers everything needed for the script (asks the traffic manager and the content manager for anything missing), writes the precise task and the script, makes the calls in pre-production and production, owns the animatic before approval; based on the task owner’s verdict decides what to fix and which stage to return to, and makes the fixes himself',
+      es: 'Reúne toda la información para el guion (lo que falta se lo pide al traffic manager y al content manager), redacta la tarea precisa y el guion, decide en preproducción y producción, responde del animatic antes de la aprobación; según la valoración del responsable decide qué corregir y a qué etapa volver, y hace él mismo las correcciones',
+      uk: 'Збирає всю інформацію для сценарію (чого бракує — запитує в трафік-менеджера й контент-менеджера), складає точне завдання та сценарій, ухвалює рішення на препродакшні й продакшні, відповідає за аніматик перед затвердженням; за оцінкою відповідального вирішує, що правити і на який етап повернутися, сам вносить правки' },
+    { ru: 'Монтирует аниматик и финальное видео, делает цветокоррекцию, делает ресайзы, рендерит и выгружает их на Google Диск',
+      en: 'Edits the animatic and the final video, does color grading and resizes, renders them and uploads to Google Drive',
+      es: 'Monta el animatic y el vídeo final, hace el etalonaje y los formatos, los renderiza y los sube a Google Drive',
+      uk: 'Монтує аніматик і фінальне відео, робить кольорокорекцію й ресайзи, рендерить і вивантажує їх на Google Диск' },
+    { ru: 'Смотрит работу на обоих утверждениях и говорит, нравится или нет, — внутренней кухни не касается; отвечает за соответствие результата брифу задачи',
+      en: 'Reviews the work at both approvals and says whether he likes it or not, without going into the internal process; responsible for the result matching the task brief',
+      es: 'Revisa el trabajo en las dos aprobaciones y dice si le gusta o no, sin entrar en la cocina interna; responde de que el resultado cumpla el brief de la tarea',
+      uk: 'Дивиться роботу на обох затвердженнях і каже, подобається чи ні, — внутрішньої кухні не торкається; відповідає за відповідність результату брифу задачі' },
+    { ru: 'Сводит в кадре ИИ-генерацию, геймплей и графику, убирает артефакты ИИ',
+      en: 'Combines AI generation, gameplay and graphics in the shot, removes AI artifacts',
+      es: 'Integra en el plano la generación de IA, el gameplay y los gráficos, y elimina los artefactos de la IA',
+      uk: 'Зводить у кадрі ШІ-генерацію, геймплей і графіку, прибирає артефакти ШІ' },
+    { ru: 'Делает визуальные эффекты: частицы, свет, переходы',
+      en: 'Creates visual effects: particles, light, transitions',
+      es: 'Crea efectos visuales: partículas, luz, transiciones',
+      uk: 'Робить візуальні ефекти: частинки, світло, переходи' },
+    { ru: 'Ищет материалы, скачивает видео и картинки, референсы',
+      en: 'Finds materials, downloads videos, images and references',
+      es: 'Busca materiales, descarga vídeos, imágenes y referencias',
+      uk: 'Шукає матеріали, завантажує відео, картинки й референси' },
+    /* заметки блоков */
+    { ru: 'Задача приходит от заказчика (в Asana). Её ведёт трафик-менеджер: он запрашивает и собирает все входные данные — что сейчас популярно, примеры видео, которое нужно сделать. Результат: сырой, но опирающийся на данные бриф.',
+      en: 'The task comes from the client (in Asana). The traffic manager runs it: requests and gathers all inputs — what is trending now, examples of the video to be made. Result: a rough but data-backed brief.',
+      es: 'La tarea llega del cliente (en Asana). La lleva el traffic manager: solicita y reúne todos los datos de entrada: qué es tendencia ahora y ejemplos del vídeo que hay que hacer. Resultado: un brief en bruto, pero basado en datos.',
+      uk: 'Задача надходить від замовника (в Asana). Її веде трафік-менеджер: він запитує та збирає всі вхідні дані — що зараз популярне, приклади відео, яке треба зробити. Результат: сирий, але заснований на даних бриф.' },
+    { ru: 'На этом этапе становятся ясны структура будущего видео, его внешний вид и звук. Приходит общее понимание того, как это будет выглядеть.',
+      en: 'At this stage the structure of the future video, its look and its sound become clear. Everyone gets a shared picture of how it will look.',
+      es: 'En esta etapa quedan claros la estructura del futuro vídeo, su aspecto y su sonido. Surge una idea común de cómo se verá.',
+      uk: 'На цьому етапі стають зрозумілими структура майбутнього відео, його вигляд і звук. З’являється загальне розуміння того, як це виглядатиме.' },
+    { ru: 'Ответственный за задачу смотрит работу и говорит, нравится или нет. Режиссёр решает: пропустить дальше или вернуться на предыдущую ступень.',
+      en: 'The task owner reviews the work and says whether he likes it or not. The director decides: move on or go back to the previous step.',
+      es: 'El responsable de la tarea revisa el trabajo y dice si le gusta o no. El director decide: seguir adelante o volver a la etapa anterior.',
+      uk: 'Відповідальний за задачу дивиться роботу і каже, подобається чи ні. Режисер вирішує: пропустити далі чи повернутися на попередній етап.' },
+    { ru: 'На этом этапе все работают с утверждённым материалом и делают финальные версии в максимальном качестве.',
+      en: 'At this stage everyone works with the approved material and makes the final versions at maximum quality.',
+      es: 'En esta etapa todos trabajan con el material aprobado y hacen las versiones finales con la máxima calidad.',
+      uk: 'На цьому етапі всі працюють із затвердженим матеріалом і роблять фінальні версії в максимальній якості.' },
+    { ru: 'Ответственный за задачу смотрит работу и говорит, нравится или нет. Решает: пропустить дальше или вернуться на предыдущую или позапрошлую ступень.',
+      en: 'The task owner reviews the work and says whether he likes it or not. The decision: move on, or go back one or two steps.',
+      es: 'El responsable de la tarea revisa el trabajo y dice si le gusta o no. Se decide: seguir adelante o volver una o dos etapas atrás.',
+      uk: 'Відповідальний за задачу дивиться роботу і каже, подобається чи ні. Рішення: пропустити далі або повернутися на один чи два етапи назад.' },
+    { ru: 'Финальный рендер, ресайзы и слив материала в нужное место.',
+      en: 'Final render, resizes and delivery of the material to the right place.',
+      es: 'Render final, formatos y entrega del material donde corresponde.',
+      uk: 'Фінальний рендер, ресайзи та вивантаження матеріалу в потрібне місце.' }
+  ];
+  function tkey(s) { return dutyKey(s).replace(/[.\s]+$/, ''); }
+  var TMAP = {};
+  TX.forEach(function (e) { TMAP[tkey(e.ru)] = e; });
+  var WORKER = { en: 'Worker ', es: 'Trabajador ', uk: 'Працівник ' };
+  function tr(ru) {
+    if (LANG === 'ru' || !ru) return ru;
+    var e = TMAP[tkey(ru)];
+    if (e && e[LANG]) return e[LANG];
+    var m = /^\s*работник\s+(\d+)\s*$/i.exec(ru);
+    if (m) return WORKER[LANG] + m[1];
+    return ru;
+  }
+
+  /* ---------- папка проекта: дерево шаблона ----------
+     цвет папки: y — жёлтая (обычная), t — бирюзовая, r — красная, b — синяя,
+     c — голубая, g — зелёная, d — тёмная, l — светлая */
+  var FOLDER_COL = {
+    y: ['#d99a1e', '#ffc83d'], t: ['#14877f', '#36c2b6'], r: ['#b3302a', '#ea5a4e'], b: ['#2a5fc0', '#4f8ff0'],
+    c: ['#3a96d0', '#79c6f4'], g: ['#26833f', '#4cbe68'], d: ['#3d4249', '#666d76'], l: ['#aab0b7', '#e3e7ea']
+  };
+  function DL(n) { return [n, 'y', [['Download', 'y'], ['Generate', 'y']]]; }
+  var TREE = ['Pipeline_project_template', 'y', [
+    ['001_Brief', 'y'],
+    ['002_References', 't'],
+    ['003_Sources', 'y', [
+      ['Fonts', 'y'],
+      DL('Photo'),
+      ['Sound', 'y', [DL('Music'), DL('SFX'), DL('VoiceOver')]],
+      DL('Video')
+    ]],
+    ['004_Project', 'r', [
+      ['AE', 'b', [['Proxy', 'y']]],
+      ['AI', 'r'], ['ComfyUI', 'y'], ['DaVinci', 'y'], ['Photoshop', 'c'], ['Reaper', 'y'], ['ScriptForge', 'y']
+    ]],
+    ['005_DAYlease', 'g', [['Year.Month.Day', 'y']]],
+    ['006_OUT', 'y', [['Image', 'y'], ['Video', 'y']]],
+    ['007_Tutorials', 'd'],
+    ['008_TEMP', 'l']
+  ]];
+  var OPEN0 = { '': 1, '003_Sources': 1, '004_Project': 1 };
+
+  /* подсказки к папкам — черновик, тексты потом заменишь */
+  var FTIP = {
+    '': { ru: 'Шаблон папки проекта: копируется под каждый новый креатив', en: 'Project folder template: copied for every new creative', es: 'Plantilla de carpeta del proyecto: se copia para cada creatividad nueva', uk: 'Шаблон папки проєкту: копіюється під кожен новий креатив' },
+    '001_Brief': { ru: 'Бриф заказчика и точное задание', en: 'Client brief and the precise task', es: 'Brief del cliente y la tarea precisa', uk: 'Бриф замовника й точне завдання' },
+    '002_References': { ru: 'Референсы и примеры видео', en: 'References and video examples', es: 'Referencias y ejemplos de vídeo', uk: 'Референси й приклади відео' },
+    '003_Sources': { ru: 'Исходники: шрифты, фото, звук, видео', en: 'Source assets: fonts, photos, sound, video', es: 'Material de origen: fuentes, fotos, sonido, vídeo', uk: 'Вихідники: шрифти, фото, звук, відео' },
+    '003_Sources/Fonts': { ru: 'Шрифты для титров и графики', en: 'Fonts for titles and graphics', es: 'Fuentes para rótulos y gráficos', uk: 'Шрифти для титрів і графіки' },
+    '003_Sources/Photo': { ru: 'Фото и картинки', en: 'Photos and images', es: 'Fotos e imágenes', uk: 'Фото й картинки' },
+    '003_Sources/Sound': { ru: 'Звук: музыка, эффекты, голос', en: 'Sound: music, effects, voice', es: 'Sonido: música, efectos, voz', uk: 'Звук: музика, ефекти, голос' },
+    '003_Sources/Sound/Music': { ru: 'Музыка', en: 'Music', es: 'Música', uk: 'Музика' },
+    '003_Sources/Sound/SFX': { ru: 'Звуковые эффекты', en: 'Sound effects', es: 'Efectos de sonido', uk: 'Звукові ефекти' },
+    '003_Sources/Sound/VoiceOver': { ru: 'Закадровый голос', en: 'Voice-over', es: 'Voz en off', uk: 'Закадровий голос' },
+    '003_Sources/Video': { ru: 'Видео: скачанное и сгенерированное', en: 'Video: downloaded and generated', es: 'Vídeo: descargado y generado', uk: 'Відео: завантажене й згенероване' },
+    '004_Project': { ru: 'Рабочие файлы программ', en: 'Working files of the software', es: 'Archivos de trabajo de los programas', uk: 'Робочі файли програм' },
+    '004_Project/AE': { ru: 'Проект композитинга и эффектов', en: 'Compositing and effects project', es: 'Proyecto de composición y efectos', uk: 'Проєкт композитингу й ефектів' },
+    '004_Project/AE/Proxy': { ru: 'Облегчённые копии видео для быстрой работы', en: 'Lightweight video copies for fast work', es: 'Copias ligeras de vídeo para trabajar rápido', uk: 'Полегшені копії відео для швидкої роботи' },
+    '004_Project/AI': { ru: 'Векторная графика', en: 'Vector graphics', es: 'Gráficos vectoriales', uk: 'Векторна графіка' },
+    '004_Project/ComfyUI': { ru: 'Воркфлоу и генерации ComfyUI', en: 'ComfyUI workflows and generations', es: 'Workflows y generaciones de ComfyUI', uk: 'Воркфлоу й генерації ComfyUI' },
+    '004_Project/DaVinci': { ru: 'Проекты монтажа и цветокоррекции', en: 'Editing and color grading projects', es: 'Proyectos de montaje y etalonaje', uk: 'Проєкти монтажу й кольорокорекції' },
+    '004_Project/Photoshop': { ru: 'Сборка опорных кадров', en: 'Key frame assembly', es: 'Montaje de fotogramas clave', uk: 'Збирання опорних кадрів' },
+    '004_Project/Reaper': { ru: 'Проекты звука и мастеринга', en: 'Sound and mastering projects', es: 'Proyectos de sonido y masterización', uk: 'Проєкти звуку й мастерингу' },
+    '004_Project/ScriptForge': { ru: 'Сценарий и раскадровка', en: 'Script and storyboard', es: 'Guion y storyboard', uk: 'Сценарій і розкадровка' },
+    '005_DAYlease': { ru: 'Ежедневные выгрузки на проверку', en: 'Daily uploads for review', es: 'Entregas diarias para revisión', uk: 'Щоденні вивантаження на перевірку' },
+    '005_DAYlease/Year.Month.Day': { ru: 'Папка дня: что ушло на проверку в этот день', en: 'Folder of the day: what went for review that day', es: 'Carpeta del día: lo que se envió a revisión ese día', uk: 'Папка дня: що пішло на перевірку цього дня' },
+    '006_OUT': { ru: 'Готовые файлы для заказчика', en: 'Finished files for the client', es: 'Archivos finales para el cliente', uk: 'Готові файли для замовника' },
+    '006_OUT/Image': { ru: 'Картинки и превью', en: 'Images and thumbnails', es: 'Imágenes y miniaturas', uk: 'Картинки й прев’ю' },
+    '006_OUT/Video': { ru: 'Финальные видео и ресайзы', en: 'Final videos and resizes', es: 'Vídeos finales y formatos', uk: 'Фінальні відео й ресайзи' },
+    '007_Tutorials': { ru: 'Инструкции и уроки для команды', en: 'Guides and tutorials for the team', es: 'Guías y tutoriales para el equipo', uk: 'Інструкції й уроки для команди' },
+    '008_TEMP': { ru: 'Временные файлы — можно чистить', en: 'Temporary files — safe to clean', es: 'Archivos temporales: se pueden borrar', uk: 'Тимчасові файли — можна чистити' },
+    'Download': { ru: 'Скачанное из интернета', en: 'Downloaded from the internet', es: 'Descargado de internet', uk: 'Завантажене з інтернету' },
+    'Generate': { ru: 'Сгенерированное в ИИ', en: 'Generated with AI', es: 'Generado con IA', uk: 'Згенероване в ШІ' }
+  };
+
+  /* ---------- программы: описание, цена, официальный сайт ---------- */
+  var PROGS = [
+    { id: 'bluestacks', name: 'BlueStacks', url: 'https://www.bluestacks.com',
+      cat: { ru: 'Эмулятор Android', en: 'Android emulator', es: 'Emulador de Android', uk: 'Емулятор Android' },
+      d: { ru: 'Запускает мобильные игры на компьютере — геймплей удобно записывать в высоком качестве.', en: 'Runs mobile games on a computer, so gameplay can be recorded in high quality.', es: 'Ejecuta juegos móviles en el ordenador, así el gameplay se graba en alta calidad.', uk: 'Запускає мобільні ігри на комп’ютері — геймплей зручно записувати у високій якості.' },
+      p: { ru: 'Бесплатно (с рекламой)', en: 'Free (with ads)', es: 'Gratis (con anuncios)', uk: 'Безкоштовно (з рекламою)' } },
+    { id: 'comfyui', name: 'ComfyUI', url: 'https://www.comfy.org',
+      cat: { ru: 'Генерация в ИИ', en: 'AI generation', es: 'Generación con IA', uk: 'Генерація в ШІ' },
+      d: { ru: 'Нодовый интерфейс для генерации картинок и видео нейросетями. Работает на своём компьютере.', en: 'Node-based interface for generating images and video with neural networks. Runs locally.', es: 'Interfaz de nodos para generar imágenes y vídeo con redes neuronales. Funciona en tu propio ordenador.', uk: 'Нодовий інтерфейс для генерації картинок і відео нейромережами. Працює на власному комп’ютері.' },
+      p: { ru: 'Бесплатно, открытый код (облако Comfy Cloud — платно)', en: 'Free, open source (Comfy Cloud is paid)', es: 'Gratis, código abierto (Comfy Cloud es de pago)', uk: 'Безкоштовно, відкритий код (хмара Comfy Cloud — платна)' } },
+    { id: 'davinci-resolve', name: 'DaVinci Resolve', url: 'https://www.blackmagicdesign.com/products/davinciresolve',
+      cat: { ru: 'Монтаж и цвет', en: 'Editing and color', es: 'Montaje y color', uk: 'Монтаж і колір' },
+      d: { ru: 'Монтаж, цветокоррекция, звук и рендер в одной программе.', en: 'Editing, color grading, audio and rendering in one application.', es: 'Montaje, etalonaje, sonido y render en un solo programa.', uk: 'Монтаж, кольорокорекція, звук і рендер в одній програмі.' },
+      p: { ru: 'Бесплатно; версия Studio — $295 разово', en: 'Free; Studio version — $295 one-time', es: 'Gratis; versión Studio: 295 $ pago único', uk: 'Безкоштовно; версія Studio — $295 разово' } },
+    { id: 'deepseek', name: 'DeepSeek V4 Flash', url: 'https://www.deepseek.com',
+      cat: { ru: 'ИИ-модель по API', en: 'AI model via API', es: 'Modelo de IA por API', uk: 'ШІ-модель через API' },
+      d: { ru: 'Работает по API внутри VS Code: вместе они нужны для обслуживания и настройки пайплайна.', en: 'Runs via API inside VS Code: together they are used to maintain and configure the pipeline.', es: 'Funciona por API dentro de VS Code: juntos sirven para mantener y configurar el pipeline.', uk: 'Працює через API всередині VS Code: разом вони потрібні для обслуговування й налаштування пайплайна.' },
+      who: { ru: 'Есть не у каждого исполнителя.', en: 'Not every team member has it.', es: 'No todos los miembros del equipo lo tienen.', uk: 'Є не в кожного виконавця.' },
+      p: { ru: 'API — оплата за использование', en: 'API — pay as you go', es: 'API: se paga por uso', uk: 'API — оплата за використання' } },
+    { id: 'effectcraft', name: 'EffectCraft', url: 'https://getartcraft.com',
+      cat: { ru: 'Композитинг и эффекты', en: 'Compositing and effects', es: 'Composición y efectos', uk: 'Композитинг і ефекти' },
+      d: { ru: 'Анимация и визуальные эффекты из набора ArtCraft — бесплатная замена After Effects, в разработке.', en: 'Animation and visual effects from the ArtCraft suite — a free After Effects alternative, in development.', es: 'Animación y efectos visuales de la suite ArtCraft: alternativa gratuita a After Effects, en desarrollo.', uk: 'Анімація й візуальні ефекти з набору ArtCraft — безкоштовна заміна After Effects, у розробці.' },
+      p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
+    { id: 'fabfilter', name: 'FabFilter', url: 'https://www.fabfilter.com', paid: true, short: '$199+',
+      cat: { ru: 'Аудиоплагины', en: 'Audio plug-ins', es: 'Plugins de audio', uk: 'Аудіоплагіни' },
+      d: { ru: 'Профессиональные плагины для сведения и мастеринга: эквалайзер Pro-Q, компрессоры, лимитер.', en: 'Professional mixing and mastering plug-ins: Pro-Q equalizer, compressors, limiter.', es: 'Plugins profesionales de mezcla y masterización: ecualizador Pro-Q, compresores, limitador.', uk: 'Професійні плагіни для зведення й мастерингу: еквалайзер Pro-Q, компресори, лімітер.' },
+      p: { ru: 'Платно: Pro-Q 4 — $199, весь набор — $1 069', en: 'Paid: Pro-Q 4 — $199, Total Bundle — $1,069', es: 'De pago: Pro-Q 4, 199 $; paquete completo, 1069 $', uk: 'Платно: Pro-Q 4 — $199, увесь набір — $1 069' } },
+    { id: 'inkscape', name: 'Inkscape', url: 'https://inkscape.org',
+      cat: { ru: 'Векторная графика', en: 'Vector graphics', es: 'Gráficos vectoriales', uk: 'Векторна графіка' },
+      d: { ru: 'Векторный редактор для логотипов, иконок и графики — замена Illustrator.', en: 'Vector editor for logos, icons and graphics — an Illustrator alternative.', es: 'Editor vectorial para logotipos, iconos y gráficos: alternativa a Illustrator.', uk: 'Векторний редактор для логотипів, іконок і графіки — заміна Illustrator.' },
+      p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
+    { id: 'izotope', name: 'iZotope Ozone', url: 'https://www.izotope.com', paid: true, short: '$55+',
+      cat: { ru: 'Мастеринг', en: 'Mastering', es: 'Masterización', uk: 'Мастеринг' },
+      d: { ru: 'Набор для мастеринга с ИИ-ассистентом: громкость, эквализация, лимитер.', en: 'Mastering suite with an AI assistant: loudness, EQ, limiter.', es: 'Suite de masterización con asistente de IA: sonoridad, ecualización, limitador.', uk: 'Набір для мастерингу з ШІ-асистентом: гучність, еквалізація, лімітер.' },
+      p: { ru: 'Платно: Elements — $55, Standard — $219, Advanced — $499', en: 'Paid: Elements — $55, Standard — $219, Advanced — $499', es: 'De pago: Elements 55 $, Standard 219 $, Advanced 499 $', uk: 'Платно: Elements — $55, Standard — $219, Advanced — $499' } },
+    { id: 'nox-player', name: 'NoxPlayer', url: 'https://www.bignox.com',
+      cat: { ru: 'Эмулятор Android', en: 'Android emulator', es: 'Emulador de Android', uk: 'Емулятор Android' },
+      d: { ru: 'Второй эмулятор Android: запасной вариант, если игра не идёт в BlueStacks.', en: 'A second Android emulator — the fallback when a game won’t run in BlueStacks.', es: 'Segundo emulador de Android: la alternativa si un juego no funciona en BlueStacks.', uk: 'Другий емулятор Android — запасний варіант, якщо гра не йде в BlueStacks.' },
+      p: { ru: 'Бесплатно (с рекламой)', en: 'Free (with ads)', es: 'Gratis (con anuncios)', uk: 'Безкоштовно (з рекламою)' } },
+    { id: 'obs-studio', name: 'OBS Studio', url: 'https://obsproject.com',
+      cat: { ru: 'Запись экрана', en: 'Screen recording', es: 'Grabación de pantalla', uk: 'Запис екрана' },
+      d: { ru: 'Запись и трансляция экрана — пишем геймплей из эмулятора.', en: 'Screen recording and streaming — used to capture gameplay from the emulator.', es: 'Grabación y emisión de pantalla: con él se graba el gameplay del emulador.', uk: 'Запис і трансляція екрана — пишемо геймплей з емулятора.' },
+      p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
+    { id: 'onlyoffice', name: 'ONLYOFFICE', url: 'https://www.onlyoffice.com',
+      cat: { ru: 'Офис', en: 'Office suite', es: 'Ofimática', uk: 'Офіс' },
+      d: { ru: 'Документы, таблицы и презентации, совместимые с Word, Excel и PowerPoint.', en: 'Documents, spreadsheets and presentations compatible with Word, Excel and PowerPoint.', es: 'Documentos, hojas de cálculo y presentaciones compatibles con Word, Excel y PowerPoint.', uk: 'Документи, таблиці й презентації, сумісні з Word, Excel і PowerPoint.' },
+      p: { ru: 'Бесплатно', en: 'Free', es: 'Gratis', uk: 'Безкоштовно' } },
+    { id: 'photocraft', name: 'PhotoCraft', url: 'https://getartcraft.com',
+      cat: { ru: 'Растровая графика', en: 'Raster graphics', es: 'Gráficos rasterizados', uk: 'Растрова графіка' },
+      d: { ru: 'Растровый редактор из набора ArtCraft, открывает PSD — бесплатная замена Photoshop, ранняя версия.', en: 'Raster editor from the ArtCraft suite that opens PSD files — a free Photoshop alternative, early version.', es: 'Editor rasterizado de la suite ArtCraft que abre archivos PSD: alternativa gratuita a Photoshop, versión temprana.', uk: 'Растровий редактор з набору ArtCraft, відкриває PSD — безкоштовна заміна Photoshop, рання версія.' },
+      p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
+    { id: 'reaper', name: 'REAPER', url: 'https://www.reaper.fm', paid: true, short: '$60',
+      cat: { ru: 'Работа со звуком', en: 'Audio workstation', es: 'Estación de audio', uk: 'Робота зі звуком' },
+      d: { ru: 'Цифровая звуковая станция: запись, музыка, сведение и мастеринг.', en: 'Digital audio workstation: recording, music, mixing and mastering.', es: 'Estación de audio digital: grabación, música, mezcla y masterización.', uk: 'Цифрова звукова станція: запис, музика, зведення й мастеринг.' },
+      p: { ru: '$60 — лицензия для частных лиц и небольших студий, $225 — коммерческая; 60 дней пробного периода', en: '$60 — personal and small-business licence, $225 — commercial; 60-day trial', es: '60 $: licencia personal y pequeña empresa; 225 $: comercial; 60 días de prueba', uk: '$60 — ліцензія для приватних осіб і невеликих студій, $225 — комерційна; 60 днів пробного періоду' } },
+    { id: 'resilio-sync', name: 'Resilio Sync', url: 'https://www.resilio.com',
+      cat: { ru: 'Синхронизация файлов', en: 'File sync', es: 'Sincronización de archivos', uk: 'Синхронізація файлів' },
+      d: { ru: 'Синхронизирует папку проекта между компьютерами команды напрямую, без облака.', en: 'Syncs the project folder between the team’s computers directly, without a cloud.', es: 'Sincroniza la carpeta del proyecto entre los ordenadores del equipo directamente, sin nube.', uk: 'Синхронізує папку проєкту між комп’ютерами команди напряму, без хмари.' },
+      who: { ru: 'Нужна всем исполнителям и работает у всех одновременно.', en: 'Every team member needs it, and it runs for everyone at the same time.', es: 'La necesitan todos los miembros del equipo y funciona para todos a la vez.', uk: 'Потрібна всім виконавцям і працює в усіх одночасно.' },
+      p: { ru: 'Бесплатно для личного использования; для бизнеса — платно', en: 'Free for personal use; business plans are paid', es: 'Gratis para uso personal; los planes de empresa son de pago', uk: 'Безкоштовно для особистого використання; для бізнесу — платно' } },
+    { id: 'scriptforge-ai', name: 'ScriptForge AI', url: 'https://github.com/3h0ll7/scriptforge-ai',
+      cat: { ru: 'Сценарий с ИИ', en: 'AI scriptwriting', es: 'Guion con IA', uk: 'Сценарій із ШІ' },
+      d: { ru: 'Пишет сценарий и раскадровку с помощью ИИ.', en: 'Writes the script and storyboard with AI.', es: 'Escribe el guion y el storyboard con IA.', uk: 'Пише сценарій і розкадровку за допомогою ШІ.' },
+      p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
+    { id: 'shutter-encoder', name: 'Shutter Encoder', url: 'https://www.shutterencoder.com',
+      cat: { ru: 'Конвертация видео', en: 'Video conversion', es: 'Conversión de vídeo', uk: 'Конвертація відео' },
+      d: { ru: 'Конвертирует и сжимает видео, звук и картинки, делает прокси.', en: 'Converts and compresses video, audio and images, makes proxies.', es: 'Convierte y comprime vídeo, audio e imágenes, y crea proxies.', uk: 'Конвертує й стискає відео, звук і картинки, робить проксі.' },
+      p: { ru: 'Бесплатно, открытый код (пожертвования)', en: 'Free, open source (donations)', es: 'Gratis, código abierto (donaciones)', uk: 'Безкоштовно, відкритий код (пожертви)' } },
+    { id: 'vscode', name: 'VS Code', url: 'https://code.visualstudio.com',
+      cat: { ru: 'Редактор кода', en: 'Code editor', es: 'Editor de código', uk: 'Редактор коду' },
+      d: { ru: 'Вместе с DeepSeek V4 Flash по API — для обслуживания и настройки пайплайна.', en: 'Together with DeepSeek V4 Flash via API — used to maintain and configure the pipeline.', es: 'Junto con DeepSeek V4 Flash por API: sirve para mantener y configurar el pipeline.', uk: 'Разом із DeepSeek V4 Flash через API — для обслуговування й налаштування пайплайна.' },
+      who: { ru: 'Есть не у каждого исполнителя.', en: 'Not every team member has it.', es: 'No todos los miembros del equipo lo tienen.', uk: 'Є не в кожного виконавця.' },
+      p: { ru: 'Бесплатно', en: 'Free', es: 'Gratis', uk: 'Безкоштовно' } }
+  ];
+  var PROG = {};
+  PROGS.forEach(function (p) { PROG[p.id] = p; });
+
+  /* ---------- какая карточка какие папки и программы использует ----------
+     [номер профессии, [папки f:путь и программы p:id]] — цвет берётся у исполнителя этой профессии */
+  var TOOLS = {
+    in:   [[1, ['f:001_Brief']]],
+    b1:   [[1, ['f:001_Brief', 'p:onlyoffice']]],
+    b2:   [[10, ['f:002_References', 'p:shutter-encoder']]],
+    scen: [[5, ['f:001_Brief', 'f:004_Project/ScriptForge', 'p:scriptforge-ai', 'p:onlyoffice']]],
+    v20:  [[5, ['f:004_Project/ScriptForge', 'p:scriptforge-ai']]],
+    txt:  [[2, ['f:003_Sources/Photo/Generate', 'f:004_Project/ComfyUI', 'p:comfyui', 'p:photocraft']],
+           [4, ['f:003_Sources/Video/Download', 'p:bluestacks', 'p:nox-player', 'p:obs-studio']]],
+    p1:   [[2, ['f:003_Sources/Photo/Generate', 'f:004_Project/ComfyUI', 'p:comfyui']]],
+    p2:   [[2, ['f:003_Sources/Photo/Generate', 'f:004_Project/ComfyUI', 'p:comfyui']]],
+    p3:   [[2, ['f:004_Project/Photoshop', 'f:004_Project/AI', 'f:003_Sources/Photo', 'f:003_Sources/Fonts', 'p:photocraft', 'p:inkscape']]],
+    gmp:  [[4, ['f:003_Sources/Video/Download', 'p:bluestacks', 'p:nox-player', 'p:obs-studio']]],
+    mus0: [[3, ['f:004_Project/Reaper', 'f:003_Sources/Sound/Music', 'f:003_Sources/Sound/SFX', 'p:reaper']]],
+    mont: [[6, ['f:004_Project/DaVinci', 'f:005_DAYlease/Year.Month.Day', 'p:davinci-resolve']]],
+    d1:   [[7, ['f:005_DAYlease']]], d2: [[7, ['f:005_DAYlease']]],
+    bad1: [[7, ['f:005_DAYlease']]], good1: [[7, ['f:005_DAYlease']]],
+    bad2: [[7, ['f:005_DAYlease']]], good2: [[7, ['f:005_DAYlease']]],
+    vid:  [[2, ['f:003_Sources/Video/Generate', 'f:004_Project/ComfyUI', 'p:comfyui']]],
+    comp: [[8, ['f:004_Project/AE', 'f:004_Project/AE/Proxy', 'p:effectcraft', 'p:shutter-encoder']]],
+    mus:  [[3, ['f:004_Project/Reaper', 'f:003_Sources/Sound/Music', 'f:003_Sources/Sound/SFX', 'f:003_Sources/Sound/VoiceOver', 'p:reaper']]],
+    fin:  [[4, ['f:003_Sources/Video/Download', 'p:bluestacks', 'p:nox-player', 'p:obs-studio']]],
+    sved: [[6, ['f:004_Project/DaVinci', 'p:davinci-resolve']]],
+    color:[[6, ['f:004_Project/DaVinci', 'p:davinci-resolve']]],
+    master:[[3, ['f:004_Project/Reaper', 'p:reaper', 'p:fabfilter', 'p:izotope']]],
+    fmont:[[6, ['f:004_Project/DaVinci', 'f:005_DAYlease/Year.Month.Day', 'p:davinci-resolve']]],
+    topj: [[6, ['f:006_OUT/Video', 'f:006_OUT/Image', 'p:davinci-resolve', 'p:shutter-encoder']]],
+    out:  [[1, ['f:006_OUT']]]
+  };
+  /* обратная связь: программа → карточки, где она нужна (для строки «В пайплайне») */
+  var USED = {};
+  for (var tid in TOOLS) TOOLS[tid].forEach(function (g) {
+    g[1].forEach(function (it) {
+      if (it.indexOf('p:') !== 0) return;
+      var k = it.slice(2);
+      (USED[k] = USED[k] || []);
+      if (USED[k].indexOf(tid) === -1) USED[k].push(tid);
+    });
+  });
+
+  /* ---------- сборка дерева ---------- */
+  var treeEl = document.getElementById('tree');
+  var plistEl = document.getElementById('plist');
+  var infoEl = document.getElementById('pinfo');
+  var TN = {};   /* путь → { row, kids, open, parent } */
+  var CHEV = '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3 1.5 L7 5 L3 8.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function folderSvg(c) {
+    var k = FOLDER_COL[c] || FOLDER_COL.y;
+    return '<svg class="tico" viewBox="0 0 20 16" aria-hidden="true">' +
+      '<path d="M1 3.2C1 2 2 1 3.2 1h4.3l2 2h7.3C18 3 19 4 19 5.2V13c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2z" fill="' + k[0] + '"/>' +
+      '<path d="M1 5.8C1 4.8 1.8 4 2.8 4h14.4c1 0 1.8.8 1.8 1.8V13c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2z" fill="' + k[1] + '"/>' +
+      '<path d="M2.6 4.6h14.8" stroke="rgba(255,255,255,.55)" stroke-width=".8"/></svg>';
+  }
+  function buildTree(node, depth, parentPath, host) {
+    var name = node[0], path = depth === 0 ? '' : (parentPath ? parentPath + '/' + name : name);
+    var kids = node[2] || [];
+    var wrap = document.createElement('div');
+    var row = document.createElement('div');
+    row.className = 'trow' + (kids.length ? ' has' : '');
+    row.style.setProperty('--d', depth);
+    row.innerHTML = '<span class="tchev">' + CHEV + '</span>' + folderSvg(node[1]) + '<span class="tname">' + esc(name) + '</span>';
+    wrap.appendChild(row);
+    var box = null;
+    if (kids.length) {
+      box = document.createElement('div');
+      box.className = 'tkids';
+      wrap.appendChild(box);
+    }
+    host.appendChild(wrap);
+    var rec = TN[path] = { row: row, kids: box, open: false, parent: depth === 0 ? null : parentPath, name: name };
+    row.dataset.path = path;
+    kids.forEach(function (k) { buildTree(k, depth + 1, path, box); });
+    setOpen(path, !!OPEN0[path]);
+  }
+  function setOpen(path, on) {
+    var t = TN[path];
+    if (!t || !t.kids) return;
+    t.open = !!on;
+    t.row.classList.toggle('open', t.open);
+    if (t.open) t.kids.removeAttribute('hidden'); else t.kids.setAttribute('hidden', '');
+  }
+  /* строка, которую сейчас видно: если папка внутри свёрнутой — сама свёрнутая */
+  function visibleRow(path) {
+    var chain = [], p = path;
+    while (p != null && TN[p]) { chain.unshift(p); p = TN[p].parent; }
+    for (var i = 0; i < chain.length - 1; i++) if (!TN[chain[i]].open) return TN[chain[i]].row;
+    return TN[path] ? TN[path].row : null;
+  }
+
+  /* стеклянная подсказка */
+  var tipEl = document.createElement('div');
+  tipEl.className = 'gtip';
+  tipEl.setAttribute('role', 'tooltip');
+  document.body.appendChild(tipEl);
+  var tipTimer = 0;
+  function tipText(path) {
+    var t = FTIP[path];
+    if (!t) { var nm = path.split('/').pop(); t = FTIP[nm]; }
+    return t ? L(t) : '';
+  }
+  function tipShow(row) {
+    var path = row.dataset.path, txt = tipText(path);
+    if (!txt) { tipHide(); return; }
+    tipEl.innerHTML = '<b>' + esc(TN[path].name) + '</b>' + esc(txt);
+    var r = row.getBoundingClientRect(), d = Number(row.style.getPropertyValue('--d')) || 0;
+    var x = r.left + (6 + d * 20 + 40) * (r.height / 22), y = r.bottom + 6;
+    tipEl.style.left = '0px'; tipEl.style.top = '0px';
+    tipEl.classList.add('on');
+    var tw = tipEl.offsetWidth, th = tipEl.offsetHeight;
+    if (x + tw > window.innerWidth - 8) x = window.innerWidth - 8 - tw;
+    if (y + th > window.innerHeight - 8) y = r.top - 6 - th;
+    tipEl.style.left = Math.round(Math.max(8, x)) + 'px';
+    tipEl.style.top = Math.round(Math.max(8, y)) + 'px';
+  }
+  function tipHide() { tipEl.classList.remove('on'); }
+
+  if (treeEl) {
+    buildTree(TREE, 0, '', treeEl);
+    treeEl.addEventListener('click', function (e) {
+      var row = e.target.closest && e.target.closest('.trow');
+      if (!row) return;
+      var path = row.dataset.path;
+      if (TN[path] && TN[path].kids) setOpen(path, !TN[path].open);
+      if (TOUCH) {
+        tipShow(row);
+        clearTimeout(tipTimer);
+        tipTimer = setTimeout(tipHide, 3000);
+      }
+    });
+    if (!TOUCH) {
+      treeEl.addEventListener('mouseover', function (e) {
+        var row = e.target.closest && e.target.closest('.trow');
+        if (row) tipShow(row);
+      });
+      treeEl.addEventListener('mouseleave', tipHide);
+    }
+    treeEl.addEventListener('scroll', tipHide, { passive: true });
+  }
+
+  /* ---------- список программ и описание ---------- */
+  var PROW = {}, infoCur = null;
+  function priceBadge(p) {
+    return p.paid ? '<span class="pp paid">' + esc(p.short) + '</span>' : '<span class="pp free">' + esc(L(UI.free)) + '</span>';
+  }
+  function buildPrograms() {
+    if (!plistEl) return;
+    plistEl.innerHTML = '';
+    PROGS.forEach(function (p) {
+      var row = document.createElement('div');
+      row.className = 'prow' + (infoCur === p.id ? ' on' : '');
+      row.dataset.id = p.id;
+      row.innerHTML = '<img src="icons/' + p.id + '.png" alt="" loading="lazy" decoding="async"><span class="pn">' +
+        esc(p.name) + '</span>' + priceBadge(p);
+      plistEl.appendChild(row);
+      PROW[p.id] = row;
+    });
+  }
+  function renderInfo(id) {
+    if (!infoEl) return;
+    var p = id && PROG[id];
+    if (!p) {
+      var paid = PROGS.filter(function (x) { return x.paid; });
+      var names = paid.map(function (x) { return x.name; }).join(', ');
+      var n = PROGS.length, k = paid.length, m = n - k;
+      var head = { ru: n + ' программ', en: n + ' programs', es: n + ' programas', uk: n + ' програм' };
+      var line = {
+        ru: 'Платные — ' + k + ': ' + names + '. Остальные ' + m + ' — бесплатные.',
+        en: k + ' paid: ' + names + '. The other ' + m + ' are free.',
+        es: k + ' de pago: ' + names + '. Los otros ' + m + ' son gratuitos.',
+        uk: 'Платні — ' + k + ': ' + names + '. Решта ' + m + ' — безкоштовні.'
+      };
+      infoEl.innerHTML = '<div class="iname">' + esc(L(head)) + '</div><p class="idesc">' + esc(L(line)) + '</p>' +
+        '<div class="isum">' + PROGS.map(function (x) {
+          return '<img src="icons/' + x.id + '.png" alt="' + esc(x.name) + '" title="' + esc(x.name) + '">';
+        }).join('') + '</div>';
+      return;
+    }
+    var used = (USED[p.id] || []).filter(function (nid) { return R[nid]; }).map(function (nid) {
+      return '<span class="ichip">' + esc(tr(nodeText(nid))) + '</span>';
+    }).join('');
+    var host = p.url.replace(/^https?:\/\//, '').split('/')[0];
+    infoEl.innerHTML =
+      '<div class="ihead"><img src="icons/' + p.id + '.png" alt=""><div><div class="iname">' + esc(p.name) +
+      '</div><div class="icat">' + esc(L(p.cat)) + '</div></div></div>' +
+      '<p class="idesc">' + esc(L(p.d)) + '</p>' +
+      '<div class="iprice ' + (p.paid ? 'paid' : 'free') + '">' + esc(L(p.p)) + '</div>' +
+      (p.who ? '<div class="iuse iwho">' + esc(L(p.who)) + '</div>' : '') +
+      (used ? '<div class="iuse">' + esc(L(UI.used)) + '<br>' + used + '</div>' : '') +
+      '<a class="ilink" href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(L(UI.site)) + ' · ' + esc(host) + ' ↗</a>';
+  }
+  function pickProgram(id) {
+    if (infoCur && PROW[infoCur]) PROW[infoCur].classList.remove('on');
+    infoCur = id;
+    if (PROW[id]) PROW[id].classList.add('on');
+    renderInfo(id);
+  }
+  buildPrograms();
+  renderInfo(null);
+  if (plistEl) {
+    plistEl.addEventListener(TOUCH ? 'click' : 'mouseover', function (e) {
+      var row = e.target.closest && e.target.closest('.prow');
+      if (row && row.dataset.id !== infoCur) pickProgram(row.dataset.id);
+    });
+    if (!TOUCH) plistEl.addEventListener('click', function (e) {
+      var row = e.target.closest && e.target.closest('.prow');
+      if (row) pickProgram(row.dataset.id);
+    });
+  }
+
+  /* ширина правой части = ширина схемы минус форма людей */
+  function sizeSide(stageW) {
+    var side = document.getElementById('side');
+    if (!side || !namesEl) return;
+    var w = Math.max(0, Math.round(stageW - namesEl.offsetWidth - 48));
+    side.style.width = w + 'px';
+    side.style.display = w < 900 ? 'none' : '';
+  }
+
+  /* ---------- подсветка папок и программ при наведении на карточку ---------- */
+  var toolHl = [];
+  function toolsOff() {
+    for (var i = 0; i < toolHl.length; i++) { toolHl[i].classList.remove('hl', 'hlc'); toolHl[i].style.removeProperty('--ph'); }
+    toolHl = [];
+  }
+  function toolsOn(id) {
+    toolsOff();
+    var spec = TOOLS[id];
+    if (!spec) return 0;
+    var h = personHues(), hueBy = {};
+    for (var i = 0; i < h.rows.length; i++) {
+      var n = roleNum(bv(h.rows[i].querySelector('.ninput')));
+      if (n && !(n in hueBy)) hueBy[n] = h.row[i];
+    }
+    spec.forEach(function (g) {
+      var hue = (g[0] in hueBy) ? hueBy[g[0]] : 212;
+      g[1].forEach(function (it) {
+        var el, cls = 'hl';
+        if (it.indexOf('p:') === 0) el = PROW[it.slice(2)];
+        else {
+          var path = it.slice(2);
+          el = visibleRow(path);
+          if (TN[path] && el !== TN[path].row) cls = 'hlc';
+        }
+        if (!el || el.classList.contains('hl') || el.classList.contains('hlc')) return;
+        el.classList.add(cls);
+        el.style.setProperty('--ph', hue);
+        toolHl.push(el);
+      });
+    });
+    return toolHl.length;
+  }
+  for (var nid0 in TOOLS) {
+    (function (nid) {
+      var el = R[nid] && R[nid].el;
+      if (!el) return;
+      el.addEventListener('mouseenter', function () { toolsOn(nid); });
+      el.addEventListener('mouseleave', toolsOff);
+    })(nid0);
+  }
+  if (TOUCH) document.addEventListener('touchstart', function (e) {
+    if (!(e.target.closest && e.target.closest('.node'))) toolsOff();
+    if (!(e.target.closest && e.target.closest('.trow'))) tipHide();
+  }, { passive: true });
+
+  /* ---------- языки ----------
+     Порядок выбора: ?lang= в адресе → язык, который человек сам выбрал флажком →
+     у владельца русский → страна по часовому поясу браузера (Испания — es, Украина — uk,
+     Россия — ru) → страна из языка браузера → иначе английский */
+  var RU_TZ = /^(Europe\/(Moscow|Kaliningrad|Samara|Volgograd|Kirov|Astrakhan|Saratov|Ulyanovsk)|Asia\/(Yekaterinburg|Omsk|Novosibirsk|Barnaul|Tomsk|Novokuznetsk|Krasnoyarsk|Irkutsk|Chita|Yakutsk|Khandyga|Vladivostok|Ust-Nera|Magadan|Sakhalin|Srednekolymsk|Kamchatka|Anadyr))$/;
+  function detectLang() {
+    var q = (/[?&]lang=([a-z]{2})/i.exec(location.search) || [])[1];
+    if (q) { q = q.toLowerCase(); if (q === 'ua') q = 'uk'; if (LANGS.indexOf(q) !== -1) return q; }
+    try { var s = localStorage.getItem('gp_lang'); if (s && LANGS.indexOf(s) !== -1) return s; } catch (e) {}
+    if (OWNER) return 'ru';
+    var tz = '';
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+    if (/^(Europe\/Madrid|Africa\/Ceuta|Atlantic\/Canary)$/.test(tz)) return 'es';
+    if (/^Europe\/(Kyiv|Kiev|Uzhgorod|Zaporozhye)$/.test(tz)) return 'uk';
+    if (RU_TZ.test(tz)) return 'ru';
+    if (tz) return 'en';
+    var reg = ((navigator.language || '').split('-')[1] || '').toUpperCase();
+    return { ES: 'es', UA: 'uk', RU: 'ru' }[reg] || 'en';
+  }
+
+  var FLAGS = [
+    ['es', 'ES', 'Español', '<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#AA151B"/><rect y="5" width="30" height="10" fill="#F1BF00"/></svg>'],
+    ['en', 'UK', 'English', '<svg viewBox="0 0 60 30"><clipPath id="ukS"><path d="M0 0v30h60V0z"/></clipPath><clipPath id="ukT"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><g clip-path="url(#ukS)"><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30m0-30L0 30" clip-path="url(#ukT)" stroke="#C8102E" stroke-width="4"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></g></svg>'],
+    ['ru', 'RU', 'Русский', '<svg viewBox="0 0 30 20"><rect width="30" height="20" fill="#fff"/><rect y="6.67" width="30" height="6.67" fill="#0039A6"/><rect y="13.33" width="30" height="6.67" fill="#D52B1E"/></svg>'],
+    ['uk', 'UA', 'Українська', '<svg viewBox="0 0 30 20"><rect width="30" height="10" fill="#0057B7"/><rect y="10" width="30" height="10" fill="#FFD700"/></svg>']
+  ];
+  var langbar = document.getElementById('langbar');
+  if (langbar) {
+    FLAGS.forEach(function (f) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'lflag';
+      b.dataset.lang = f[0];
+      b.title = f[2];
+      b.setAttribute('aria-label', f[2]);
+      b.innerHTML = f[3];
+      b.addEventListener('click', function () { setLang(f[0], true); });
+      langbar.appendChild(b);
+    });
+  }
+
+  /* снять перевод: в поля и карточки возвращается русский текст */
+  function langReset() {
+    var els = document.querySelectorAll('[data-base]');
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i], base = el.dataset.base;
+      delete el.dataset.base;
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { el.value = base; continue; }
+      for (var id in R) if (R[id].el === el) { setText(id, base); break; }
+    }
+  }
+  function putField(el) {
+    if (!el) return;
+    var base = bv(el), t = tr(base);
+    if (t !== base) { el.dataset.base = base; el.value = t; }
+  }
+  /* показать текущий язык поверх русских текстов */
+  function langApply() {
+    var ru = LANG === 'ru';
+    document.documentElement.lang = LANG;
+    document.title = L(UI.title);
+    var st = document.querySelectorAll('[data-i18n]');
+    for (var i = 0; i < st.length; i++) { var k = UI[st[i].dataset.i18n]; if (k) st[i].textContent = L(k); }
+    if (cnumEl) { cnumEl.placeholder = L(UI.cnum); cnumEl.setAttribute('aria-label', L(UI.cnum)); }
+    var rows = namesEl.querySelectorAll('.nrow');
+    for (i = 0; i < rows.length; i++) {
+      var ri = rows[i].querySelector('.ninput'), pi = rows[i].querySelector('.nperson'), di = rows[i].querySelector('.ndtext');
+      var lb = rows[i].querySelector('.ndlab');
+      if (ri) ri.placeholder = L(UI.role);
+      if (pi) pi.placeholder = L(UI.person);
+      if (lb) lb.textContent = L(UI.duties);
+      if (!ru) { putField(ri); putField(pi); putField(di); }
+      if (di && !di.hasAttribute('hidden')) autoGrow(di);
+    }
+    if (!ru) for (i = 0; i < notesEl.children.length; i++) putField(notesEl.children[i]);
+    for (var id in R) {
+      if (ru || id.indexOf('bad') === 0 || id.indexOf('good') === 0) continue;
+      var base = nodeText(id), t = tr(base);
+      if (t !== base) { R[id].el.dataset.base = base; setText(id, t); }
+    }
+    /* правка — только по-русски и только у владельца */
+    var canEdit = OWNER && ru;
+    var f = document.querySelectorAll('#cnum, #names .ninput, #names .nperson, #names .ndtext, #notes textarea');
+    for (i = 0; i < f.length; i++) f[i].readOnly = !canEdit;
+    for (id in R) {
+      var el = R[id].el;
+      if (el.classList.contains('smiley')) continue;
+      var ed = el.querySelector('.dtx') || el;
+      ed.setAttribute('contenteditable', canEdit ? 'true' : 'false');
+    }
+    var gb = document.querySelector('.guestbadge');
+    if (gb) gb.textContent = L(UI.guest);
+    var sb = document.getElementById('save'), kb = document.getElementById('key');
+    if (sb) sb.textContent = L(UI.save);
+    if (kb) kb.textContent = L(UI.key);
+    if (langbar) {
+      var bs = langbar.querySelectorAll('.lflag');
+      for (i = 0; i < bs.length; i++) {
+        var on = bs[i].dataset.lang === LANG;
+        bs[i].classList.toggle('on', on);
+        bs[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+      }
+    }
+    buildPrograms();
+    renderInfo(infoCur);
+    tipHide();
+    layout();
+    readSheet();
+    if (manual) apply(); else fit();
+    tintNodes();
+  }
+  function setLang(l, remember) {
+    if (LANGS.indexOf(l) === -1) return;
+    if (remember) { try { localStorage.setItem('gp_lang', l); } catch (e) {} }
+    if (l === LANG) return;
+    langReset();
+    LANG = l;
+    langApply();
+    if (OWNER && l !== 'ru') toast(UI.ownerRo.ru);
+  }
+  function langInit() {
+    LANG = detectLang();
+    langApply();
+  }
+
+  window.__side = { setLang: setLang, lang: function () { return LANG; }, toolsOn: toolsOn, toolsOff: toolsOff, detect: detectLang, open: setOpen };
+
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-19',
+    build: '2026-11-07-3 glass-trial-20',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -2380,6 +3182,7 @@ body{
   applyAccess();
   /* и только теперь подхватываем сохранение: поля заметок уже созданы */
   bootRestore();
+  langInit();
 
 
 
