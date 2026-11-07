@@ -908,9 +908,8 @@ body{
     b.addEventListener('mousedown', function (e) { e.preventDefault(); e.stopPropagation(); });
     b.addEventListener('click', function (e) {
       e.preventDefault(); e.stopPropagation();
+      /* галочки ставят все; у гостя они живут до перезагрузки страницы и никуда не сохраняются */
       setDone(id, !R[id].done);
-      /* галочки ставят все; у гостя они хранятся только в его браузере */
-      if (!isOwner()) guestDoneSave();
     });
     d.appendChild(b);
   }
@@ -925,25 +924,9 @@ body{
     if (manual) apply(); else fit();
     if (isOwner()) dirty = true;
   }
-  var GUEST_DONE = 'gp_guest_done';
-  function guestDoneSave() {
-    var out = {};
-    for (var k in R) if (R[k].done) out[k] = true;
-    try { localStorage.setItem(GUEST_DONE, JSON.stringify(out)); } catch (e) {}
-  }
-  function guestDoneApply() {
-    var m = null;
-    try { m = JSON.parse(localStorage.getItem(GUEST_DONE) || 'null'); } catch (e) {}
-    if (!m) return;
-    for (var k in R) {
-      if (!R[k].el.querySelector('.chk')) continue;
-      var want = !!m[k];
-      if (!!R[k].done === want) continue;
-      R[k].done = want;
-      R[k].el.classList.toggle('done', want);
-      R[k].el.querySelector('.chk').setAttribute('aria-checked', want ? 'true' : 'false');
-    }
-  }
+  /* старые гостевые галочки из прошлой версии — стираем */
+  try { localStorage.removeItem('gp_guest_done'); } catch (e) {}
+
 
   /* запись текста в карточку так, чтобы галочка и ромб остались на месте */
   function setText(id, t) {
@@ -2034,7 +2017,6 @@ body{
   function applySnapshot(data) {
     if (typeof langReset === 'function') langReset();
     var r = applySnapshotRaw(data);
-    if (!isOwner()) guestDoneApply();
     if (typeof langApply === 'function') langApply();
     return r;
   }
@@ -3329,7 +3311,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-26',
+    build: '2026-11-07-3 glass-trial-27',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3362,7 +3344,6 @@ body{
   applyAccess();
   /* и только теперь подхватываем сохранение: поля заметок уже созданы */
   bootRestore();
-  if (!isOwner()) guestDoneApply();
   langInit();
   /* браузер держит копию страницы до 10 минут (так настроен GitHub Pages).
      Поэтому при открытии тихо сверяем номер сборки с сервером: вышла новая —
