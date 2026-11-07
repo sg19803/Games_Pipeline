@@ -793,6 +793,9 @@ body{
 .note::-webkit-scrollbar, .ndtext::-webkit-scrollbar{width:8px}
 .note::-webkit-scrollbar-track, .ndtext::-webkit-scrollbar-track{background:transparent; margin:10px 0}
 .note::-webkit-scrollbar-thumb, .ndtext::-webkit-scrollbar-thumb{background:rgba(90,100,110,.28); border-radius:4px}
+
+/* ромб «Утверждение», где участвует исполнитель или папка под мышкой */
+.diamondWrap.phl .diamondInner{box-shadow:var(--gl-blueRim), 0 0 0 2px hsla(var(--ph,212),70%,48%,.75), 0 0 26px hsla(var(--ph,212),90%,60%,.7) !important}
 </style>
 </head>
 <body>
@@ -3058,48 +3061,100 @@ body{
     })(nid0);
   }
 
-  /* ---------- обратная подсветка: навёл на программу — горят карточки, где она нужна,
-     папки, куда идёт материал, и исполнители — каждый своим цветом ---------- */
-  var progHl = [];
+  /* ---------- обратная подсветка: навёл на программу, папку или исполнителя —
+     горят карточки схемы, где это используется, папки, программы и исполнители,
+     каждый своим цветом ---------- */
+  var progHl = [], litKey = null;
   function progOff() {
-    unmark(progHl); progHl = [];
+    unmark(progHl); progHl = []; litKey = null;
     rolesOff();
   }
-  function progOn(pid) {
+  /* match(g) — подходит ли пара «профессия → папки и программы» */
+  function lightGroups(key, match) {
+    if (key === litKey) return progHl.length;
     progOff();
+    litKey = key;
     var hueBy = roleHues(), nums = [];
     for (var nid in TOOLS) {
       TOOLS[nid].forEach(function (g) {
-        if (g[1].indexOf('p:' + pid) === -1) return;
+        if (!match(g)) return;
         var hue = (g[0] in hueBy) ? hueBy[g[0]] : 212;
         var el = R[nid] && R[nid].el;
         if (el && !el.classList.contains('phl')) { el.classList.add('phl'); el.style.setProperty('--ph', hue); progHl.push(el); }
-        g[1].forEach(function (it) { if (it.indexOf('f:') === 0) markFolder(it.slice(2), hue, progHl); });
+        g[1].forEach(function (it) {
+          if (it.indexOf('f:') === 0) markFolder(it.slice(2), hue, progHl);
+          else {
+            var pr = PROW[it.slice(2)];
+            if (pr && !pr.classList.contains('hl')) { pr.classList.add('hl'); pr.style.setProperty('--ph', hue); progHl.push(pr); }
+          }
+        });
         if (nums.indexOf(g[0]) === -1) nums.push(g[0]);
       });
     }
     if (nums.length) { NODE_ROLES.__p = nums; rolesOn('__p'); delete NODE_ROLES.__p; }
     return progHl.length;
   }
+  function progOn(pid) {
+    return lightGroups('p:' + pid, function (g) { return g[1].indexOf('p:' + pid) !== -1; });
+  }
+  /* папка: всё, что пишет в неё или во вложенные папки */
+  function folderOn(path) {
+    return lightGroups('f:' + path, function (g) {
+      for (var k = 0; k < g[1].length; k++) {
+        var it = g[1][k];
+        if (it.indexOf('f:') !== 0) continue;
+        var f = it.slice(2);
+        if (path === '' || f === path || f.indexOf(path + '/') === 0) return true;
+      }
+      return false;
+    });
+  }
+  /* исполнитель: все его профессии (одно имя в нескольких строках — один человек) */
+  function personOn(row) {
+    var pi = row.querySelector('.nperson');
+    var who = (bv(pi) || '').replace(/\s+/g, ' ').trim().toLowerCase();
+    var rows = namesEl.querySelectorAll('.nrow'), nums = [];
+    for (var i = 0; i < rows.length; i++) {
+      var w = (bv(rows[i].querySelector('.nperson')) || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      if (rows[i] === row || (who && w === who)) {
+        var n = roleNum(bv(rows[i].querySelector('.ninput')));
+        if (n && nums.indexOf(n) === -1) nums.push(n);
+      }
+    }
+    if (!nums.length) { progOff(); return 0; }
+    return lightGroups('r:' + nums.join(','), function (g) { return nums.indexOf(g[0]) !== -1; });
+  }
+  if (treeEl) {
+    treeEl.addEventListener(TOUCH ? 'click' : 'mouseover', function (e) {
+      var row = e.target.closest && e.target.closest('.trow');
+      if (row) folderOn(row.dataset.path);
+    });
+    if (!TOUCH) treeEl.addEventListener('mouseleave', progOff);
+  }
+  namesEl.addEventListener(TOUCH ? 'click' : 'mouseover', function (e) {
+    var row = e.target.closest && e.target.closest('.nrow');
+    if (row) personOn(row);
+  });
+  if (!TOUCH) namesEl.addEventListener('mouseleave', progOff);
   if (plistEl) {
     plistEl.addEventListener(TOUCH ? 'click' : 'mouseover', function (e) {
       var row = e.target.closest && e.target.closest('.prow');
       if (!row) return;
       if (row.dataset.id !== infoCur) pickProgram(row.dataset.id);
-      if (row.dataset.id !== progOn.cur) { progOn.cur = row.dataset.id; progOn(row.dataset.id); }
+      progOn(row.dataset.id);
     });
     if (!TOUCH) {
       plistEl.addEventListener('click', function (e) {
         var row = e.target.closest && e.target.closest('.prow');
         if (row) pickProgram(row.dataset.id);
       });
-      plistEl.addEventListener('mouseleave', function () { progOn.cur = null; progOff(); });
+      plistEl.addEventListener('mouseleave', progOff);
     }
   }
   if (TOUCH) document.addEventListener('touchstart', function (e) {
     if (!(e.target.closest && e.target.closest('.node'))) toolsOff();
     if (!(e.target.closest && e.target.closest('.trow'))) tipHide();
-    if (!(e.target.closest && e.target.closest('.prow'))) { progOn.cur = null; progOff(); }
+    if (!(e.target.closest && e.target.closest('.prow, .trow, .nrow'))) progOff();
   }, { passive: true });
 
   /* ---------- языки ----------
@@ -3227,11 +3282,11 @@ body{
     langApply();
   }
 
-  window.__side = { progOn: progOn, progOff: progOff, setLang: setLang, lang: function () { return LANG; }, toolsOn: toolsOn, toolsOff: toolsOff, detect: detectLang, open: setOpen };
+  window.__side = { folderOn: folderOn, personOn: personOn, progOn: progOn, progOff: progOff, setLang: setLang, lang: function () { return LANG; }, toolsOn: toolsOn, toolsOff: toolsOff, detect: detectLang, open: setOpen };
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-21',
+    build: '2026-11-07-3 glass-trial-22',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
