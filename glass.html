@@ -2218,9 +2218,9 @@ body{
          Два исполнителя — снизу слева цвет первого, снизу справа второго */
       el.style.setProperty('--tintbg', list.length > 1
         ? 'linear-gradient(0deg, hsla(' + a + ',75%,58%,0), hsla(' + a + ',75%,58%,0)), ' +
-          'radial-gradient(70% 110% at 0% 100%, hsla(' + a + ',75%,58%,.10), hsla(' + a + ',75%,58%,0) 75%), ' +
-          'radial-gradient(70% 110% at 100% 100%, hsla(' + b + ',75%,58%,.10), hsla(' + b + ',75%,58%,0) 75%)'
-        : 'linear-gradient(0deg, hsla(' + a + ',75%,58%,.10) 0%, hsla(' + a + ',75%,58%,.03) 45%, hsla(' + a + ',75%,58%,0) 80%)');
+          'radial-gradient(70% 110% at 0% 100%, hsla(' + a + ',75%,58%,.03), hsla(' + a + ',75%,58%,0) 75%), ' +
+          'radial-gradient(70% 110% at 100% 100%, hsla(' + b + ',75%,58%,.03), hsla(' + b + ',75%,58%,0) 75%)'
+        : 'linear-gradient(0deg, hsla(' + a + ',75%,58%,.03) 0%, hsla(' + a + ',75%,58%,.009) 45%, hsla(' + a + ',75%,58%,0) 80%)');
       el.classList.add('tinted');
     }
   }
@@ -2301,7 +2301,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-17',
+    build: '2026-11-07-3 glass-trial-18',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
