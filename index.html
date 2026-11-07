@@ -47,7 +47,7 @@ body{
 .headline:focus{border-bottom-color:var(--blue)}
 /* ---- форма имён: пустое поле с серой подсказкой «ИМЯ» и плюсик рядом ---- */
 .names{display:flex; flex-direction:column; gap:9px; margin:0 0 22px}
-.nrow{display:flex; align-items:center; gap:10px}
+.nrow{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
 .ninput{
   width:340px; max-width:100%; font:inherit; font-size:15px; letter-spacing:-.004em; color:var(--ink);
   padding:10px 14px; border:1px solid var(--hair); border-radius:11px; background:#fff;
@@ -87,6 +87,29 @@ body{
 }
 .nminus:hover{background:#fff2f1; border-color:#f3c8c4; color:var(--red)}
 .nminus:active{transform:scale(.94)}
+/* третье поле строки — обязанности. Свёрнуто: маленькая кнопка «Обязанности».
+   Клик — под строкой раскрывается текст (профессия не повторяется, всё через запятую) */
+.ndbtn{
+  flex:0 0 auto; display:inline-flex; align-items:center; gap:6px;
+  padding:9px 14px; border-radius:999px; border:1px solid var(--hair); background:#fff;
+  color:var(--ink2); cursor:pointer; font:inherit; font-size:13.5px; letter-spacing:-.004em;
+  transition:background .18s ease, border-color .18s ease, color .18s ease;
+}
+.ndbtn:hover{background:#f4f9ff; border-color:#c9dcf8; color:var(--blue)}
+.ndbtn:focus-visible{outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,113,227,.16)}
+.ndbtn.open{background:#f6fbff; border-color:#a9cdf6; color:var(--blue)}
+.ndar{font-size:12px; line-height:1; transform:translateY(-1px)}
+.ndtext{
+  flex:0 0 700px; order:20; box-sizing:border-box; width:700px; max-width:100%; margin:1px 0 3px;
+  font:inherit; font-size:14px; line-height:1.45; letter-spacing:-.004em; color:var(--ink2);
+  padding:11px 14px; border:1px solid var(--hair); border-radius:12px; background:#fbfbfd;
+  outline:none; resize:vertical; min-height:46px; overflow:hidden;
+  transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.ndtext[hidden]{display:none}
+.ndtext::placeholder{color:var(--ink3)}
+.ndtext:hover{border-color:#d8d8de}
+.ndtext:focus{border-color:var(--blue); background:#fff; box-shadow:0 0 0 3px rgba(0,113,227,.16)}
 /* ---- полотно схемы ---- */
 .stage{position:relative}
 .frames,.nodes{position:absolute; left:0; top:0}
@@ -203,7 +226,8 @@ body{
 body.guest .nplus, body.guest .nminus{display:none}
 body.guest .chk{pointer-events:none; opacity:.45}
 body.guest .node, body.guest .dtx, body.guest #cnum,
-body.guest .ninput, body.guest .nperson, body.guest .note{cursor:default}
+body.guest .ninput, body.guest .nperson, body.guest .note,
+body.guest .ndtext{cursor:default}
 .guestbadge{
   position:fixed; left:50%; bottom:20px; transform:translateX(-50%); z-index:30;
   font-size:12.5px; color:var(--ink3); background:rgba(255,255,255,.92);
@@ -770,9 +794,37 @@ body.guest .ninput, body.guest .nperson, body.guest .note{cursor:default}
   var namesEl = document.getElementById('names');
   var cnumEl  = document.getElementById('cnum');
 
+  /* готовые тексты обязанностей для десяти профессий схемы.
+     Профессию в тексте не повторяем — она стоит в первом поле строки,
+     и не списком, а одной фразой через запятую. */
+  var DUTIES = {
+    'трафик менеджер': 'принимает задачу от заказчика в Asana, запрашивает и собирает входные данные: бриф, референсы, примеры, ставит задачу команде и следит за сроками, принимает готовую работу на выходе',
+    'ии артист': 'создаёт локации и персонажей, собирает опорные кадры для аниматика, генерирует видео на продакшне, следит, чтобы персонажи и стиль не менялись от кадра к кадру',
+    'саунд артист': 'делает сырую музыку и звуковые эффекты для аниматика, готовит финальную музыку и эффекты под монтаж, записывает или генерирует закадровый голос, делает мастеринг звука',
+    'геймплэй артист': 'записывает геймплей для опорных кадров, делает финальные геймплеи под утверждённый сценарий',
+    'режиссер': 'составляет точное задание и сценарий, принимает решения на препродакшне и продакшне, отвечает за аниматик перед утверждением, вносит правки после утверждения',
+    'режиссер монтажа': 'монтирует аниматик и финальное видео, делает цветокоррекцию, делает ресайзы, рендерит и выгружает их на Google Диск',
+    'ответственный за задачу': 'проверяет работу на обоих утверждениях, пропускает дальше или возвращает с правками на один или два этапа назад, отвечает за соответствие результата брифу заказчика',
+    'композитинг артист': 'сводит в кадре ИИ-генерацию, геймплей и графику, убирает артефакты ИИ',
+    'vfx артист': 'делает визуальные эффекты: частицы, свет, переходы',
+    'контент менеджер': 'принимает ресайзы, называет и раскладывает файлы, передаёт материалы заказчику и ведёт архив'
+  };
+  /* в сохранённых данных встречается опечатка «Ответсвенный» — строку без текста не оставляем */
+  DUTIES['ответсвенный за задачу'] = DUTIES['ответственный за задачу'];
+  /* «ё» = «е», дефис = пробел: «ИИ-артист» и «ИИ артист» — одна строка словаря */
+  function dutyKey(s) {
+    return String(s == null ? '' : s)
+      .replace(/\u0451/g, '\u0435').replace(/\u0401/g, '\u0415')
+      .replace(/[-\u2010-\u2015]+/g, ' ')
+      .replace(/\s+/g, ' ').trim().toLowerCase();
+  }
+  function dutyDefault(role) {
+    return DUTIES[dutyKey(role)] || '';
+  }
+
   /* ещё одна строка с номером — появляется по плюсику */
-  /* одна строка = профессия + человек; плюсик добавляет такую же пустую */
-  function addRow(role, person) {
+  /* одна строка = профессия + человек + обязанности; плюсик добавляет такую же пустую */
+  function addRow(role, person, duties) {
     var row = document.createElement('div');
     row.className = 'nrow';
     var inp = document.createElement('input');
@@ -792,6 +844,29 @@ body.guest .ninput, body.guest .nperson, body.guest .note{cursor:default}
     pin.spellcheck = false;
     pin.autocomplete = 'off';
     pin.value = person || '';
+    /* обязанности: свёрнуты в кнопку, по клику под строкой раскрывается текст.
+       Готовый текст для известной профессии подставляется сразу; пусто — значит пусто */
+    var dbtn = document.createElement('button');
+    dbtn.className = 'ndbtn';
+    dbtn.type = 'button';
+    dbtn.title = 'Обязанности — нажми, чтобы раскрыть текст';
+    dbtn.setAttribute('aria-expanded', 'false');
+    var dar = document.createElement('span');
+    dar.className = 'ndar';
+    dar.textContent = '\u25B8';
+    var dlab = document.createElement('span');
+    dlab.className = 'ndlab';
+    dlab.textContent = 'Обязанности';
+    dbtn.appendChild(dar);
+    dbtn.appendChild(dlab);
+    var dta = document.createElement('textarea');
+    dta.className = 'ndtext';
+    dta.rows = 2;
+    dta.placeholder = 'Обязанности — одной фразой через запятую';
+    dta.title = 'Что этот человек делает';
+    dta.spellcheck = false;
+    dta.value = (duties == null) ? dutyDefault(role) : String(duties);
+    dta.setAttribute('hidden', '');
     var btn = document.createElement('button');
     btn.className = 'nplus';
     btn.type = 'button';
@@ -806,10 +881,19 @@ body.guest .ninput, body.guest .nperson, body.guest .note{cursor:default}
     bminus.textContent = '\u2212';
     row.appendChild(inp);
     row.appendChild(pin);
+    row.appendChild(dbtn);
     row.appendChild(btn);
     row.appendChild(bminus);
+    row.appendChild(dta);
     namesEl.appendChild(row);
     return inp;
+  }
+
+  /* поле обязанностей подстраивает высоту под текст — чтобы ничего не обрезалось */
+  function autoGrow(ta) {
+    if (!ta || ta.hasAttribute('hidden')) return;
+    ta.style.height = 'auto';
+    ta.style.height = Math.max(46, ta.scrollHeight) + 'px';
   }
 
   /* все номера по порядку: сначала большое поле, потом строки; пустые не считаем */
@@ -832,8 +916,10 @@ body.guest .ninput, body.guest .nperson, body.guest .note{cursor:default}
     for (var i = 0; i < rows.length; i++) {
       var ri = rows[i].querySelector('.ninput');
       var pi = rows[i].querySelector('.nperson');
+      var di = rows[i].querySelector('.ndtext');
       out.push({ role: ri ? (ri.value || '') : '',
-                 person: pi ? (pi.value || '') : '' });
+                 person: pi ? (pi.value || '') : '',
+                 duties: di ? (di.value || '') : '' });
     }
     return out;
   }
@@ -915,6 +1001,51 @@ body.guest .ninput, body.guest .nperson, body.guest .note{cursor:default}
   }
   namesEl.addEventListener('input', markShared);
 
+  /* клик по кнопке «Обязанности»: раскрыть или снова свернуть текст этой строки.
+     Смотреть можно всем — гостю тоже; править текст может только владелец (readOnly) */
+  namesEl.addEventListener('click', function (e) {
+    var b = (e.target && e.target.closest) ? e.target.closest('.ndbtn') : null;
+    if (!b) return;
+    var row = b.closest('.nrow');
+    var ta = row ? row.querySelector('.ndtext') : null;
+    if (!ta) return;
+    var wasOpen = !ta.hasAttribute('hidden');
+    if (wasOpen) {
+      ta.setAttribute('hidden', '');
+      b.classList.remove('open');
+    } else {
+      ta.removeAttribute('hidden');
+      b.classList.add('open');
+      autoGrow(ta);
+    }
+    b.setAttribute('aria-expanded', wasOpen ? 'false' : 'true');
+    b.title = wasOpen ? 'Обязанности — нажми, чтобы раскрыть текст'
+                      : 'Обязанности — нажми, чтобы свернуть текст';
+    var ar = b.querySelector('.ndar');
+    if (ar) ar.textContent = wasOpen ? '\u25B8' : '\u25BE';
+    readSheet();
+    apply();
+  });
+
+  /* вписал профессию — обязанности подставляются из готового списка,
+     но только если поле обязанностей пустое (руками вписанное не затираем) */
+  namesEl.addEventListener('change', function (e) {
+    var t = e.target;
+    if (!t || !t.classList || !t.classList.contains('ninput')) return;
+    if (!isOwner()) return;
+    var row = (t.closest) ? t.closest('.nrow') : null;
+    if (!row) return;
+    var ta = row.querySelector('.ndtext');
+    if (!ta || (ta.value || '').replace(/\s+/g, ' ').trim()) return;
+    var def = dutyDefault(t.value);
+    if (!def) return;
+    ta.value = def;
+    if (!ta.hasAttribute('hidden')) autoGrow(ta);
+    dirty = true;
+    readSheet();
+    apply();
+  });
+
   /* на странице всегда есть хотя бы одна строка с подсказкой «Профессия» */
   function ensureRow() {
     if (!namesEl.querySelector('.ninput')) addRow('', '');
@@ -983,6 +1114,14 @@ body.guest .ninput, body.guest .nperson, body.guest .note{cursor:default}
       /* номер креатива — тоже правка: при закрытии вкладки предупредим */
       if (t.id === 'cnum' || String(t.className || '').indexOf('ninput') >= 0
           || String(t.className || '').indexOf('note') >= 0) dirty = true;
+      /* обязанности: поле тянется за текстом и считается правкой */
+      if (String(t.className || '').indexOf('ndtext') >= 0) {
+        dirty = true;
+        autoGrow(t);
+        readSheet();
+        apply();
+      }
+
       return;
     }
     dirty = true;
@@ -1030,6 +1169,9 @@ body.guest .ninput, body.guest .nperson, body.guest .note{cursor:default}
   }
 
   /* тексты по блокам, внутри блока — сверху вниз и слева направо */
+  /* одна строка без лишних пробелов — для текстового файла, снимков и проверок */
+  function one(v) { return String(v == null ? '' : v).replace(/\s+/g, ' ').trim(); }
+
   function collect() {
     var groups = framesOut.map(function (f) { return { l: f.l, r: f.r, items: [] }; });
     for (var id in R) {
@@ -1050,6 +1192,21 @@ body.guest .ninput, body.guest .nperson, body.guest .note{cursor:default}
     var names = creativeValues();
     lines.push('Номер креатива: ' + (names.length ? names.join(', ') : '—'));
     lines.push('');
+    /* профессии, люди и обязанности — одной компактной таблицей */
+    var whoAll = nameRows(), anyWho = false;
+    for (var wi = 0; wi < whoAll.length; wi++) {
+      if (one(whoAll[wi].role) || one(whoAll[wi].person) || one(whoAll[wi].duties)) { anyWho = true; break; }
+    }
+    if (anyWho) {
+      lines.push('Кто за что отвечает:');
+      for (var wj = 0; wj < whoAll.length; wj++) {
+        var wRole = one(whoAll[wj].role), wMan = one(whoAll[wj].person), wDuty = one(whoAll[wj].duties);
+        if (!wRole && !wMan && !wDuty) continue;
+        lines.push('  ' + (wRole || '—') + (wMan ? ' — ' + wMan : '')
+                   + (wDuty ? ': ' + wDuty : ''));
+      }
+      lines.push('');
+    }
     /* панель отделяем только в том блоке, где она стоит */
     var panelGroup = -1;
     if (panelOut) {
@@ -1213,19 +1370,25 @@ body.guest .ninput, body.guest .nperson, body.guest .note{cursor:default}
     var savedNames = (data.names && typeof data.names === 'object') ? data.names : null;
     if (savedNames) {
       var head = String(savedNames.head == null ? '' : savedNames.head);
-      /* строки бывают двух видов: старые — просто название профессии,
-         новые — {role, person} (профессия + человек) */
+      /* строки бывают трёх видов: совсем старые — просто название профессии,
+         поновее — {role, person}, нынешние — {role, person, duties}.
+         Если обязанностей в снимке нет — подставляем готовый текст по профессии */
       var rows = Array.isArray(savedNames.rows) ? savedNames.rows.map(function (v) {
         if (v && typeof v === 'object') {
-          return { role: String(v.role == null ? '' : v.role),
-                   person: String(v.person == null ? '' : v.person) };
+          var rl = String(v.role == null ? '' : v.role);
+          return { role: rl,
+                   person: String(v.person == null ? '' : v.person),
+                   duties: (v.duties == null ? dutyDefault(rl) : String(v.duties)) };
         }
-        return { role: String(v == null ? '' : v), person: '' };
+        var rs = String(v == null ? '' : v);
+        return { role: rs, person: '', duties: dutyDefault(rs) };
       }) : [];
       if (cnumEl.value !== head || JSON.stringify(rows) !== JSON.stringify(nameRows())) {
         cnumEl.value = head;
         while (namesEl.firstChild) namesEl.removeChild(namesEl.firstChild);
-        for (var r2 = 0; r2 < rows.length; r2++) addRow(rows[r2].role, rows[r2].person);
+        for (var r2 = 0; r2 < rows.length; r2++) {
+          addRow(rows[r2].role, rows[r2].person, rows[r2].duties);
+        }
         ensureRow();
         markShared();
         changed = true;
@@ -1382,7 +1545,7 @@ body.guest .ninput, body.guest .nperson, body.guest .note{cursor:default}
       if (old && old.parentNode) old.parentNode.removeChild(old);
       return;
     }
-    var f = document.querySelectorAll('#cnum, #names .ninput, #names .nperson, #notes textarea');
+    var f = document.querySelectorAll('#cnum, #names .ninput, #names .nperson, #names .ndtext, #notes textarea');
     for (var i = 0; i < f.length; i++) f[i].readOnly = true;
     var ed = document.querySelectorAll('[contenteditable="true"]');
     for (i = 0; i < ed.length; i++) ed[i].setAttribute('contenteditable', 'false');
@@ -1436,12 +1599,14 @@ body.guest .ninput, body.guest .nperson, body.guest .note{cursor:default}
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-06-5 (owner only)',
+    build: '2026-11-06-6 (objazannosti v strokah)',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
     applySnapshot: applySnapshot,
     people: personGroups,
+    rows: nameRows,
+    dutyDefault: dutyDefault,
     set: function (id, text) { if (R[id]) { setText(id, text); readSheet(); layout(); } },
     setDone: function (id, on) { setDone(id, on); dirty = false; },
     rect: function (id) {
