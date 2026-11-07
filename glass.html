@@ -3086,6 +3086,7 @@ body{
      каждый своим цветом ---------- */
   var progHl = [], litKey = null;
   function progOff() {
+    if (litKey && litKey.indexOf('p:') !== 0) { clearInterval(cycT); cycT = 0; cycList = []; }
     unmark(progHl); progHl = []; litKey = null;
     rolesOff();
   }
@@ -3094,7 +3095,7 @@ body{
     if (key === litKey) return progHl.length;
     progOff();
     litKey = key;
-    var hueBy = roleHues(), nums = [];
+    var hueBy = roleHues(), nums = [], progs = [];
     for (var nid in TOOLS) {
       TOOLS[nid].forEach(function (g) {
         if (!match(g)) return;
@@ -3105,13 +3106,19 @@ body{
           if (it.indexOf('f:') === 0) markFolder(it.slice(2), hue, progHl);
           else {
             var pr = PROW[it.slice(2)];
-            if (pr && !pr.classList.contains('hl')) { pr.classList.add('hl'); pr.style.setProperty('--ph', hue); progHl.push(pr); }
+            if (pr && !pr.classList.contains('hl')) { pr.classList.add('hl'); pr.style.setProperty('--ph', hue); progHl.push(pr); progs.push(it.slice(2)); }
           }
         });
         if (nums.indexOf(g[0]) === -1) nums.push(g[0]);
       });
     }
     if (nums.length) { NODE_ROLES.__p = nums; rolesOn('__p'); delete NODE_ROLES.__p; }
+    /* папка или исполнитель: программы показываются в описании по очереди, раз в 2 секунды,
+       как при наведении на карточку. Для программы под мышкой очереди нет — описание её */
+    if (key.indexOf('p:') !== 0 && progs.length) {
+      clearInterval(cycT); cycList = progs; cycI = 0; cycShow();
+      if (progs.length > 1) cycT = setInterval(function () { cycI++; cycShow(); }, 2000);
+    }
     return progHl.length;
   }
   function progOn(pid) {
@@ -3306,7 +3313,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-23',
+    build: '2026-11-07-3 glass-trial-24',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
