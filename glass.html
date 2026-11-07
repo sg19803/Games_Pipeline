@@ -329,30 +329,31 @@ body.guest .ndtext{cursor:default}
    градиентами и тенями (иначе большая схема тормозит).
    ===================================================================== */
 :root{
-  --gl-ink:#2b2d31; --gl-ink2:#55595f; --gl-ink3:#8b8f95;
+  --gl-ink:#33363b; --gl-ink2:#5b5f65; --gl-ink3:#7f8388;
   --gl-blue:#3f6fae; --gl-red:#e0443c; --gl-green:#2fae5c;
-  /* стеклянная плашка */
-  --gl-fill:linear-gradient(180deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.16) 55%, rgba(255,255,255,.24) 100%);
+  /* стеклянная плашка, по замеру референса: внутри прозрачно и чуть темнее фона,
+     форму даёт кромка — тёмный волосок снаружи, яркая линия и тень под верхним краем,
+     яркий преломлённый блик по нижнему краю, под плашкой мягкая тень */
+  --gl-tint:linear-gradient(180deg, rgba(30,40,50,.075) 0%, rgba(30,40,50,.06) 60%, rgba(30,40,50,.035) 100%);
+  --gl-fill:var(--gl-tint);
+  --gl-rim:
+    inset 0 1px 0 rgba(255,255,255,.62),
+    inset 0 4px 4px -2px rgba(50,60,70,.20),
+    inset 0 -2px 1px -1px rgba(255,255,255,.95),
+    inset 0 -6px 7px -3px rgba(255,255,255,.55),
+    inset 3px 0 4px -3px rgba(255,255,255,.45),
+    inset -3px 0 4px -3px rgba(255,255,255,.45),
+    0 0 0 1px rgba(104,112,120,.42);
   --gl-slab:
-    inset 0 1.5px 0 rgba(255,255,255,.95),
-    inset 0 0 0 1px rgba(255,255,255,.38),
-    inset 0 -1.5px 0 rgba(255,255,255,.55),
-    inset 0 -6px 10px rgba(255,255,255,.16),
-    inset 0 3px 6px rgba(255,255,255,.18),
-    0 0 0 1px rgba(98,106,114,.28),
-    0 1px 1px rgba(50,58,66,.16),
-    0 4px 8px rgba(50,58,66,.10),
-    0 10px 22px rgba(50,58,66,.16);
+    var(--gl-rim),
+    0 2px 2px rgba(55,63,71,.22),
+    0 7px 14px rgba(55,63,71,.14);
   --gl-slabHi:
-    inset 0 1.5px 0 rgba(255,255,255,1),
-    inset 0 0 0 1px rgba(255,255,255,.5),
-    inset 0 -1.5px 0 rgba(255,255,255,.7),
-    inset 0 -6px 10px rgba(255,255,255,.22),
-    0 0 0 1px rgba(98,106,114,.32),
-    0 2px 3px rgba(50,58,66,.18),
-    0 12px 24px rgba(50,58,66,.22);
-  /* утопленное поле ввода: та же кромка, внутри чуть темнее */
-  --gl-wellFill:linear-gradient(180deg, rgba(255,255,255,.30), rgba(255,255,255,.14));
+    var(--gl-rim),
+    0 0 0 1px rgba(104,112,120,.5),
+    0 3px 4px rgba(55,63,71,.24),
+    0 12px 24px rgba(55,63,71,.18);
+  --gl-wellFill:var(--gl-tint);
   /* стальное синее стекло */
   --gl-primary:
     linear-gradient(180deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.10) 38%, rgba(255,255,255,0) 50%),
@@ -389,10 +390,10 @@ body{
 .scroller::-webkit-scrollbar-thumb{background:rgba(90,96,104,.35); border-color:transparent; background-clip:padding-box}
 
 /* лист и рамки блоков — большие стеклянные плиты, как «Info Card» */
-.sheet{background:var(--gl-fill); border:0; box-shadow:var(--gl-slab), 0 24px 60px rgba(50,58,66,.18)}
-.frame{background:linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.08)); border:0; box-shadow:var(--gl-slab)}
-.panel{background:linear-gradient(180deg, rgba(255,232,205,.40), rgba(255,226,196,.16)); border:0; box-shadow:var(--gl-slab)}
-.panel.blue{background:linear-gradient(180deg, rgba(210,228,255,.45), rgba(190,214,250,.18)); box-shadow:var(--gl-slab)}
+.sheet{background:linear-gradient(180deg, rgba(30,40,50,.03), rgba(30,40,50,.015)); border:0; box-shadow:var(--gl-rim), 0 3px 4px rgba(55,63,71,.16), 0 24px 60px rgba(55,63,71,.16)}
+.frame{background:linear-gradient(180deg, rgba(30,40,50,.035), rgba(30,40,50,.02)); border:0; box-shadow:var(--gl-slab)}
+.panel{background:linear-gradient(180deg, rgba(200,140,80,.10), rgba(200,140,80,.05)); border:0; box-shadow:var(--gl-slab)}
+.panel.blue{background:linear-gradient(180deg, rgba(70,120,200,.10), rgba(70,120,200,.05)); box-shadow:var(--gl-slab)}
 
 /* ---- форма ---- */
 .headline{color:var(--gl-ink); border-bottom:1px solid rgba(255,255,255,.75); box-shadow:0 1px 0 rgba(98,106,114,.25)}
@@ -401,7 +402,7 @@ body{
 .headline:focus{border-bottom-color:var(--gl-blue)}
 /* поля — стеклянные капсулы, как «Your Name» */
 .ninput, .nperson, .ndtext, .note{
-  background:var(--gl-wellFill); color:var(--gl-ink); border:0; box-shadow:var(--gl-slab);
+  background:var(--gl-wellFill); color:var(--gl-ink); border:0; box-shadow:var(--gl-slab); font-weight:400;
 }
 .ninput, .nperson{border-radius:20px}
 .ndtext{border-radius:18px; color:var(--gl-ink2)}
@@ -409,7 +410,7 @@ body{
 .ninput::placeholder, .nperson::placeholder, .ndtext::placeholder{color:var(--gl-ink3)}
 .ninput:hover, .nperson:hover, .ndtext:hover, .note:hover{box-shadow:var(--gl-slabHi)}
 .ninput:focus, .nperson:focus, .ndtext:focus, .note:focus{
-  background:linear-gradient(180deg, rgba(255,255,255,.5), rgba(255,255,255,.26));
+  background:var(--gl-tint);
   box-shadow:var(--gl-slabHi), 0 0 0 3px rgba(90,160,255,.28), 0 0 18px rgba(90,160,255,.35);
 }
 /* кнопки + / − / «Обязанности» — стеклянные кнопки, как «Cancel» и вкладки */
@@ -421,7 +422,7 @@ body{
 .ndbtn.open{background:var(--gl-glow); color:#fff; box-shadow:var(--gl-glowShadow); text-shadow:0 1px 1px rgba(20,50,100,.3)}
 /* строки человека под мышкой — светятся, как «Notifications» */
 .nrow.hl .ninput, .nrow.hl .nperson, .nrow.hl .ndtext{
-  background:linear-gradient(180deg, rgba(200,226,255,.75), rgba(150,195,250,.45));
+  background:linear-gradient(180deg, rgba(90,150,230,.22), rgba(90,150,230,.12));
   box-shadow:var(--gl-slab), 0 0 0 1px rgba(80,140,220,.45), 0 0 20px rgba(90,160,255,.50);
 }
 .nrow.hl .ndbtn{background:var(--gl-glow); color:#fff; box-shadow:var(--gl-glowShadow)}
@@ -429,7 +430,7 @@ body{
 /* ---- карточки схемы — стеклянные плашки ---- */
 .node{background:var(--gl-fill); border:0; color:var(--gl-ink); box-shadow:var(--gl-slab)}
 .node:hover{border:0; box-shadow:var(--gl-slabHi), 0 0 0 3px rgba(90,160,255,.22)}
-.node.peach{background:linear-gradient(180deg, rgba(255,240,222,.65), rgba(255,226,196,.28))}
+.node.peach{background:linear-gradient(180deg, rgba(200,140,80,.11), rgba(200,140,80,.06))}
 .node.peach:hover{border:0; box-shadow:var(--gl-slabHi), 0 0 0 3px rgba(90,160,255,.22)}
 /* вход и выход — главные кнопки потока: стальное синее стекло, как «Create Project» */
 .node.key{
@@ -442,7 +443,7 @@ body{
 .diamondWrap .dtx{color:#fff; text-shadow:0 1px 1px rgba(20,50,100,.35)}
 .diamondWrap:hover .diamondInner{background:var(--gl-glow); box-shadow:var(--gl-glowShadow), 0 0 30px rgba(90,160,255,.55)}
 /* смайлики — стеклянные кружки с цветным кольцом */
-.node.smiley{background:var(--gl-fill); border:2px solid}
+.node.smiley{background:var(--gl-tint); border:2px solid}
 .node.smiley.bad{border-color:rgba(224,68,60,.85); color:var(--gl-red); box-shadow:var(--gl-slab)}
 .node.smiley.good{border-color:rgba(47,174,92,.85); color:var(--gl-green); box-shadow:var(--gl-slab)}
 .node.smiley.bad:hover{box-shadow:var(--gl-slabHi), 0 0 18px rgba(224,68,60,.35)}
@@ -476,7 +477,7 @@ body{
 }
 /* правка текста в карточке */
 .node[contenteditable="true"]:focus, .node.peach[contenteditable="true"]:focus{
-  background:linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.3)); border:0;
+  background:var(--gl-tint); border:0;
   box-shadow:var(--gl-slabHi), 0 0 0 3px rgba(90,160,255,.3), 0 0 18px rgba(90,160,255,.35);
 }
 .node.key[contenteditable="true"]:focus{background:var(--gl-primary); box-shadow:var(--gl-primaryShadow), 0 0 0 3px rgba(90,160,255,.35)}
@@ -1983,7 +1984,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-2',
+    build: '2026-11-07-3 glass-trial-3',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
