@@ -616,6 +616,35 @@ body{
 .node.tinted:not(.key):not(.done):not(.diamondWrap):not(.smiley){background:var(--tintbg), var(--gl-tint)}
 .node.peach.tinted:not(.done){background:var(--tintbg), linear-gradient(180deg, rgba(200,140,80,.11), rgba(200,140,80,.06))}
 .node.smiley.tinted:not(.done){background:var(--tintbg), var(--gl-tint)}
+
+/* ---- вход, выход и ромбы — прозрачное цветное стекло (фон и каустика просвечивают) ---- */
+:root{
+  --gl-greenFill:
+    linear-gradient(180deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,.04) 42%, rgba(255,255,255,0) 55%),
+    linear-gradient(180deg, rgba(60,175,105,.46) 0%, rgba(40,150,85,.32) 100%);
+  --gl-greenRim:
+    inset 0 1px 0 rgba(255,255,255,.75),
+    inset 0 4px 4px -2px rgba(20,70,40,.22),
+    inset 0 -2px 1px -1px rgba(225,255,235,.95),
+    inset 0 -7px 9px -3px rgba(190,255,215,.55),
+    inset 3px 0 4px -3px rgba(220,255,232,.5),
+    inset -3px 0 4px -3px rgba(220,255,232,.5),
+    inset -1px 1px 0 rgba(130,215,238,.30),
+    0 0 0 1px rgba(30,110,60,.45);
+  --gl-blueGlass:
+    radial-gradient(80% 80% at 50% 18%, rgba(225,242,255,.30), rgba(225,242,255,0) 70%),
+    linear-gradient(135deg, rgba(110,170,240,.50) 0%, rgba(60,120,210,.32) 100%);
+  --gl-blueRim:
+    inset 1px 1px 0 rgba(255,255,255,.8),
+    inset 3px 3px 4px -2px rgba(20,50,110,.22),
+    inset -2px -2px 1px -1px rgba(220,238,255,.95),
+    inset -7px -7px 9px -4px rgba(180,215,255,.5),
+    0 0 0 1px rgba(40,90,170,.45);
+}
+.diamondInner{background:var(--gl-blueGlass); box-shadow:var(--gl-blueRim), 0 4px 8px rgba(30,60,110,.22), 0 10px 22px rgba(30,60,110,.18), 0 0 18px rgba(90,160,255,.30)}
+.diamondWrap:hover .diamondInner{background:var(--gl-blueGlass); box-shadow:var(--gl-blueRim), 0 6px 12px rgba(30,60,110,.24), 0 16px 30px rgba(30,60,110,.22), 0 0 28px rgba(90,160,255,.45), var(--ab)}
+.node.key, .diamondWrap .dtx{text-shadow:0 1px 2px rgba(10,40,25,.55), 0 0 1px rgba(10,40,25,.35)}
+.diamondWrap .dtx{text-shadow:0 1px 2px rgba(10,30,70,.55), 0 0 1px rgba(10,30,70,.35)}
 </style>
 </head>
 <body>
@@ -2244,7 +2273,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-13',
+    build: '2026-11-07-3 glass-trial-14',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
