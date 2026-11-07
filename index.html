@@ -68,6 +68,13 @@ body{
 .nperson:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,113,227,.16)}
 /* имя уже встречается в другой строке — эти профессии относятся к одному человеку */
 .nperson.shared{border-color:#a9cdf6; background:#f6fbff}
+/* мышка на карточке схемы: подсвечиваются строки профессий, которые за неё
+   отвечают — все три поля строки (профессия, человек, обязанности) */
+.nrow.hl .ninput, .nrow.hl .nperson{
+  border-color:#a9cdf6; background:#f2f8ff; box-shadow:0 0 0 3px rgba(0,113,227,.10);
+}
+.nrow.hl .ndbtn{background:#f2f8ff; border-color:#a9cdf6; color:var(--blue)}
+.nrow.hl .ndtext{border-color:#a9cdf6; background:#f2f8ff}
 .nplus{
   flex:0 0 auto; width:34px; height:34px; padding:0; border-radius:50%;
   border:1px solid var(--hair); background:#fff; color:var(--blue); cursor:pointer;
@@ -115,6 +122,8 @@ body{
 .frames,.nodes{position:absolute; left:0; top:0}
 .frame{position:absolute; background:#fafafb; border:1px solid #ececf1; border-radius:18px}
 .panel{position:absolute; background:#fdf7f0; border:1px solid #f4e4d1; border-radius:16px}
+/* вторая подложка — синяя: «Запись геймплеев» стоит отдельной группой */
+.panel.blue{background:#eef5fd; border-color:#d6e6fa}
 .wires{position:absolute; left:0; top:0; overflow:visible; pointer-events:none}
 /* ---- карточки: тянутся по тексту, текст по центру ---- */
 .node{
@@ -328,6 +337,7 @@ body.guest .ndtext{cursor:default}
   var NOTE_H = 160, NOTE_GAP = 26;
   var framesOut = [];   /* границы блоков — нужны для сохранения текстов по порядку */
   var panelOut = null;  /* границы персиковой панели — чтобы отделить её от основного ряда */
+  var panel2Out = null; /* границы синей панели — «Запись геймплеев» */
 
   function mk(id, text, w, kind) {
     var d = document.createElement('div');
@@ -434,6 +444,7 @@ body.guest .ndtext{cursor:default}
   mk('p1', 'Создание локаций в ИИ', 112, 'peach');
   mk('p2', 'Создание персонажей ИИ', 112, 'peach');
   mk('p3', 'Сборка опорных кадров', 112, 'peach');
+  mk('gmp', 'Запись геймплеев', 112);
   mkSmiley('bad1', 'bad');  mkSmiley('good1', 'good');
   mkSmiley('bad2', 'bad');  mkSmiley('good2', 'good');
 
@@ -451,7 +462,7 @@ body.guest .ndtext{cursor:default}
   /* одна высота у всех обычных карточек: «Композитинг VFX» и «Финальный продакшн»
      перестают быть разной высоты, столбцы выходят симметричными,
      а стрелки входят и выходят строго по середине карточки */
-  var FIXED = { d1: 1, d2: 1, bad1: 1, bad2: 1, good1: 1, good2: 1, p1: 1, p2: 1, p3: 1 };
+  var FIXED = { d1: 1, d2: 1, bad1: 1, bad2: 1, good1: 1, good2: 1, p1: 1, p2: 1, p3: 1, gmp: 1 };
   var commonH = 0;
   var kh;
   for (kh in R) { if (!FIXED[kh]) commonH = Math.max(commonH, R[kh].h); }
@@ -474,7 +485,7 @@ body.guest .ndtext{cursor:default}
   }
   for (kh in R) { if (!FIXED[kh]) R[kh].h = R[kh].el.offsetHeight; }
   /* персиковая панель выравнивается внутри себя: три карточки одной высоты */
-  var PEACH = { p1: 1, p2: 1, p3: 1 };
+  var PEACH = { p1: 1, p2: 1, p3: 1, gmp: 1 };
   var peachH = 0;
   for (kh in PEACH) peachH = Math.max(peachH, R[kh].h);
   for (kh in PEACH) {
@@ -552,6 +563,18 @@ body.guest .ndtext{cursor:default}
     t: panelTop,
     b: panelTop + PPAD * 2 + pColH
   };
+  /* синяя подложка с «Записью геймплеев» — справа от персиковой, по её верху */
+  var blueL = F.panel.r + 18;
+  R.gmp.x = blueL + PPAD;
+  R.gmp.y = panelTop + PPAD;
+  F.panel2 = {
+    l: blueL,
+    r: blueL + PPAD * 2 + R.gmp.w,
+    t: panelTop,
+    b: panelTop + PPAD * 2 + R.gmp.h
+  };
+  /* если подложка не влезла — блок 2 растягивается, но ничего не торчит */
+  if (F.panel2.r + PAD > F2.r) F2.r = F.panel2.r + PAD;
 
   /* --- блок 3: первое «Утверждение» и два смайлика --- */
   var f3l = F2.r + FGAP;
@@ -596,7 +619,7 @@ body.guest .ndtext{cursor:default}
   /* ---------- 3. рамки блоков и общий сдвиг ---------- */
   var minT = Infinity, maxB = -Infinity;
   for (var kk in R) {
-    if (kk === 'p1' || kk === 'p2' || kk === 'p3') continue;
+    if (PEACH[kk]) continue;   /* карточки подложек живут ниже главного ряда */
     minT = Math.min(minT, R[kk].y);
     maxB = Math.max(maxB, R[kk].y + R[kk].h);
   }
@@ -604,7 +627,7 @@ body.guest .ndtext{cursor:default}
   /* все рамки одной высоты: низ считается и по персиковой панели, иначе блок 2 торчит */
   /* под карточками (и персиковой панелью) оставлено место под поле заметок:
      рамка блока вытянута вниз на высоту поля, сам текст рамку не растит */
-  var notesTop = Math.max(maxB, F.panel.b) + NOTE_GAP;
+  var notesTop = Math.max(maxB, F.panel.b, F.panel2.b) + NOTE_GAP;
   var frameBot = notesTop + NOTE_H + PAD;
 
   var frames = [F1, F2, F3, F45, F6, F7].map(function (f) {
@@ -613,6 +636,7 @@ body.guest .ndtext{cursor:default}
 
   framesOut = frames;
   panelOut = F.panel;
+  panel2Out = F.panel2;
 
   var fL = Infinity, fR = -Infinity, fB = -Infinity;
   for (i = 0; i < frames.length; i++) {
@@ -644,6 +668,13 @@ body.guest .ndtext{cursor:default}
   pn.style.width = Math.round(F.panel.r - F.panel.l) + 'px';
   pn.style.height = Math.round(F.panel.b - F.panel.t) + 'px';
   framesEl.appendChild(pn);
+  var pn2 = document.createElement('div');
+  pn2.className = 'panel blue';
+  pn2.style.left = Math.round(F.panel2.l + OX) + 'px';
+  pn2.style.top = Math.round(F.panel2.t + OY) + 'px';
+  pn2.style.width = Math.round(F.panel2.r - F.panel2.l) + 'px';
+  pn2.style.height = Math.round(F.panel2.b - F.panel2.t) + 'px';
+  framesEl.appendChild(pn2);
 
   /* ---------- 3б. пустые поля для заметок: по одному в каждом блоке ----------
      создаём один раз, при пересборке только двигаем — набранный текст остаётся */
@@ -1625,9 +1656,79 @@ body.guest .ndtext{cursor:default}
       .catch(function () { /* файла нет или страница открыта локально */ });
   }
 
+  /* ---------- 4в. кто отвечает за карточку: подсветка строк сверху ----------
+     На макете у каждой карточки стоит цифра — это номер строки в списке профессий
+     (1 трафик менеджер, 2 ИИ артист, 3 саунд артист, 4 геймплэй артист, 5 режиссер,
+     6 режиссер монтажа, 7 ответственный за задачу, 8 композитинг артист, 9 VFX артист,
+     10 контент менеджер). На самой странице цифры не показываем: связь нужна только
+     для подсветки — держишь мышку на карточке, сверху подсвечиваются строки тех,
+     кто за неё отвечает; убрал мышку — подсветка пропала. */
+  var ROLE_BY_NUM = {
+    1: 'трафик менеджер',           2: 'ии артист',
+    3: 'саунд артист',              4: 'геймплэй артист',
+    5: 'режиссер',                  6: 'режиссер монтажа',
+    7: 'ответственный за задачу',   8: 'композитинг артист',
+    9: 'vfx артист',               10: 'контент менеджер'
+  };
+  /* карточка → номера профессий; у карточки их может быть две */
+  var NODE_ROLES = {
+    in: [1], b1: [1], b2: [10],
+    scen: [5], v20: [5],
+    txt: [2, 4],                       /* опорные кадры: ИИ артист или запись геймплея */
+    mus0: [3], mont: [6],
+    p1: [2], p2: [2], p3: [2], gmp: [4],
+    d1: [7], d2: [7],                  /* «Утверждение» держит ответственный за задачу */
+    bad1: [7], good1: [7], bad2: [7], good2: [7],
+    vid: [2], comp: [8, 9], mus: [3], fin: [4],
+    sved: [6], color: [6], master: [3], fmont: [6],
+    topj: [6], out: [1]
+  };
+
+  /* профессия из строки → её номер. «ё» и дефисы уже приведены к одному виду в dutyKey,
+     здесь добавлены только частые варианты написания */
+  function roleNum(text) {
+    var k = dutyKey(text)
+      .replace(/геймплей/g, 'геймплэй')
+      .replace(/ответственный за задачи/g, 'ответственный за задачу')
+      .replace(/ответсвенный/g, 'ответственный');
+    for (var n in ROLE_BY_NUM) if (ROLE_BY_NUM[n] === k) return Number(n);
+    return 0;
+  }
+
+  var hlRows = [];
+  function rolesOff() {
+    for (var i = 0; i < hlRows.length; i++) hlRows[i].classList.remove('hl');
+    hlRows = [];
+  }
+  /* мышка на карточке — подсветка строк; строк может быть две (например 8 и 9) */
+  function rolesOn(id) {
+    rolesOff();
+    var nums = NODE_ROLES[id] || [];
+    if (!nums.length) return 0;
+    var rows = namesEl.querySelectorAll('.nrow');
+    for (var i = 0; i < rows.length; i++) {
+      var inp = rows[i].querySelector('.ninput');
+      var n = roleNum(inp ? inp.value : '');
+      if (nums.indexOf(n) !== -1) { rows[i].classList.add('hl'); hlRows.push(rows[i]); }
+    }
+    return hlRows.length;
+  }
+  function bindRoles() {
+    for (var id in NODE_ROLES) {
+      (function (nid) {
+        var el = R[nid] && R[nid].el;
+        if (!el || el.__rolesBound) return;
+        el.__rolesBound = true;
+        el.addEventListener('mouseenter', function () { rolesOn(nid); });
+        el.addEventListener('mouseleave', rolesOff);
+      })(id);
+    }
+  }
+  bindRoles();
+
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-06-9 (galochki-u-smalikov)',
+    build: '2026-11-06-10 (podsvetka-professij-i-gejmplej)',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -1646,6 +1747,10 @@ body.guest .ndtext{cursor:default}
                done: !!R[id].done, text: nodeText(id) };
     },
     ids: function () { return Object.keys(R); },
+    nodeRoles: NODE_ROLES,
+    roleNum: roleNum,
+    roles: rolesOn,
+    rolesOff: rolesOff,
     save: save,
     download: function () { saveAsDownload(collect()); }
   };
