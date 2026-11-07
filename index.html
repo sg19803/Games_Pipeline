@@ -18,7 +18,21 @@ body{
   -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
   display:flex; flex-direction:column; height:100vh; overflow:hidden;
 }
-/* ---- панели сверху нет: лист занимает всё окно ---- */
+/* ---- подпись автора: одна маленькая серая строка по центру сверху ----
+   стоит вне полотна и вне зума: не масштабируется вместе со схемой, при
+   прокрутке остаётся на месте, в снимок и в текстовый экспорт не попадает */
+.copy{
+  flex:0 0 auto; display:flex; align-items:center; justify-content:center;
+  padding:8px 16px 7px; font-size:11.5px; line-height:1.2; letter-spacing:.01em;
+  color:#a9a9b0; user-select:none;
+}
+.copy .sep{margin:0 7px; color:#c9c9cf}
+.copy a{
+  color:#a9a9b0; text-decoration:none; border-bottom:1px solid transparent;
+  transition:color .18s ease, border-color .18s ease;
+}
+.copy a:hover{color:var(--blue); border-bottom-color:rgba(0,113,227,.35)}
+/* ---- панели сверху нет: только подпись автора, остальное окно — лист ---- */
 /* ---- полотно: белый лист на сером столе ---- */
 .scroller{flex:1 1 auto; overflow:auto; padding:28px 28px 84px; -webkit-overflow-scrolling:touch; display:flex}
 .scroller::-webkit-scrollbar{height:12px; width:12px}
@@ -284,6 +298,7 @@ body.guest .ndtext{cursor:default}
 </style>
 </head>
 <body>
+<div class="copy" id="copy"><span>&copy; 2026 Serhii Horbunov</span><span class="sep">&middot;</span><a href="https://sergiovida.com" target="_blank" rel="noopener">sergiovida.com</a></div>
 <div class="scroller" id="scroller">
   <div class="zoomer" id="zoomer">
     <div class="sheet" id="sheet">
@@ -1728,7 +1743,7 @@ body.guest .ndtext{cursor:default}
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-06-10 (podsvetka-professij-i-gejmplej)',
+    build: '2026-11-06-11 (podpis-avtora-sverhu)',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
