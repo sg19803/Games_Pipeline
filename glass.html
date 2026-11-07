@@ -612,6 +612,9 @@ body{
 #cplus, .nplus, .nminus{display:none !important}
 .node:not(.key):not(.done):not(.smiley)[contenteditable="true"]:focus{box-shadow:var(--gl-e5), 0 0 0 3px rgba(90,160,255,.3), 0 0 18px rgba(90,160,255,.35)}
 .node.diamondWrap, .node.diamondWrap:hover{background:none !important; box-shadow:none !important; transform:none}
+.node.tinted:not(.key):not(.done):not(.diamondWrap):not(.smiley){background:var(--tintbg), var(--gl-tint)}
+.node.peach.tinted:not(.done){background:var(--tintbg), linear-gradient(180deg, rgba(200,140,80,.11), rgba(200,140,80,.06))}
+.node.smiley.tinted:not(.done){background:var(--tintbg), var(--gl-tint)}
 </style>
 </head>
 <body>
@@ -1227,6 +1230,8 @@ body{
   route('topj', 'out', [[X2('topj'), YC('topj')], [X1('out'), YC('out')]]);
   ['p1', 'p2'].forEach(function (k) { viaBus(k, 'p3', pmx, YC(k), YC('p3')); });
 
+  /* оттенки исполнителей на карточках */
+  if (typeof NODE_ROLES !== 'undefined' && NODE_ROLES) tintNodes();
   /* размеры листа изменились — обновляем рамку прокрутки и масштаб */
   readSheet();
   if (manual) apply(); else fit();
@@ -2121,17 +2126,47 @@ body{
     /* у каждого человека свой цвет подсветки: оттенки разнесены «золотым углом» (137.5°),
        поэтому соседние люди никогда не получают похожий цвет. Строка без имени —
        отдельный «человек» со своим цветом */
-    var order = {}, cnt = 0;
+    var hues = personHues();
     for (i = 0; i < rows.length; i++) {
-      var key = who(rows[i]) || ('#' + i);
-      if (!(key in order)) order[key] = cnt++;
-      if (rows[i].classList.contains('hl')) {
-        var hue = Math.round((212 + order[key] * 137.508) % 360);
-        rows[i].style.setProperty('--ph', hue);
-      }
+      if (rows[i].classList.contains('hl')) rows[i].style.setProperty('--ph', hues.row[i]);
     }
     return hlRows.length;
   }
+
+  /* оттенок человека: люди по порядку появления в списке, оттенки разнесены «золотым углом»;
+     строка без имени — отдельный «человек». Возвращает оттенок каждой строки */
+  function personHues() {
+    var rows = namesEl.querySelectorAll('.nrow'), order = {}, cnt = 0, out = { row: [], rows: rows };
+    for (var i = 0; i < rows.length; i++) {
+      var pi = rows[i].querySelector('.nperson');
+      var key = (pi ? (pi.value || '') : '').replace(/\s+/g, ' ').trim().toLowerCase() || ('#' + i);
+      if (!(key in order)) order[key] = cnt++;
+      out.row.push(Math.round((212 + order[key] * 137.508) % 360));
+    }
+    return out;
+  }
+
+  /* лёгкий оттенок карточки цветом её исполнителя — виден всегда, без наведения.
+     Два разных исполнителя — карточка переливается от одного оттенка к другому */
+  function tintNodes() {
+    if (!namesEl) return;
+    var h = personHues();
+    for (var id in NODE_ROLES) {
+      var el = R[id] && R[id].el;
+      if (!el) continue;
+      var nums = NODE_ROLES[id], seen = {}, list = [];
+      for (var i = 0; i < h.rows.length; i++) {
+        var inp = h.rows[i].querySelector('.ninput');
+        if (nums.indexOf(roleNum(inp ? inp.value : '')) !== -1 && !seen[h.row[i]]) { seen[h.row[i]] = 1; list.push(h.row[i]); }
+      }
+      if (!list.length) { el.classList.remove('tinted'); el.style.removeProperty('--tintbg'); continue; }
+      var a = list[0], b = list[list.length > 1 ? 1 : 0];
+      el.style.setProperty('--tintbg', 'linear-gradient(' + (list.length > 1 ? '100deg' : '180deg') +
+        ', hsla(' + a + ',75%,58%,.16), hsla(' + b + ',75%,58%,' + (list.length > 1 ? '.16' : '.07') + '))');
+      el.classList.add('tinted');
+    }
+  }
+  namesEl.addEventListener('input', tintNodes);
   function bindRoles() {
     for (var id in NODE_ROLES) {
       (function (nid) {
@@ -2208,7 +2243,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-11',
+    build: '2026-11-07-3 glass-trial-12',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
