@@ -645,6 +645,18 @@ body{
 .diamondWrap:hover .diamondInner{background:var(--gl-blueGlass); box-shadow:var(--gl-blueRim), 0 6px 12px rgba(30,60,110,.24), 0 16px 30px rgba(30,60,110,.22), 0 0 28px rgba(90,160,255,.45), var(--ab)}
 .node.key, .diamondWrap .dtx{text-shadow:0 1px 2px rgba(10,40,25,.55), 0 0 1px rgba(10,40,25,.35)}
 .diamondWrap .dtx{text-shadow:0 1px 2px rgba(10,30,70,.55), 0 0 1px rgba(10,30,70,.35)}
+
+/* ---- вход, выход, ромбы: цвет так же снизу и кверху уходит в чистое стекло ---- */
+:root{
+  --gl-greenFill:linear-gradient(0deg, rgba(55,175,100,.50) 0%, rgba(55,175,100,.22) 40%, rgba(55,175,100,0) 85%), var(--gl-tint);
+  --gl-blueGlass:linear-gradient(0deg, rgba(70,135,225,.55) 0%, rgba(70,135,225,.24) 42%, rgba(70,135,225,0) 88%), var(--gl-tint);
+}
+/* ромб повёрнут на 45°: градиент разворачиваем обратно, чтобы цвет шёл снизу экрана */
+.diamondInner{background:linear-gradient(-45deg, rgba(70,135,225,.55) 0%, rgba(70,135,225,.24) 42%, rgba(70,135,225,0) 88%), var(--gl-tint)}
+.diamondWrap:hover .diamondInner{background:linear-gradient(-45deg, rgba(70,135,225,.60) 0%, rgba(70,135,225,.28) 45%, rgba(70,135,225,0) 90%), var(--gl-tint)}
+/* на светлом верху стекла белый текст не читается — текст тёмный, в цвет стекла */
+.node.key{color:#185a33; text-shadow:0 1px 1.5px rgba(255,255,255,.45), 0 1px 2px rgba(20,60,35,.18)}
+.diamondWrap .dtx{color:#174a8c; text-shadow:0 1px 1.5px rgba(255,255,255,.45), 0 1px 2px rgba(20,45,90,.18)}
 </style>
 </head>
 <body>
@@ -2278,7 +2290,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-15',
+    build: '2026-11-07-3 glass-trial-16',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
