@@ -188,7 +188,7 @@ body{
 /* ---- галочки у смайликов ----
    у ромба «Утверждение» галочки нет; она стоит рядом с каждым кружком,
    а подсветка у кружка своя: «хорошо» — зелёная, «плохо» — красная */
-.node.smiley .chk{left:-10px; top:-10px; width:17px; height:17px}
+.node.smiley .chk{left:-10px; top:-10px; width:17px; height:17px; opacity:.75}
 .node.smiley.done{background:#fff}
 .node.smiley.done.good{
   background:#e7f8ec; border-color:var(--green); color:var(--green);
@@ -1627,7 +1627,7 @@ body.guest .ndtext{cursor:default}
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-06-8 (galochki-u-smalikov)',
+    build: '2026-11-06-9 (galochki-u-smalikov)',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
