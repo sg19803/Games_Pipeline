@@ -56,6 +56,18 @@ body{
 .ninput::placeholder{color:var(--ink3)}
 .ninput:hover{border-color:#d8d8de}
 .ninput:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,113,227,.16)}
+/* второе поле строки — человек, который отвечает за эту профессию;
+   одно и то же имя в двух строках склеивает профессии в одного человека */
+.nperson{
+  width:230px; max-width:100%; font:inherit; font-size:15px; letter-spacing:-.004em; color:var(--ink);
+  padding:10px 14px; border:1px solid var(--hair); border-radius:11px; background:#fff;
+  outline:none; transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.nperson::placeholder{color:var(--ink3)}
+.nperson:hover{border-color:#d8d8de}
+.nperson:focus{border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,113,227,.16)}
+/* имя уже встречается в другой строке — эти профессии относятся к одному человеку */
+.nperson.shared{border-color:#a9cdf6; background:#f6fbff}
 .nplus{
   flex:0 0 auto; width:34px; height:34px; padding:0; border-radius:50%;
   border:1px solid var(--hair); background:#fff; color:var(--blue); cursor:pointer;
@@ -747,16 +759,27 @@ body{
   var cnumEl  = document.getElementById('cnum');
 
   /* ещё одна строка с номером — появляется по плюсику */
-  function addRow(value) {
+  /* одна строка = профессия + человек; плюсик добавляет такую же пустую */
+  function addRow(role, person) {
     var row = document.createElement('div');
     row.className = 'nrow';
     var inp = document.createElement('input');
     inp.className = 'ninput';
     inp.type = 'text';
-    inp.placeholder = 'ИМЯ';
+    inp.placeholder = 'Профессия';
+    inp.title = 'Профессия';
     inp.spellcheck = false;
     inp.autocomplete = 'off';
-    inp.value = value || '';
+    inp.value = role || '';
+    /* имя человека: одно и то же имя в разных строках = один человек */
+    var pin = document.createElement('input');
+    pin.className = 'nperson';
+    pin.type = 'text';
+    pin.placeholder = 'Имя человека';
+    pin.title = 'Имя человека, который отвечает за эту профессию';
+    pin.spellcheck = false;
+    pin.autocomplete = 'off';
+    pin.value = person || '';
     var btn = document.createElement('button');
     btn.className = 'nplus';
     btn.type = 'button';
@@ -770,6 +793,7 @@ body{
     bminus.setAttribute('aria-label', 'Удалить строку');
     bminus.textContent = '\u2212';
     row.appendChild(inp);
+    row.appendChild(pin);
     row.appendChild(btn);
     row.appendChild(bminus);
     namesEl.appendChild(row);
@@ -789,14 +813,36 @@ body{
     return out;
   }
 
-  /* точный вид полей «ИМЯ»: что в большом поле и каждая строка как есть,
+  /* точный вид полей: что в большом поле и каждая строка как есть,
      включая пустые — иначе после сохранения число полей не восстановить */
   function nameRows() {
-    var out = [], inputs = namesEl.querySelectorAll('.ninput');
-    for (var i = 0; i < inputs.length; i++) out.push(inputs[i].value || '');
+    var out = [], rows = namesEl.querySelectorAll('.nrow');
+    for (var i = 0; i < rows.length; i++) {
+      var ri = rows[i].querySelector('.ninput');
+      var pi = rows[i].querySelector('.nperson');
+      out.push({ role: ri ? (ri.value || '') : '',
+                 person: pi ? (pi.value || '') : '' });
+    }
     return out;
   }
-  function nameState() { return { head: cnumEl.value || '', rows: nameRows() }; }
+
+  /* кто за что отвечает: имя человека → его профессии.
+     Одно имя в двух строках = один человек с двумя профессиями. */
+  function personGroups() {
+    var out = {}, rows = nameRows();
+    for (var i = 0; i < rows.length; i++) {
+      var who = (rows[i].person || '').replace(/\s+/g, ' ').trim();
+      var role = (rows[i].role || '').replace(/\s+/g, ' ').trim();
+      if (!who) continue;
+      if (!out[who]) out[who] = [];
+      if (role) out[who].push(role);
+    }
+    return out;
+  }
+
+  function nameState() {
+    return { head: cnumEl.value || '', rows: nameRows(), people: personGroups() };
+  }
 
   /* заметки блоков: номер блока (с 1) → текст как есть; пустые не сохраняем */
   function noteValues() {
@@ -836,9 +882,28 @@ body{
   }
   namesEl.addEventListener('click', onMinus);
 
-  /* на странице всегда есть хотя бы одна строка с подсказкой «ИМЯ» */
+  /* подсветка: имя уже стоит в другой строке — это тот же человек */
+  function markShared() {
+    var rows = nameRows(), seen = {}, i, who;
+    for (i = 0; i < rows.length; i++) {
+      who = (rows[i].person || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      if (who) seen[who] = (seen[who] || 0) + 1;
+    }
+    var els = namesEl.querySelectorAll('.nperson');
+    for (i = 0; i < els.length; i++) {
+      who = (els[i].value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      var n = who ? (seen[who] || 0) : 0;
+      els[i].classList.toggle('shared', n > 1);
+      els[i].title = n > 1
+        ? 'Это имя уже есть ещё в ' + (n - 1) + ' строке — профессии склеятся в одного человека'
+        : 'Имя человека, который отвечает за эту профессию';
+    }
+  }
+  namesEl.addEventListener('input', markShared);
+
+  /* на странице всегда есть хотя бы одна строка с подсказкой «Профессия» */
   function ensureRow() {
-    if (!namesEl.querySelector('.ninput')) addRow('');
+    if (!namesEl.querySelector('.ninput')) addRow('', '');
   }
   ensureRow();
 
@@ -1134,14 +1199,21 @@ body{
     var savedNames = (data.names && typeof data.names === 'object') ? data.names : null;
     if (savedNames) {
       var head = String(savedNames.head == null ? '' : savedNames.head);
+      /* строки бывают двух видов: старые — просто название профессии,
+         новые — {role, person} (профессия + человек) */
       var rows = Array.isArray(savedNames.rows) ? savedNames.rows.map(function (v) {
-        return String(v == null ? '' : v);
+        if (v && typeof v === 'object') {
+          return { role: String(v.role == null ? '' : v.role),
+                   person: String(v.person == null ? '' : v.person) };
+        }
+        return { role: String(v == null ? '' : v), person: '' };
       }) : [];
       if (cnumEl.value !== head || JSON.stringify(rows) !== JSON.stringify(nameRows())) {
         cnumEl.value = head;
         while (namesEl.firstChild) namesEl.removeChild(namesEl.firstChild);
-        for (var r2 = 0; r2 < rows.length; r2++) addRow(rows[r2]);
+        for (var r2 = 0; r2 < rows.length; r2++) addRow(rows[r2].role, rows[r2].person);
         ensureRow();
+        markShared();
         changed = true;
       }
     } else {
@@ -1151,8 +1223,9 @@ body{
       if (JSON.stringify(want) !== JSON.stringify(creativeValues())) {
         cnumEl.value = want.length ? want[0] : '';
         while (namesEl.firstChild) namesEl.removeChild(namesEl.firstChild);
-        for (var k = 1; k < want.length; k++) addRow(want[k]);
+        for (var k = 1; k < want.length; k++) addRow(want[k], '');
         ensureRow();
+        markShared();
         changed = true;
       }
     }
@@ -1304,11 +1377,12 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-06-3 (minus + local copy)',
+    build: '2026-11-06-4 (person per row)',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
     applySnapshot: applySnapshot,
+    people: personGroups,
     set: function (id, text) { if (R[id]) { setText(id, text); readSheet(); layout(); } },
     setDone: function (id, on) { setDone(id, on); dirty = false; },
     rect: function (id) {
