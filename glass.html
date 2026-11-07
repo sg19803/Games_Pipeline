@@ -767,11 +767,7 @@ body{
 .langbar{position:absolute; right:28px; bottom:100%; margin-bottom:8px; display:flex; gap:4px; z-index:5}
 .lflag{position:relative; width:30px; height:20px; padding:0; border:0; background:none; cursor:pointer}
 .lflag svg{display:block; width:30px; height:20px}
-/* выбранный язык — тонкая белая черта под флагом */
-.lflag::after{content:""; position:absolute; left:0; right:0; bottom:-5px; height:2px; border-radius:1px; background:rgba(255,255,255,.9); opacity:0; transition:opacity .15s ease}
-.lflag.on::after{opacity:1}
-.lflag:hover::after{opacity:.45}
-.lflag.on:hover::after{opacity:1}
+
 .lflag:focus-visible{outline:2px solid #6aa8ff; outline-offset:2px}
 
 @media (hover: none), (pointer: coarse){
