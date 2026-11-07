@@ -2771,6 +2771,8 @@ body{
       who: { ru: 'Есть не у каждого исполнителя.', en: 'Not every team member has it.', es: 'No todos los miembros del equipo lo tienen.', uk: 'Є не в кожного виконавця.' },
       p: { ru: 'Бесплатно', en: 'Free', es: 'Gratis', uk: 'Безкоштовно' } }
   ];
+  /* версия скриншотов: меняется при замене картинок, чтобы браузер не показывал старые из кэша */
+  var SHOT_V = '20261107b';
   var PROG = {};
   PROGS.forEach(function (p) { PROG[p.id] = p; });
 
@@ -2966,8 +2968,9 @@ body{
       '<a class="ilink" href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(L(UI.site)) + ' ›</a>';
     if (p.shot) {
       infoEl.classList.add('has-shot');
-      infoEl.innerHTML = '<div class="itext">' + html + '</div><a class="ishot" href="shots/' + p.id + '.jpg" target="_blank" rel="noopener" title="' +
-        esc(p.name) + '"><img src="shots/' + p.id + '.jpg" alt="' + esc(p.name) + '" decoding="async"></a>';
+      var shotUrl = 'shots/' + p.id + '.jpg?v=' + SHOT_V;
+      infoEl.innerHTML = '<div class="itext">' + html + '</div><a class="ishot" href="' + shotUrl + '" target="_blank" rel="noopener" title="' +
+        esc(p.name) + '"><img src="' + shotUrl + '" alt="' + esc(p.name) + '" decoding="async"></a>';
     } else {
       infoEl.classList.remove('has-shot');
       infoEl.innerHTML = '<div class="itext">' + html + '</div>';
