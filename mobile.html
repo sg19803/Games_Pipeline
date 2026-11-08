@@ -233,6 +233,29 @@ body.bsOpen #scr-schema{padding-bottom:64vh}
 .bigIco .c{font-size:14px; line-height:18px; color:var(--gl-ink2)}
 
 @media (prefers-reduced-motion: reduce){ .bs{transition:none} }
+
+/* ---- стекло как у лупы: под панелями — копия страницы, по краям она гнётся и расходится на цвета ---- */
+.rf{background:transparent !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; isolation:isolate}
+.gv{position:absolute; inset:0; z-index:-1; border-radius:inherit; overflow:hidden; pointer-events:none; background:#050d11}
+.gch{position:absolute; inset:0; overflow:hidden; isolation:isolate; background:#050d11}
+.gch > i{position:absolute; inset:0; z-index:2; mix-blend-mode:multiply}
+.gR > i{background:#f00} .gG > i{background:#0f0} .gB > i{background:#00f}
+.gG, .gB{mix-blend-mode:screen}
+.gsrc{position:absolute; left:0; top:0; will-change:auto !important;
+  font-size:17px; line-height:25px; letter-spacing:-.022em; color:var(--gl-ink); text-align:left; font-weight:400;
+  background:
+    radial-gradient(700px 520px at 100% -10%, rgba(78,168,196,.85), rgba(40,110,135,.35) 45%, transparent 75%),
+    linear-gradient(160deg, #0b1c22 0%, #050d11 55%, #020507 100%);
+  background-size:100vw 100vh; background-repeat:no-repeat; background-color:#050d11}
+.gsrc *{transition:none !important; animation:none !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; will-change:auto !important}
+.gdim{position:absolute; inset:0; z-index:3; background:rgba(0,0,0,.16)}
+.gtint{position:absolute; inset:0; z-index:4; border-radius:inherit}
+.top .gtint{background:linear-gradient(180deg, rgba(5,13,17,.66), rgba(5,13,17,.36))}
+.tabs .gtint{background:linear-gradient(180deg, rgba(30,46,54,.46), rgba(12,24,30,.6)); box-shadow:inset 0 1px 0 rgba(255,255,255,.2), inset 0 0 0 1px rgba(255,255,255,.08)}
+.bs .gtint{background:
+    radial-gradient(900px 520px at 100% 0%, rgba(90,185,212,.26), rgba(90,185,212,.08) 45%, transparent 72%),
+    linear-gradient(180deg, rgba(206,210,214,.62) 0%, rgba(196,200,204,.74) 40%, rgba(185,189,194,.84) 100%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.55), inset -2px 2px 0 rgba(140,220,240,.45), inset 0 1px 0 rgba(255,255,255,.7)}
 </style>
 </head>
 <body>
@@ -1124,7 +1147,7 @@ body.bsOpen #scr-schema{padding-bottom:64vh}
   /* ---------- вкладки ---------- */
   var tabs = document.getElementById('tabs');
   function showScreen(name) {
-    var scr = document.querySelectorAll('.screen');
+    var scr = document.querySelectorAll('main > .screen');
     for (var i = 0; i < scr.length; i++) scr[i].classList.toggle('on', scr[i].id === 'scr-' + name);
     var tb = tabs.querySelectorAll('.tab');
     for (i = 0; i < tb.length; i++) tb[i].classList.toggle('on', tb[i].dataset.scr === name);
@@ -1173,6 +1196,156 @@ body.bsOpen #scr-schema{padding-bottom:64vh}
       renderAll();
     })
     .catch(function () {});
+
+  /* =====================================================================
+     СТЕКЛО КАК У ЛУПЫ. Верхняя строка, нижняя панель вкладок и выезжающая карточка
+     показывают то, что под ними: внутри каждой — копия страницы в трёх цветовых каналах.
+     У края стекла картинка гнётся (вдавленное стекло, как у лупы), а каналы гнутся
+     по-разному — поэтому по краю появляется лёгкая радуга. В середине картинка не тронута,
+     только чуть размыта. Копия обновляется, когда меняется страница (подсветка, галочки, язык),
+     а при прокрутке только сдвигается. ?glass=0 — выключить, чтобы сравнить.
+     ===================================================================== */
+  (function glassInit() {
+    if (/[?&]glass=0/.test(location.search)) return;
+    var NS = 'http://www.w3.org/2000/svg';
+    var defs = document.createElementNS(NS, 'svg');
+    defs.setAttribute('width', '0'); defs.setAttribute('height', '0'); defs.setAttribute('aria-hidden', 'true');
+    defs.style.position = 'absolute';
+    document.body.appendChild(defs);
+    /* band — ширина изгибающейся полосы у края; k — сила изгиба (отрицательная = вдавленное);
+       ext — какие края уходят за экран и не гнутся: [верх, право, низ, лево] */
+    var PANELS = [
+      { el: document.querySelector('.top'),  band: 16, k: -30, blur: 1.4, rad: 0,  ext: [1, 1, 0, 1] },
+      { el: document.getElementById('tabs'), band: 22, k: -40, blur: 1.6, rad: 24, ext: [0, 0, 0, 0] },
+      { el: document.getElementById('bs'),   band: 34, k: -48, blur: 2.5, rad: 26, ext: [0, 0, 1, 0], dim: true, onlyOn: true }
+    ];
+    var CH = [['gR', 1.12], ['gG', 1], ['gB', 0.88]];   /* каналы гнутся по-разному — радуга по краю */
+    var main = document.querySelector('main');
+    var uid = 0;
+
+    PANELS.forEach(function (p) {
+      p.id = 'gw' + (uid++);
+      var gv = document.createElement('div');
+      gv.className = 'gv';
+      p.srcs = []; p.chs = [];
+      CH.forEach(function (c, i) {
+        var ch = document.createElement('div');
+        ch.className = 'gch ' + c[0];
+        var src = document.createElement('div');
+        src.className = 'gsrc';
+        ch.appendChild(src); ch.appendChild(document.createElement('i'));
+        ch.style.filter = 'url(#' + p.id + '_' + i + ')';
+        gv.appendChild(ch);
+        p.srcs.push(src); p.chs.push(ch);
+      });
+      if (p.dim) { var d = document.createElement('div'); d.className = 'gdim'; gv.appendChild(d); }
+      var tint = document.createElement('div'); tint.className = 'gtint'; gv.appendChild(tint);
+      p.el.insertBefore(gv, p.el.firstChild);
+      p.el.classList.add('rf');
+      p.w = p.h = 0;
+    });
+
+    /* карта изгиба под размер панели: у края картинка тянется наружу, в середине — ноль */
+    function buildMap(p, w, h) {
+      p.w = w; p.h = h;
+      var S = 2, cw = Math.max(2, Math.ceil(w / S)), chh = Math.max(2, Math.ceil(h / S));
+      var cv = document.createElement('canvas'); cv.width = cw; cv.height = chh;
+      var g = cv.getContext('2d'), im = g.createImageData(cw, chh), D = im.data;
+      var BIG = 400, e = p.ext;
+      var x0 = -(e[3] ? BIG : 0), x1 = w + (e[1] ? BIG : 0), y0 = -(e[0] ? BIG : 0), y1 = h + (e[2] ? BIG : 0);
+      var cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, hx = (x1 - x0) / 2, hy = (y1 - y0) / 2, r = p.rad;
+      for (var yy = 0; yy < chh; yy++) for (var xx = 0; xx < cw; xx++) {
+        var px = (xx + .5) * S - cx, py = (yy + .5) * S - cy;
+        var qx = Math.abs(px) - (hx - r), qy = Math.abs(py) - (hy - r);
+        var mx = Math.max(qx, 0), my = Math.max(qy, 0), ml = Math.sqrt(mx * mx + my * my);
+        var sd = ml + Math.min(Math.max(qx, qy), 0) - r;            /* < 0 внутри панели */
+        var nx, ny;
+        if (qx > 0 && qy > 0) { nx = mx / ml; ny = my / ml; } else if (qx > qy) { nx = 1; ny = 0; } else { nx = 0; ny = 1; }
+        nx *= px < 0 ? -1 : 1; ny *= py < 0 ? -1 : 1;
+        var t = Math.max(0, 1 + sd / p.band), f = t * t * t;        /* 0 в глубине, 1 у самого края */
+        var k = 4 * (yy * cw + xx);
+        D[k] = Math.round(128 + 127 * f * nx); D[k + 1] = Math.round(128 + 127 * f * ny); D[k + 2] = 128; D[k + 3] = 255;
+      }
+      g.putImageData(im, 0, 0);
+      var url = cv.toDataURL('image/png'), h2 = '';
+      CH.forEach(function (c, i) {
+        h2 += '<filter id="' + p.id + '_' + i + '" x="0" y="0" width="1" height="1" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">' +
+          '<feImage href="' + url + '" xlink:href="' + url + '" x="0" y="0" width="' + w + '" height="' + h + '" preserveAspectRatio="none" result="m"/>' +
+          '<feGaussianBlur in="SourceGraphic" stdDeviation="' + p.blur + '" edgeMode="duplicate" result="b"/>' +
+          '<feDisplacementMap in="b" in2="m" scale="' + (p.k * c[1]).toFixed(1) + '" xChannelSelector="R" yChannelSelector="G"/></filter>';
+      });
+      var old = defs.querySelector('g[data-p="' + p.id + '"]');
+      if (old) old.remove();
+      var gEl = document.createElementNS(NS, 'g');
+      gEl.setAttribute('data-p', p.id);
+      gEl.innerHTML = h2.replace(/xlink:href="[^"]*"/g, '');    /* innerHTML в svg не знает xlink — ставим отдельно */
+      defs.appendChild(gEl);
+      var fe = gEl.querySelectorAll('feImage');
+      for (var i = 0; i < fe.length; i++) fe[i].setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', url);
+      /* Safari перечитывает фильтр только при смене ссылки */
+      p.chs.forEach(function (ch, i) { ch.style.filter = 'none'; void ch.offsetWidth; ch.style.filter = 'url(#' + p.id + '_' + i + ')'; });
+    }
+
+    /* копия активного экрана — в каждый канал каждой панели */
+    var SX = 0, SY = 0;
+    function strip(n) {
+      if (n.nodeType !== 1) return;
+      n.removeAttribute('id');
+      var all = n.querySelectorAll('[id]');
+      for (var i = 0; i < all.length; i++) all[i].removeAttribute('id');
+    }
+    function reclone() {
+      var scr = main.querySelector('.screen.on');
+      if (!scr) return;
+      var r = scr.getBoundingClientRect();
+      SX = r.left + window.scrollX; SY = r.top + window.scrollY;
+      var dw = document.documentElement.scrollWidth, dh = document.documentElement.scrollHeight;
+      PANELS.forEach(function (p) {
+        p.srcs.forEach(function (s) {
+          s.style.width = dw + 'px'; s.style.height = dh + 'px';
+          var c = scr.cloneNode(true);
+          strip(c);
+          c.style.cssText = 'position:absolute; margin:0; left:' + SX + 'px; top:' + SY + 'px; width:' + r.width + 'px';
+          s.textContent = '';
+          s.appendChild(c);
+        });
+      });
+      kick(60);
+    }
+    /* при прокрутке и движении карточки копия только сдвигается под стекло */
+    function place(p) {
+      if (p.onlyOn && !p.el.classList.contains('on') && !p.el.classList.contains('drag')) return;
+      var r = p.el.getBoundingClientRect();
+      var w = Math.round(r.width), h = Math.round(r.height);
+      if (w < 2 || h < 2) return;
+      if (Math.abs(w - p.w) > 1 || Math.abs(h - p.h) > 1) buildMap(p, w, h);
+      var x = -r.left - window.scrollX, y = -r.top - window.scrollY;
+      var tf = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
+      for (var i = 0; i < p.srcs.length; i++) p.srcs[i].style.transform = tf;
+    }
+    var until = 0, raf = 0;
+    function tick() {
+      raf = 0;
+      PANELS.forEach(place);
+      if (performance.now() < until) raf = requestAnimationFrame(tick);
+    }
+    function kick(ms) {
+      until = Math.max(until, performance.now() + ms);
+      if (!raf) raf = requestAnimationFrame(tick);
+    }
+    window.addEventListener('scroll', function () { kick(250); }, { passive: true });
+    document.addEventListener('touchstart', function () { kick(400); }, { passive: true });
+    document.addEventListener('touchmove', function () { kick(400); }, { passive: true });
+    document.addEventListener('click', function () { kick(900); });
+    var rt = 0;
+    window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(reclone, 120); });
+    var mt = 0;
+    new MutationObserver(function () { clearTimeout(mt); mt = setTimeout(reclone, 40); })
+      .observe(main, { subtree: true, childList: true, attributes: true, characterData: true });
+    new MutationObserver(function () { kick(700); }).observe(document.getElementById('bs'), { attributes: true, attributeFilter: ['class', 'style'] });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(reclone);
+    reclone();
+  })();
   window.__m = { show: showScreen, open: openSheet, close: closeSheet, lang: function () { return LANG; } };
 
 })();
