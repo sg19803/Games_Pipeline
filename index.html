@@ -427,7 +427,7 @@ body{
 
 /* ---- 4 – форма ---- */
 .headline{color:var(--gl-ink); border-bottom:1px solid rgba(255,255,255,.75); box-shadow:0 1px 0 rgba(98,106,114,.25); text-shadow:var(--gl-ts)}
-.headline::placeholder{color:#a3a7ac}
+.headline::placeholder{color:var(--gl-ink); opacity:1}   /* пустое поле показывает заголовок страницы тем же цветом, что и текст */
 .headline:focus{border-bottom-color:var(--gl-blue)}
 .ninput, .nperson, .ndtext, .note{
   background:var(--gl-tint); color:var(--gl-ink); border:0; box-shadow:var(--gl-e4);
@@ -880,7 +880,7 @@ body.tab-hidden .tabPoster{display:flex}
       <div class="langbar" id="langbar" role="group" aria-label="Language"></div>
       <div class="caustics" aria-hidden="true"><i></i><i></i></div>
       <div class="headrow">
-        <input class="headline" id="cnum" type="text" placeholder="Номер креатива" spellcheck="false" autocomplete="off" aria-label="Номер креатива">
+        <input class="headline" id="cnum" type="text" placeholder="Пайплайн ИИ-креативов" spellcheck="false" autocomplete="off" aria-label="Пайплайн ИИ-креативов">
         <button class="nplus" id="cplus" type="button" aria-label="Добавить ещё номер" title="Добавить ещё номер">+</button>
       </div>
       <div class="toprow">
@@ -3369,7 +3369,7 @@ body.tab-hidden .tabPoster{display:flex}
     document.title = L(UI.title);
     var st = document.querySelectorAll('[data-i18n]');
     for (var i = 0; i < st.length; i++) { var k = UI[st[i].dataset.i18n]; if (k) st[i].textContent = L(k); }
-    if (cnumEl) { cnumEl.placeholder = L(UI.cnum); cnumEl.setAttribute('aria-label', L(UI.cnum)); }
+    if (cnumEl) { cnumEl.placeholder = L(UI.title); cnumEl.setAttribute('aria-label', L(UI.title)); }
     var rows = namesEl.querySelectorAll('.nrow');
     for (i = 0; i < rows.length; i++) {
       var ri = rows[i].querySelector('.ninput'), pi = rows[i].querySelector('.nperson'), di = rows[i].querySelector('.ndtext');
@@ -3435,7 +3435,7 @@ body.tab-hidden .tabPoster{display:flex}
 
   /* отладочный крючок – для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-08-23 touch-lens-dock',
+    build: '2026-11-08-24 title-headline',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
