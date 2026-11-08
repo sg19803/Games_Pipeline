@@ -3399,7 +3399,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-08-10 lupa-gpu',
+    build: '2026-11-08-11 lupa-inerciya',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3581,14 +3581,35 @@ body{
       }
       lens.style.transform = 'translate3d(' + (lx - L / 2) + 'px,' + (ly - L / 2) + 'px,0)';
     }
+    /* инерция: линза догоняет стрелку пружиной (как физический предмет) — чуть отстаёт,
+       быстро доезжает и мягко останавливается. В линзе всегда то, что лежит под её центром */
+    var RESP = 0.16, ZETA = 0.82;                       /* время отклика пружины, с; демпфирование (1 — без перелёта) */
+    var OM = 2 * Math.PI / RESP, KS = OM * OM, CD = 2 * ZETA * OM;
+    var tx = 0, ty = 0, cx = 0, cy = 0, vx = 0, vy = 0, offY = 0, springT = 0, lastT = 0;
+    function step(now) {
+      springT = 0;
+      if (!shown) return;
+      var dt = Math.min(0.032, Math.max(0.001, (now - lastT) / 1000)); lastT = now;
+      vx += (KS * (tx - cx) - CD * vx) * dt; cx += vx * dt;
+      vy += (KS * (ty - cy) - CD * vy) * dt; cy += vy * dt;
+      px = cx; py = cy; lx = cx; ly = cy + offY;
+      place();
+      if (Math.abs(tx - cx) > 0.05 || Math.abs(ty - cy) > 0.05 || Math.abs(vx) > 0.5 || Math.abs(vy) > 0.5) springT = requestAnimationFrame(step);
+      else { cx = tx; cy = ty; vx = vy = 0; px = cx; py = cy; lx = cx; ly = cy + offY; place(); }
+    }
     function show(x, y, ax, ay) {
-      px = x; py = y; lx = ax; ly = ay;
-      if (!shown) { shown = true; lens.classList.add('on'); }
-      place();   /* сразу, без ожидания кадра: линза не отстаёт от стрелки */
+      tx = x; ty = y; offY = ay - y;
+      if (!shown) {
+        shown = true; lens.classList.add('on');
+        cx = x; cy = y; vx = vy = 0;                    /* появляется сразу под стрелкой */
+        px = cx; py = cy; lx = cx; ly = cy + offY; place();
+      }
+      if (!springT) { lastT = performance.now(); springT = requestAnimationFrame(step); }
     }
     function hide() {
       if (!shown) return;
       shown = false; lens.classList.remove('on');
+      if (springT) { cancelAnimationFrame(springT); springT = 0; }
     }
 
     if (!TOUCH) {
