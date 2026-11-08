@@ -314,7 +314,11 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
   transition:opacity .2s ease}
 .mlTip.off{opacity:0; pointer-events:none}
 /* ---- стекло как у лупы: под панелями — копия страницы, по краям она гнётся и расходится на цвета ---- */
-.rf{background:transparent !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; isolation:isolate}
+.rf{isolation:isolate}
+/* пока страница едет — под стеклом обычное размытие (его телефон считает сам и без задержки);
+   остановилась — через мгновение снова видно преломление, как у лупы */
+.gv{transition:opacity .22s ease}
+body.gmove .gv{opacity:0; transition:opacity .08s ease}
 .gv{position:absolute; inset:0; z-index:-1; border-radius:inherit; overflow:hidden; pointer-events:none; background:#050d11}
 .gch{position:absolute; inset:0; overflow:hidden; isolation:isolate; background:#050d11}
 .gch > i{position:absolute; inset:0; z-index:2; mix-blend-mode:multiply}
@@ -1505,16 +1509,23 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
       until = Math.max(until, performance.now() + ms);
       if (!raf) raf = requestAnimationFrame(tick);
     }
-    window.addEventListener('scroll', function () { kick(250); }, { passive: true });
-    document.addEventListener('touchstart', function () { kick(400); }, { passive: true });
-    document.addEventListener('touchmove', function () { kick(400); }, { passive: true });
-    document.addEventListener('click', function () { kick(900); });
+    var mvT = 0, body = document.body;
+    function moving(ms) {
+      if (!body.classList.contains('gmove')) body.classList.add('gmove');
+      clearTimeout(mvT);
+      mvT = setTimeout(function () {
+        PANELS.forEach(place);
+        requestAnimationFrame(function () { body.classList.remove('gmove'); });
+      }, ms || 160);
+    }
+    window.addEventListener('scroll', function () { moving(160); }, { passive: true });
+    document.addEventListener('touchmove', function () { moving(200); }, { passive: true });
     var rt = 0;
     window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(reclone, 120); });
     var mt = 0;
     new MutationObserver(function () { clearTimeout(mt); mt = setTimeout(reclone, 40); })
       .observe(main, { subtree: true, childList: true, attributes: true, characterData: true });
-    new MutationObserver(function () { kick(700); }).observe(document.getElementById('bs'), { attributes: true, attributeFilter: ['class', 'style'] });
+    new MutationObserver(function () { moving(480); }).observe(document.getElementById('bs'), { attributes: true, attributeFilter: ['class', 'style'] });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(reclone);
     reclone();
   })();
