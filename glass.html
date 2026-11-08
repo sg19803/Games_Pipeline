@@ -829,7 +829,7 @@ body{
 /* в копии внутри лупы — без размытия фона: на вид почти то же, а считать в разы легче */
 .lensClone, .lensClone *{-webkit-backdrop-filter:none !important; backdrop-filter:none !important}
 .lensClone .pulse, .lensClone .caustics, .lensClone .langbar{display:none !important}
-.lensClone{will-change:transform}
+.lensClone{will-change:auto !important}   /* не отдельный слой: иначе Chrome рисует копию мимо фильтра искажения и оно пропадает при движении */
 /* мышка над листом остаётся стрелкой, в том числе над полями текста; во время правки — текстовый курсор */
 #sheet, #sheet input, #sheet textarea, #sheet [contenteditable]{cursor:default}
 #sheet input:focus, #sheet textarea:focus, #sheet [contenteditable="true"]:focus{cursor:text}
@@ -3402,7 +3402,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-41',
+    build: '2026-11-07-3 glass-trial-42',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3602,7 +3602,7 @@ body{
       var u = (px - SR.left) / SS, v = (py - SR.top) / SS;   /* точка под курсором в координатах листа */
       for (var c = 0; c < 3; c++) {
         var Z = SS * MAG * SCALE[c];
-        clones[c].style.transform = 'translate3d(' + (L / 2 - u * Z) + 'px,' + (L / 2 - v * Z) + 'px,0) scale(' + Z + ')';
+        clones[c].style.transform = 'translate(' + (L / 2 - u * Z) + 'px,' + (L / 2 - v * Z) + 'px) scale(' + Z + ')';
       }
       lens.style.transform = 'translate3d(' + (lx - L / 2) + 'px,' + (ly - L / 2) + 'px,0)';
     }
