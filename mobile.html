@@ -84,7 +84,8 @@ button{font:inherit; color:inherit; border:0; background:none; padding:0; cursor
 
 .screen{display:none; padding:12px 12px calc(110px + var(--safeB))}
 .screen.on{display:block}
-.hint{color:#9fb3bb; font-size:14px; line-height:19px; letter-spacing:-.016em; margin:4px 6px 14px}
+.hint{color:#9fb3bb; font-size:14px; line-height:19px; letter-spacing:-.016em; margin:4px 6px 14px; padding-right:78px; min-height:96px}
+/* справа от подсказки — место стоянки лупы, текст под неё не заходит */
 
 /* ---- лист схемы: этапы сверху вниз ---- */
 .schema{position:relative}
@@ -1614,7 +1615,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
 
     /* положение: центр линзы (cx, cy) в окне, масштаб линзы sc (маленькая ↔ большая) */
     var cx = 0, cy = 0, sc = SMALL, vx = 0, vy = 0, vs = 0, tx = 0, ty = 0, ts = SMALL, big = false, raf = 0, lastT = 0;
-    function dock() { var hd = document.querySelector('.top').getBoundingClientRect(); return { x: window.innerWidth - 36, y: hd.bottom + 38 }; }
+    function dock() { var hd = document.querySelector('.top').getBoundingClientRect(); return { x: window.innerWidth - 42, y: hd.bottom + 44 }; }
     function place() {
       var u = cx + window.scrollX, v = cy + window.scrollY;
       for (var c = 0; c < 3; c++) {
@@ -1700,13 +1701,17 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     });
     /* на других вкладках и под карточкой лупа не нужна */
     var tabsEl = document.getElementById('tabs');
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(reclone);
+    /* шапка могла стать выше (заголовок в две строки) — ставим маленькую лупу заново под неё */
+    function redock() { if (!big) { var d = dock(); tx = d.x; ty = d.y; go(); } }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { reclone(); redock(); });
+    document.getElementById('flags').addEventListener('click', function () { setTimeout(redock, 30); });
+    setTimeout(redock, 600);
     reclone(); place();
     window.__lens = { grow: grow, dock: toDock };
   })();
 
   /* свежая версия: страница хранится в кэше телефона до 10 минут – сверяемся с сервером и один раз перезагружаемся */
-  var MBUILD = 'm-2026-11-08-9';
+  var MBUILD = 'm-2026-11-08-10';
   (function freshCheck() {
     try {
       fetch(location.pathname + '?nc=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
