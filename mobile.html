@@ -82,7 +82,9 @@ button{font:inherit; color:inherit; border:0; background:none; padding:0; cursor
 .flags svg{display:block; width:24px; height:16px}
 .flags button:not(.on){opacity:.55}
 
-.screen{display:none; padding:12px 12px calc(110px + var(--safeB))}
+.screen{display:none; padding:12px 12px 8px}
+/* внизу — простая ссылка на полную версию для компьютера */
+.toDesk{display:block; width:max-content; margin:6px auto calc(104px + var(--safeB)); padding:10px 12px; font-size:14px; line-height:18px; color:#7fb8ff; text-decoration:none; letter-spacing:-.01em}
 .screen.on{display:block}
 .hint{color:#9fb3bb; font-size:14px; line-height:19px; letter-spacing:-.016em; margin:4px 6px 14px; padding-right:78px; min-height:96px}
 /* справа от подсказки — место стоянки лупы, текст под неё не заходит */
@@ -353,6 +355,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   <section class="screen" id="scr-team"><p class="hint" id="hintTeam"></p><div class="panel" id="team"></div></section>
   <section class="screen" id="scr-progs"><div class="panel" id="progs"></div></section>
   <section class="screen" id="scr-folder"><p class="hint" id="hintFolder"></p><div class="panel" id="folder"></div></section>
+  <a class="toDesk" id="toDesk" href="./"></a>
 </main>
 
 <nav class="tabs" id="tabs">
@@ -1358,6 +1361,9 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     document.getElementById('hintSchema').textContent = L(MUI.hintSchema);
     document.getElementById('hintTeam').textContent = L(MUI.hintTeam);
     document.getElementById('hintFolder').textContent = L(MUI.hintFolder);
+    var td = document.getElementById('toDesk');
+    td.textContent = L({ ru: 'Десктоп-версия', en: 'Desktop version', es: 'Versión de escritorio', uk: 'Десктоп-версія' });
+    td.href = './?lang=' + LANG;
     calcHues();
     renderSchema(); renderTeam(); renderProgs(); renderFolder();
     var fb = document.querySelectorAll('#flags button');
@@ -1711,7 +1717,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   })();
 
   /* свежая версия: страница хранится в кэше телефона до 10 минут – сверяемся с сервером и один раз перезагружаемся */
-  var MBUILD = 'm-2026-11-08-11';
+  var MBUILD = 'm-2026-11-08-12';
   (function freshCheck() {
     try {
       fetch(location.pathname + '?nc=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
