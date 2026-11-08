@@ -3402,7 +3402,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-40',
+    build: '2026-11-07-3 glass-trial-41',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3449,7 +3449,7 @@ body{
     var L = TOUCH ? 170 : 220;            /* диаметр линзы, px экрана */
     var MAG = TOUCH ? 3 : 2.2;            /* увеличение относительно того, что видно на экране */
     var SPLIT = TOUCH ? 0.02 : 0.025;     /* расхождение каналов: на краю ≈ SPLIT × радиус линзы (≈ 2–3 px) */
-    var BULGE = TOUCH ? -50 : -70;       /* вдавленное стекло: к краям изображение растягивается и гнётся (на краю до ~75 px) */
+    var BULGE = TOUCH ? -25 : -35;       /* вдавленное стекло: к краям изображение растягивается и гнётся (на краю до ~75 px) */
 
     /* карта смещений для вдавленного стекла: центр не трогаем, к краю — резко сильнее */
     var cv = document.createElement('canvas');
@@ -3610,16 +3610,12 @@ body{
        быстро доезжает и мягко останавливается. В линзе всегда то, что лежит под её центром */
     var RESP = 0.38, ZETA = 0.85;                       /* время отклика пружины, с; демпфирование (1 — без перелёта) */
     var OM = 2 * Math.PI / RESP, KS = OM * OM, CD = 2 * ZETA * OM;
-    var tx = 0, ty = 0, cx = 0, cy = 0, vx = 0, vy = 0, offY = 0, springT = 0, lastT = 0, slow = [], warpOn = true;
+    var tx = 0, ty = 0, cx = 0, cy = 0, vx = 0, vy = 0, offY = 0, springT = 0, lastT = 0;
     function step(now) {
       springT = 0;
       if (!shown) return;
       var raw = now - lastT;
       var dt = Math.min(0.032, Math.max(0.001, raw / 1000)); lastT = now;
-      /* если компьютер не тянет искажение (кадр дольше ~24 мс подряд) — выключаем только его, лупа остаётся */
-      if (raw > 0 && raw < 200) { slow.push(raw); if (slow.length > 24) slow.shift();
-        if (slow.length === 24 && warpOn) { var sum = 0; for (var q = 0; q < 24; q++) sum += slow[q];
-          if (sum / 24 > 45) { warpOn = false; lens.firstChild.classList.remove('warp'); } } }
       /* пружину считаем мелкими шагами по 4 мс: при редких кадрах (тяжёлая страница, слабое железо)
          один большой шаг раскачивал её — лупа улетала и прыгала */
       if (raw > 150) { cx = tx; cy = ty; vx = vy = 0; }
