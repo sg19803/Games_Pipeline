@@ -3,6 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Как рождается рекламное видео для игры: от брифа до выгрузки — роли, этапы, программы и папки проекта.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Пайплайн ИИ-креативов">
+<meta property="og:description" content="Как рождается рекламное видео для игры: от брифа до выгрузки — роли, этапы, программы и папки проекта.">
+<meta property="og:url" content="https://sg19803.github.io/Games_Pipeline/">
+<meta property="og:image" content="https://sg19803.github.io/Games_Pipeline/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://sg19803.github.io/Games_Pipeline/og-image.png">
 <script>/* iPhone/iPad: без автоувеличения при касании поля (жест масштаба пальцами при этом работает) */
 if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1)){document.querySelector('meta[name=viewport]').setAttribute("content","width=device-width, initial-scale=1, maximum-scale=1")}</script>
 <title>Пайплайн ИИ-креативов — проба: стекло</title>
@@ -842,6 +852,24 @@ body{
 .lensClone .node:not(.diamondWrap), .lensClone .frame, .lensClone .note, .lensClone .spanel,
 .lensClone .ninput, .lensClone .nperson, .lensClone .ndbtn, .lensClone .diamondInner, .lensClone .smiley{
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.55), 0 1px 3px rgba(40,50,60,.28) !important}
+
+/* ---- картинка для превью вкладки: пока вкладка в фоне, страница показывает крупную надпись,
+   и браузер берёт для подсказки над вкладкой её, а не мелкий снимок схемы ---- */
+.tabPoster{position:fixed; inset:0; z-index:300; display:none; align-items:center; justify-content:center; padding:5vw;
+  background:
+    radial-gradient(1100px 760px at 92% -8%, rgba(78,168,196,.85), rgba(40,110,135,.35) 45%, transparent 75%),
+    radial-gradient(900px 640px at 8% 112%, rgba(20,70,88,.55), transparent 65%),
+    linear-gradient(160deg, #0b1c22 0%, #050d11 55%, #020507 100%)}
+body.tab-hidden .tabPoster{display:flex}
+.tpCard{width:min(1400px, 92vw); padding:5vw 6vw; border-radius:clamp(20px, 3vw, 44px);
+  background:
+    radial-gradient(900px 520px at 100% 0%, rgba(90,185,212,.30), rgba(90,185,212,.10) 45%, transparent 72%),
+    linear-gradient(180deg, #ced2d6 0%, #c4c8cc 55%, #b9bdc2 100%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.6), inset -2px 2px 0 rgba(140,220,240,.45), 0 10px 20px rgba(0,0,0,.35), 0 40px 90px rgba(0,0,0,.55)}
+.tpKick{font-size:clamp(14px, 1.6vw, 26px); line-height:1.2; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:#2a6f86; margin:0 0 1.2vw}
+.tpTitle{font-size:clamp(44px, 8.4vw, 150px); line-height:.98; font-weight:700; letter-spacing:-.035em; color:#1d2328; margin:0}
+.tpSub{font-size:clamp(16px, 2.1vw, 36px); line-height:1.3; letter-spacing:-.016em; color:#3d464e; margin:2vw 0 0; max-width:42ch}
+.tpFoot{margin-top:3vw; font-size:clamp(12px, 1.3vw, 22px); color:#5b656e}
 </style>
 </head>
 <body>
@@ -3409,7 +3437,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-44',
+    build: '2026-11-07-3 glass-trial-45',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3687,6 +3715,33 @@ body{
     document.addEventListener('touchend', end, { passive: true });
     document.addEventListener('touchcancel', end, { passive: true });
     document.addEventListener('contextmenu', function (e) { if (active) e.preventDefault(); });
+  })();
+
+  /* ---- превью вкладки: вкладка ушла в фон — показываем крупную надпись на языке страницы ---- */
+  (function tabPoster() {
+    var POSTER = {
+      kick:  { ru: 'Схема производства', en: 'Production map', es: 'Mapa de producción', uk: 'Схема виробництва' },
+      sub:   { ru: 'Как рождается рекламное видео для игры: от брифа до выгрузки — роли, этапы, программы и папки проекта',
+               en: 'How a game ad video is made: from brief to delivery — roles, stages, software and project folders',
+               es: 'Cómo nace un vídeo publicitario para un juego: del brief a la entrega — roles, etapas, programas y carpetas del proyecto',
+               uk: 'Як народжується рекламне відео для гри: від брифу до вивантаження — ролі, етапи, програми й папки проєкту' }
+    };
+    var el = document.createElement('div');
+    el.className = 'tabPoster';
+    el.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(el);
+    function fill() {
+      el.innerHTML = '<div class="tpCard"><p class="tpKick">' + esc(L(POSTER.kick)) + '</p>' +
+        '<h1 class="tpTitle">' + esc(L(UI.title)).replace(/-/g, '\u2011') + '</h1>' +   /* неразрывный дефис: «ИИ-креативов» не рвётся */
+        '<p class="tpSub">' + esc(L(POSTER.sub)) + '</p>' +
+        '<p class="tpFoot">© 2026 Serhii Horbunov · sergiovida.com</p></div>';
+    }
+    function sync() {
+      if (document.visibilityState === 'hidden') { fill(); document.body.classList.add('tab-hidden'); }
+      else document.body.classList.remove('tab-hidden');
+    }
+    document.addEventListener('visibilitychange', sync);
+    window.__tabPoster = function (on) { fill(); document.body.classList.toggle('tab-hidden', !!on); };
   })();
 
   /* браузер держит копию страницы до 10 минут (так настроен GitHub Pages).
