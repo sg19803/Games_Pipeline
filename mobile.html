@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#071318">
-<meta name="description" content="Как рождается рекламное видео для игры: от брифа до выгрузки — роли, этапы, программы и папки проекта.">
+<meta name="description" content="Как рождается рекламное видео для игры: от брифа до выгрузки – роли, этапы, программы и папки проекта.">
 <meta property="og:title" content="Пайплайн ИИ-креативов">
 <meta property="og:image" content="https://sg19803.github.io/Games_Pipeline/og-image.png">
 <title>Пайплайн ИИ-креативов</title>
@@ -60,7 +60,7 @@ body{
   background:#050d11;
   overscroll-behavior-y:none;
 }
-/* фон стоит на месте при прокрутке (на iPhone обычный «fixed» у фона не работает — поэтому отдельный слой) */
+/* фон стоит на месте при прокрутке (на iPhone обычный «fixed» у фона не работает – поэтому отдельный слой) */
 body::before{content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
   background:
     radial-gradient(700px 520px at 100% -10%, rgba(78,168,196,.85), rgba(40,110,135,.35) 45%, transparent 75%),
@@ -104,7 +104,7 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
 .join path{fill:none; stroke:var(--gl-blue); stroke-width:1.5}
 .join .hd{fill:var(--gl-blue); stroke:none}
 
-/* карточка шага — то же стекло, что на основной странице */
+/* карточка шага – то же стекло, что на основной странице */
 .step{position:relative; min-height:58px; border-radius:14px; padding:10px 12px 9px 28px;
   display:flex; flex-direction:column; justify-content:center; text-align:left;
   background:var(--tintbg, none), var(--gl-tint); box-shadow:var(--gl-e4);
@@ -128,12 +128,12 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
 .step.key{align-items:center; padding-left:12px}
 .step.key .w{justify-content:center}
 
-/* выбранный шаг и связанные с ним — цветом исполнителя */
+/* выбранный шаг и связанные с ним – цветом исполнителя */
 .step.sel{box-shadow:var(--gl-e5), 0 0 0 2px hsla(var(--ph),70%,48%,.85), 0 0 26px hsla(var(--ph),90%,60%,.7)}
 .step.rel{box-shadow:var(--gl-e4), 0 0 0 1.5px hsla(var(--ph),70%,48%,.6), 0 0 16px hsla(var(--ph),90%,60%,.45)}
 .step.flow{box-shadow:var(--gl-e4), 0 0 0 1.5px rgba(63,111,174,.55), 0 0 14px rgba(90,160,255,.35)}
 
-/* подложки опорных кадров — как на основной: персиковая и голубая */
+/* подложки опорных кадров – как на основной: персиковая и голубая */
 .sub{margin-top:8px; border-radius:16px; padding:10px 8px 8px}
 .sub.peach{background:linear-gradient(180deg, rgba(200,140,80,.13), rgba(200,140,80,.06)); box-shadow:var(--gl-rimThin)}
 .sub.blue{background:linear-gradient(180deg, rgba(90,140,220,.14), rgba(90,140,220,.06)); box-shadow:var(--gl-rimThin)}
@@ -281,7 +281,7 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
 .doneBtn.on{background:rgba(55,175,100,.22); color:#1b5e36}
 .doneBtn.on svg{background:#2fae5c; box-shadow:none} .doneBtn.on svg path{stroke:#fff}
 
-/* ---- лупа: маленькая стоит сверху справа; коснулся — выросла, тащишь пальцем; красный крестик — обратно ---- */
+/* ---- лупа: маленькая стоит сверху справа; коснулся – выросла, тащишь пальцем; красный крестик – обратно ---- */
 .mlens{position:fixed; left:0; top:0; z-index:35; width:var(--L); height:var(--L); margin:calc(var(--L) / -2) 0 0 calc(var(--L) / -2);
   border-radius:50%; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; will-change:transform}
 .mlView{position:absolute; inset:0; border-radius:50%; overflow:hidden; isolation:isolate; background:#050d11; filter:url(#mLensWarp);
@@ -315,10 +315,10 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
   background:radial-gradient(circle at 35% 25%, #ff7a70, #e0443c 60%, #c4362e); box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 3px 10px rgba(0,0,0,.35);
   transition:opacity .2s ease}
 .mlTip.off{opacity:0; pointer-events:none}
-/* ---- стекло как у лупы: под панелями — копия страницы, по краям она гнётся и расходится на цвета ---- */
+/* ---- стекло как у лупы: под панелями – копия страницы, по краям она гнётся и расходится на цвета ---- */
 .rf{isolation:isolate}
-/* пока страница едет — под стеклом обычное размытие (его телефон считает сам и без задержки);
-   остановилась — через мгновение снова видно преломление, как у лупы */
+/* пока страница едет – под стеклом обычное размытие (его телефон считает сам и без задержки);
+   остановилась – через мгновение снова видно преломление, как у лупы */
 .gv{transition:opacity .22s ease}
 body.gmove .gv{opacity:0; transition:opacity .08s ease}
 .gv{position:absolute; inset:0; z-index:-1; border-radius:inherit; overflow:hidden; pointer-events:none; background:#050d11}
@@ -433,8 +433,8 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     free:     { ru: 'бесплатно', en: 'free', es: 'gratis', uk: 'безкоштовно' },
     site:     { ru: 'Официальный сайт', en: 'Official site', es: 'Sitio oficial', uk: 'Офіційний сайт' },
     used:     { ru: 'В пайплайне:', en: 'In the pipeline:', es: 'En el pipeline:', uk: 'У пайплайні:' },
-    guest:    { ru: 'Только просмотр — менять и сохранять может владелец', en: 'View only — only the owner can edit and save',
-                es: 'Solo lectura: editar y guardar solo puede el propietario', uk: 'Лише перегляд — змінювати й зберігати може власник' },
+    guest:    { ru: 'Только просмотр – менять и сохранять может владелец', en: 'View only – only the owner can edit and save',
+                es: 'Solo lectura: editar y guardar solo puede el propietario', uk: 'Лише перегляд – змінювати й зберігати може власник' },
     save:     { ru: 'Сохранить', en: 'Save', es: 'Guardar', uk: 'Зберегти' },
     key:      { ru: 'Ключ', en: 'Key', es: 'Clave', uk: 'Ключ' },
     loaded:   { ru: 'Загружены сохранённые тексты', en: 'Saved texts loaded', es: 'Textos guardados cargados', uk: 'Завантажено збережені тексти' },
@@ -442,8 +442,8 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   };
 
   /* ---------- перевод текстов схемы, профессий, обязанностей и заметок ----------
-     Ключ — русский текст (регистр, «ё», дефисы и точка в конце не важны).
-     Нет перевода — показывается русский текст как есть. */
+     Ключ – русский текст (регистр, «ё», дефисы и точка в конце не важны).
+     Нет перевода – показывается русский текст как есть. */
   var TX = [
     { ru: 'ВХОД ЗАДАЧИ', en: 'TASK INPUT', es: 'ENTRADA DE TAREA', uk: 'ВХІД ЗАДАЧІ' },
     { ru: 'Получение сырого брифа', en: 'Raw brief intake', es: 'Recepción del brief inicial', uk: 'Отримання сирого брифу' },
@@ -499,15 +499,15 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     { ru: 'Собирает всю информацию для сценария (недостающее запрашивает у трафик-менеджера и у контент-менеджера), составляет точное задание и сценарий, принимает решения на препродакшне и продакшне, отвечает за аниматик перед утверждением; по оценке ответственного решает, что править и на какой этап вернуться, сам вносит правки',
       en: 'Gathers everything needed for the script (asks the traffic manager and the content manager for anything missing), writes the precise task and the script, makes the calls in pre-production and production, owns the animatic before approval; based on the task owner’s verdict decides what to fix and which stage to return to, and makes the fixes himself',
       es: 'Reúne toda la información para el guion (lo que falta se lo pide al traffic manager y al content manager), redacta la tarea precisa y el guion, decide en preproducción y producción, responde del animatic antes de la aprobación; según la valoración del responsable decide qué corregir y a qué etapa volver, y hace él mismo las correcciones',
-      uk: 'Збирає всю інформацію для сценарію (чого бракує — запитує в трафік-менеджера й контент-менеджера), складає точне завдання та сценарій, ухвалює рішення на препродакшні й продакшні, відповідає за аніматик перед затвердженням; за оцінкою відповідального вирішує, що правити і на який етап повернутися, сам вносить правки' },
+      uk: 'Збирає всю інформацію для сценарію (чого бракує – запитує в трафік-менеджера й контент-менеджера), складає точне завдання та сценарій, ухвалює рішення на препродакшні й продакшні, відповідає за аніматик перед затвердженням; за оцінкою відповідального вирішує, що правити і на який етап повернутися, сам вносить правки' },
     { ru: 'Монтирует аниматик и финальное видео, делает цветокоррекцию, делает ресайзы, рендерит и выгружает их на Google Диск',
       en: 'Edits the animatic and the final video, does color grading and resizes, renders them and uploads to Google Drive',
       es: 'Monta el animatic y el vídeo final, hace el etalonaje y los formatos, los renderiza y los sube a Google Drive',
       uk: 'Монтує аніматик і фінальне відео, робить кольорокорекцію й ресайзи, рендерить і вивантажує їх на Google Диск' },
-    { ru: 'Смотрит работу на обоих утверждениях и говорит, нравится или нет, — внутренней кухни не касается; отвечает за соответствие результата брифу задачи',
+    { ru: 'Смотрит работу на обоих утверждениях и говорит, нравится или нет, – внутренней кухни не касается; отвечает за соответствие результата брифу задачи',
       en: 'Reviews the work at both approvals and says whether he likes it or not, without going into the internal process; responsible for the result matching the task brief',
       es: 'Revisa el trabajo en las dos aprobaciones y dice si le gusta o no, sin entrar en la cocina interna; responde de que el resultado cumpla el brief de la tarea',
-      uk: 'Дивиться роботу на обох затвердженнях і каже, подобається чи ні, — внутрішньої кухні не торкається; відповідає за відповідність результату брифу задачі' },
+      uk: 'Дивиться роботу на обох затвердженнях і каже, подобається чи ні, – внутрішньої кухні не торкається; відповідає за відповідність результату брифу задачі' },
     { ru: 'Сводит в кадре ИИ-генерацию, геймплей и графику, убирает артефакты ИИ',
       en: 'Combines AI generation, gameplay and graphics in the shot, removes AI artifacts',
       es: 'Integra en el plano la generación de IA, el gameplay y los gráficos, y elimina los artefactos de la IA',
@@ -521,10 +521,10 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
       es: 'Busca materiales, descarga vídeos, imágenes y referencias',
       uk: 'Шукає матеріали, завантажує відео, картинки й референси' },
     /* заметки блоков */
-    { ru: 'Задача приходит от заказчика (в Asana). Её ведёт трафик-менеджер: он запрашивает и собирает все входные данные — что сейчас популярно, примеры видео, которое нужно сделать. Результат: сырой, но опирающийся на данные бриф.',
-      en: 'The task comes from the client (in Asana). The traffic manager runs it: requests and gathers all inputs — what is trending now, examples of the video to be made. Result: a rough but data-backed brief.',
+    { ru: 'Задача приходит от заказчика (в Asana). Её ведёт трафик-менеджер: он запрашивает и собирает все входные данные – что сейчас популярно, примеры видео, которое нужно сделать. Результат: сырой, но опирающийся на данные бриф.',
+      en: 'The task comes from the client (in Asana). The traffic manager runs it: requests and gathers all inputs – what is trending now, examples of the video to be made. Result: a rough but data-backed brief.',
       es: 'La tarea llega del cliente (en Asana). La lleva el traffic manager: solicita y reúne todos los datos de entrada: qué es tendencia ahora y ejemplos del vídeo que hay que hacer. Resultado: un brief en bruto, pero basado en datos.',
-      uk: 'Задача надходить від замовника (в Asana). Її веде трафік-менеджер: він запитує та збирає всі вхідні дані — що зараз популярне, приклади відео, яке треба зробити. Результат: сирий, але заснований на даних бриф.' },
+      uk: 'Задача надходить від замовника (в Asana). Її веде трафік-менеджер: він запитує та збирає всі вхідні дані – що зараз популярне, приклади відео, яке треба зробити. Результат: сирий, але заснований на даних бриф.' },
     { ru: 'На этом этапе становятся ясны структура будущего видео, его внешний вид и звук. Приходит общее понимание того, как это будет выглядеть.',
       en: 'At this stage the structure of the future video, its look and its sound become clear. Everyone gets a shared picture of how it will look.',
       es: 'En esta etapa quedan claros la estructura del futuro vídeo, su aspecto y su sonido. Surge una idea común de cómo se verá.',
@@ -560,8 +560,8 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   }
 
   /* ---------- папка проекта: дерево шаблона ----------
-     цвет папки: y — жёлтая (обычная), t — бирюзовая, r — красная, b — синяя,
-     c — голубая, g — зелёная, d — тёмная, l — светлая */
+     цвет папки: y – жёлтая (обычная), t – бирюзовая, r – красная, b – синяя,
+     c – голубая, g – зелёная, d – тёмная, l – светлая */
   var FOLDER_COL = {
     y: ['#d99a1e', '#ffc83d'], t: ['#14877f', '#36c2b6'], r: ['#b3302a', '#ea5a4e'], b: ['#2a5fc0', '#4f8ff0'],
     c: ['#3a96d0', '#79c6f4'], g: ['#26833f', '#4cbe68'], d: ['#3d4249', '#666d76'], l: ['#aab0b7', '#e3e7ea']
@@ -587,7 +587,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   ]];
   var OPEN0 = { '': 1, '003_Sources': 1, '004_Project': 1 };
 
-  /* подсказки к папкам — черновик, тексты потом заменишь */
+  /* подсказки к папкам – черновик, тексты потом заменишь */
   var FTIP = {
     '': { ru: 'Шаблон папки проекта: копируется под каждый новый креатив', en: 'Project folder template: copied for every new creative', es: 'Plantilla de carpeta del proyecto: se copia para cada creatividad nueva', uk: 'Шаблон папки проєкту: копіюється під кожен новий креатив' },
     '001_Brief': { ru: 'Бриф заказчика и точное задание', en: 'Client brief and the precise task', es: 'Brief del cliente y la tarea precisa', uk: 'Бриф замовника й точне завдання' },
@@ -615,7 +615,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     '006_OUT/Image': { ru: 'Картинки и превью', en: 'Images and thumbnails', es: 'Imágenes y miniaturas', uk: 'Картинки й прев’ю' },
     '006_OUT/Video': { ru: 'Финальные видео и ресайзы', en: 'Final videos and resizes', es: 'Vídeos finales y formatos', uk: 'Фінальні відео й ресайзи' },
     '007_Tutorials': { ru: 'Инструкции и уроки для команды', en: 'Guides and tutorials for the team', es: 'Guías y tutoriales para el equipo', uk: 'Інструкції й уроки для команди' },
-    '008_TEMP': { ru: 'Временные файлы — можно чистить', en: 'Temporary files — safe to clean', es: 'Archivos temporales: se pueden borrar', uk: 'Тимчасові файли — можна чистити' },
+    '008_TEMP': { ru: 'Временные файлы – можно чистить', en: 'Temporary files – safe to clean', es: 'Archivos temporales: se pueden borrar', uk: 'Тимчасові файли – можна чистити' },
     '003_Sources/Video/Gameplay': { ru: 'Записи геймплея', en: 'Gameplay recordings', es: 'Grabaciones de gameplay', uk: 'Записи геймплею' },
     'Download': { ru: 'Скачанное из интернета', en: 'Downloaded from the internet', es: 'Descargado de internet', uk: 'Завантажене з інтернету' },
     'Generate': { ru: 'Сгенерированное в ИИ', en: 'Generated with AI', es: 'Generado con IA', uk: 'Згенероване в ШІ' }
@@ -625,51 +625,51 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   var PROGS = [
     { id: 'bluestacks', shot: true, name: 'BlueStacks', url: 'https://www.bluestacks.com',
       cat: { ru: 'Эмулятор Android', en: 'Android emulator', es: 'Emulador de Android', uk: 'Емулятор Android' },
-      d: { ru: 'Запускает мобильные игры на компьютере — геймплей удобно записывать в высоком качестве.', en: 'Runs mobile games on a computer, so gameplay can be recorded in high quality.', es: 'Ejecuta juegos móviles en el ordenador, así el gameplay se graba en alta calidad.', uk: 'Запускає мобільні ігри на комп’ютері — геймплей зручно записувати у високій якості.' },
+      d: { ru: 'Запускает мобильные игры на компьютере – геймплей удобно записывать в высоком качестве.', en: 'Runs mobile games on a computer, so gameplay can be recorded in high quality.', es: 'Ejecuta juegos móviles en el ordenador, así el gameplay se graba en alta calidad.', uk: 'Запускає мобільні ігри на комп’ютері – геймплей зручно записувати у високій якості.' },
       p: { ru: 'Бесплатно (с рекламой)', en: 'Free (with ads)', es: 'Gratis (con anuncios)', uk: 'Безкоштовно (з рекламою)' } },
     { id: 'comfyui', shot: true, name: 'ComfyUI', url: 'https://www.comfy.org',
       cat: { ru: 'Генерация в ИИ', en: 'AI generation', es: 'Generación con IA', uk: 'Генерація в ШІ' },
       d: { ru: 'Нодовый интерфейс для генерации картинок и видео нейросетями. Работает на своём компьютере.', en: 'Node-based interface for generating images and video with neural networks. Runs locally.', es: 'Interfaz de nodos para generar imágenes y vídeo con redes neuronales. Funciona en tu propio ordenador.', uk: 'Нодовий інтерфейс для генерації картинок і відео нейромережами. Працює на власному комп’ютері.' },
-      p: { ru: 'Бесплатно, открытый код (облако Comfy Cloud — платно)', en: 'Free, open source (Comfy Cloud is paid)', es: 'Gratis, código abierto (Comfy Cloud es de pago)', uk: 'Безкоштовно, відкритий код (хмара Comfy Cloud — платна)' } },
+      p: { ru: 'Бесплатно, открытый код (облако Comfy Cloud – платно)', en: 'Free, open source (Comfy Cloud is paid)', es: 'Gratis, código abierto (Comfy Cloud es de pago)', uk: 'Безкоштовно, відкритий код (хмара Comfy Cloud – платна)' } },
     { id: 'davinci-resolve', shot: true, name: 'DaVinci Resolve', url: 'https://www.blackmagicdesign.com/products/davinciresolve',
       cat: { ru: 'Монтаж и цвет', en: 'Editing and color', es: 'Montaje y color', uk: 'Монтаж і колір' },
-      d: { ru: 'Монтаж, цветокоррекция, звук и рендер в одной программе. Во вкладке Fusion можно делать композитинг, во вкладке Fairlight — звуковые эффекты и мастеринг.', en: 'Editing, color grading, audio and rendering in one application. The Fusion page handles compositing, the Fairlight page handles sound effects and mastering.', es: 'Montaje, etalonaje, sonido y render en un solo programa. En la página Fusion se hace composición; en Fairlight, efectos de sonido y masterización.', uk: 'Монтаж, кольорокорекція, звук і рендер в одній програмі. У вкладці Fusion можна робити композитинг, у вкладці Fairlight — звукові ефекти й мастеринг.' },
-      p: { ru: 'Бесплатно; версия Studio — $295 разово', en: 'Free; Studio version — $295 one-time', es: 'Gratis; versión Studio: 295 $ pago único', uk: 'Безкоштовно; версія Studio — $295 разово' } },
+      d: { ru: 'Монтаж, цветокоррекция, звук и рендер в одной программе. Во вкладке Fusion можно делать композитинг, во вкладке Fairlight – звуковые эффекты и мастеринг.', en: 'Editing, color grading, audio and rendering in one application. The Fusion page handles compositing, the Fairlight page handles sound effects and mastering.', es: 'Montaje, etalonaje, sonido y render en un solo programa. En la página Fusion se hace composición; en Fairlight, efectos de sonido y masterización.', uk: 'Монтаж, кольорокорекція, звук і рендер в одній програмі. У вкладці Fusion можна робити композитинг, у вкладці Fairlight – звукові ефекти й мастеринг.' },
+      p: { ru: 'Бесплатно; версия Studio – $295 разово', en: 'Free; Studio version – $295 one-time', es: 'Gratis; versión Studio: 295 $ pago único', uk: 'Безкоштовно; версія Studio – $295 разово' } },
     { id: 'deepseek', shot: true, name: 'DeepSeek V4 Flash', url: 'https://www.deepseek.com',
       cat: { ru: 'ИИ-модель по API', en: 'AI model via API', es: 'Modelo de IA por API', uk: 'ШІ-модель через API' },
       d: { ru: 'Работает по API внутри VS Code: вместе они нужны для обслуживания и настройки пайплайна. На нём же работает ScriptForge AI. По MCP подключается к DaVinci Resolve и почти к любой программе, которую мы используем.', en: 'Runs via API inside VS Code: together they are used to maintain and configure the pipeline. ScriptForge AI also runs on it. Through MCP it connects to DaVinci Resolve and to almost any software we use.', es: 'Funciona por API dentro de VS Code: juntos sirven para mantener y configurar el pipeline. ScriptForge AI también funciona con él. Por MCP se conecta a DaVinci Resolve y a casi cualquier programa que usamos.', uk: 'Працює через API всередині VS Code: разом вони потрібні для обслуговування й налаштування пайплайна. На ньому ж працює ScriptForge AI. Через MCP підключається до DaVinci Resolve і майже до будь-якої програми, яку ми використовуємо.' },
       who: { ru: 'Есть не у каждого исполнителя.', en: 'Not every team member has it.', es: 'No todos los miembros del equipo lo tienen.', uk: 'Є не в кожного виконавця.' },
-      p: { ru: 'API — оплата за использование', en: 'API — pay as you go', es: 'API: se paga por uso', uk: 'API — оплата за використання' } },
+      p: { ru: 'API – оплата за использование', en: 'API – pay as you go', es: 'API: se paga por uso', uk: 'API – оплата за використання' } },
     { id: 'effectcraft', shot: true, name: 'EffectCraft', url: 'https://getartcraft.com',
       cat: { ru: 'Композитинг и эффекты', en: 'Compositing and effects', es: 'Composición y efectos', uk: 'Композитинг і ефекти' },
-      d: { ru: 'Анимация и визуальные эффекты из набора ArtCraft — бесплатная замена After Effects, в разработке.', en: 'Animation and visual effects from the ArtCraft suite — a free After Effects alternative, in development.', es: 'Animación y efectos visuales de la suite ArtCraft: alternativa gratuita a After Effects, en desarrollo.', uk: 'Анімація й візуальні ефекти з набору ArtCraft — безкоштовна заміна After Effects, у розробці.' },
+      d: { ru: 'Анимация и визуальные эффекты из набора ArtCraft – бесплатная замена After Effects, в разработке.', en: 'Animation and visual effects from the ArtCraft suite – a free After Effects alternative, in development.', es: 'Animación y efectos visuales de la suite ArtCraft: alternativa gratuita a After Effects, en desarrollo.', uk: 'Анімація й візуальні ефекти з набору ArtCraft – безкоштовна заміна After Effects, у розробці.' },
       p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
     { id: 'fabfilter', shot: true, name: 'FabFilter', url: 'https://www.fabfilter.com', paid: true, short: '$199+',
       cat: { ru: 'Аудиоплагины', en: 'Audio plug-ins', es: 'Plugins de audio', uk: 'Аудіоплагіни' },
       d: { ru: 'Профессиональные плагины для сведения и мастеринга: эквалайзер Pro-Q, компрессоры, лимитер.', en: 'Professional mixing and mastering plug-ins: Pro-Q equalizer, compressors, limiter.', es: 'Plugins profesionales de mezcla y masterización: ecualizador Pro-Q, compresores, limitador.', uk: 'Професійні плагіни для зведення й мастерингу: еквалайзер Pro-Q, компресори, лімітер.' },
-      p: { ru: 'Платно: Pro-Q 4 — $199, весь набор — $1 069', en: 'Paid: Pro-Q 4 — $199, Total Bundle — $1,069', es: 'De pago: Pro-Q 4, 199 $; paquete completo, 1069 $', uk: 'Платно: Pro-Q 4 — $199, увесь набір — $1 069' } },
+      p: { ru: 'Платно: Pro-Q 4 – $199, весь набор – $1 069', en: 'Paid: Pro-Q 4 – $199, Total Bundle – $1,069', es: 'De pago: Pro-Q 4, 199 $; paquete completo, 1069 $', uk: 'Платно: Pro-Q 4 – $199, увесь набір – $1 069' } },
     { id: 'filmcraft', shot: true, name: 'FilmCraft', url: 'https://getartcraft.com/apps/filmcraft',
       cat: { ru: 'Монтаж и цвет', en: 'Editing and color', es: 'Montaje y color', uk: 'Монтаж і колір' },
-      d: { ru: 'Монтажная программа из набора ArtCraft — бесплатная замена DaVinci Resolve: мониторы исходника и программы, полноценный таймлайн со всеми режимами подрезки, цветокоррекция, ключевые кадры, экспорт с пресетами.',
-           en: 'Video editor from the ArtCraft suite — a free DaVinci Resolve alternative: source and program monitors, a real timeline with every trim mode, color grading, keyframes, export presets.',
+      d: { ru: 'Монтажная программа из набора ArtCraft – бесплатная замена DaVinci Resolve: мониторы исходника и программы, полноценный таймлайн со всеми режимами подрезки, цветокоррекция, ключевые кадры, экспорт с пресетами.',
+           en: 'Video editor from the ArtCraft suite – a free DaVinci Resolve alternative: source and program monitors, a real timeline with every trim mode, color grading, keyframes, export presets.',
            es: 'Editor de vídeo de la suite ArtCraft, alternativa gratuita a DaVinci Resolve: monitores de origen y de programa, línea de tiempo completa con todos los modos de recorte, etalonaje, fotogramas clave y exportación con presets.',
-           uk: 'Монтажна програма з набору ArtCraft — безкоштовна заміна DaVinci Resolve: монітори вихідника й програми, повноцінний таймлайн з усіма режимами підрізання, кольорокорекція, ключові кадри, експорт із пресетами.' },
+           uk: 'Монтажна програма з набору ArtCraft – безкоштовна заміна DaVinci Resolve: монітори вихідника й програми, повноцінний таймлайн з усіма режимами підрізання, кольорокорекція, ключові кадри, експорт із пресетами.' },
       p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
     { id: 'inkscape', shot: true, name: 'Inkscape', url: 'https://inkscape.org',
       cat: { ru: 'Векторная графика', en: 'Vector graphics', es: 'Gráficos vectoriales', uk: 'Векторна графіка' },
-      d: { ru: 'Векторный редактор для логотипов, иконок и графики — замена Illustrator.', en: 'Vector editor for logos, icons and graphics — an Illustrator alternative.', es: 'Editor vectorial para logotipos, iconos y gráficos: alternativa a Illustrator.', uk: 'Векторний редактор для логотипів, іконок і графіки — заміна Illustrator.' },
+      d: { ru: 'Векторный редактор для логотипов, иконок и графики – замена Illustrator.', en: 'Vector editor for logos, icons and graphics – an Illustrator alternative.', es: 'Editor vectorial para logotipos, iconos y gráficos: alternativa a Illustrator.', uk: 'Векторний редактор для логотипів, іконок і графіки – заміна Illustrator.' },
       p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
     { id: 'izotope', shot: true, name: 'iZotope Ozone', url: 'https://www.izotope.com', paid: true, short: '$55+',
       cat: { ru: 'Мастеринг', en: 'Mastering', es: 'Masterización', uk: 'Мастеринг' },
       d: { ru: 'Набор для мастеринга с ИИ-ассистентом: громкость, эквализация, лимитер.', en: 'Mastering suite with an AI assistant: loudness, EQ, limiter.', es: 'Suite de masterización con asistente de IA: sonoridad, ecualización, limitador.', uk: 'Набір для мастерингу з ШІ-асистентом: гучність, еквалізація, лімітер.' },
-      p: { ru: 'Платно: Elements — $55, Standard — $219, Advanced — $499', en: 'Paid: Elements — $55, Standard — $219, Advanced — $499', es: 'De pago: Elements 55 $, Standard 219 $, Advanced 499 $', uk: 'Платно: Elements — $55, Standard — $219, Advanced — $499' } },
+      p: { ru: 'Платно: Elements – $55, Standard – $219, Advanced – $499', en: 'Paid: Elements – $55, Standard – $219, Advanced – $499', es: 'De pago: Elements 55 $, Standard 219 $, Advanced 499 $', uk: 'Платно: Elements – $55, Standard – $219, Advanced – $499' } },
     { id: 'nox-player', shot: true, name: 'NoxPlayer', url: 'https://www.bignox.com',
       cat: { ru: 'Эмулятор Android', en: 'Android emulator', es: 'Emulador de Android', uk: 'Емулятор Android' },
-      d: { ru: 'Второй эмулятор Android: запасной вариант, если игра не идёт в BlueStacks.', en: 'A second Android emulator — the fallback when a game won’t run in BlueStacks.', es: 'Segundo emulador de Android: la alternativa si un juego no funciona en BlueStacks.', uk: 'Другий емулятор Android — запасний варіант, якщо гра не йде в BlueStacks.' },
+      d: { ru: 'Второй эмулятор Android: запасной вариант, если игра не идёт в BlueStacks.', en: 'A second Android emulator – the fallback when a game won’t run in BlueStacks.', es: 'Segundo emulador de Android: la alternativa si un juego no funciona en BlueStacks.', uk: 'Другий емулятор Android – запасний варіант, якщо гра не йде в BlueStacks.' },
       p: { ru: 'Бесплатно (с рекламой)', en: 'Free (with ads)', es: 'Gratis (con anuncios)', uk: 'Безкоштовно (з рекламою)' } },
     { id: 'obs-studio', shot: true, name: 'OBS Studio', url: 'https://obsproject.com',
       cat: { ru: 'Запись экрана', en: 'Screen recording', es: 'Grabación de pantalla', uk: 'Запис екрана' },
-      d: { ru: 'Запись и трансляция экрана — пишем геймплей из эмулятора.', en: 'Screen recording and streaming — used to capture gameplay from the emulator.', es: 'Grabación y emisión de pantalla: con él se graba el gameplay del emulador.', uk: 'Запис і трансляція екрана — пишемо геймплей з емулятора.' },
+      d: { ru: 'Запись и трансляция экрана – пишем геймплей из эмулятора.', en: 'Screen recording and streaming – used to capture gameplay from the emulator.', es: 'Grabación y emisión de pantalla: con él se graba el gameplay del emulador.', uk: 'Запис і трансляція екрана – пишемо геймплей з емулятора.' },
       p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
     { id: 'onlyoffice', shot: true, name: 'ONLYOFFICE', url: 'https://www.onlyoffice.com',
       cat: { ru: 'Офис', en: 'Office suite', es: 'Ofimática', uk: 'Офіс' },
@@ -677,17 +677,17 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
       p: { ru: 'Бесплатно', en: 'Free', es: 'Gratis', uk: 'Безкоштовно' } },
     { id: 'photocraft', shot: true, name: 'PhotoCraft', url: 'https://getartcraft.com',
       cat: { ru: 'Растровая графика', en: 'Raster graphics', es: 'Gráficos rasterizados', uk: 'Растрова графіка' },
-      d: { ru: 'Растровый редактор из набора ArtCraft, открывает PSD — бесплатная замена Photoshop, ранняя версия.', en: 'Raster editor from the ArtCraft suite that opens PSD files — a free Photoshop alternative, early version.', es: 'Editor rasterizado de la suite ArtCraft que abre archivos PSD: alternativa gratuita a Photoshop, versión temprana.', uk: 'Растровий редактор з набору ArtCraft, відкриває PSD — безкоштовна заміна Photoshop, рання версія.' },
+      d: { ru: 'Растровый редактор из набора ArtCraft, открывает PSD – бесплатная замена Photoshop, ранняя версия.', en: 'Raster editor from the ArtCraft suite that opens PSD files – a free Photoshop alternative, early version.', es: 'Editor rasterizado de la suite ArtCraft que abre archivos PSD: alternativa gratuita a Photoshop, versión temprana.', uk: 'Растровий редактор з набору ArtCraft, відкриває PSD – безкоштовна заміна Photoshop, рання версія.' },
       p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
     { id: 'reaper', shot: true, name: 'REAPER', url: 'https://www.reaper.fm', paid: true, short: '$60',
       cat: { ru: 'Работа со звуком', en: 'Audio workstation', es: 'Estación de audio', uk: 'Робота зі звуком' },
       d: { ru: 'Цифровая звуковая станция: запись, музыка, сведение и мастеринг.', en: 'Digital audio workstation: recording, music, mixing and mastering.', es: 'Estación de audio digital: grabación, música, mezcla y masterización.', uk: 'Цифрова звукова станція: запис, музика, зведення й мастеринг.' },
-      p: { ru: '$60 — лицензия для частных лиц и небольших студий, $225 — коммерческая; 60 дней пробного периода', en: '$60 — personal and small-business licence, $225 — commercial; 60-day trial', es: '60 $: licencia personal y pequeña empresa; 225 $: comercial; 60 días de prueba', uk: '$60 — ліцензія для приватних осіб і невеликих студій, $225 — комерційна; 60 днів пробного періоду' } },
+      p: { ru: '$60 – лицензия для частных лиц и небольших студий, $225 – коммерческая; 60 дней пробного периода', en: '$60 – personal and small-business licence, $225 – commercial; 60-day trial', es: '60 $: licencia personal y pequeña empresa; 225 $: comercial; 60 días de prueba', uk: '$60 – ліцензія для приватних осіб і невеликих студій, $225 – комерційна; 60 днів пробного періоду' } },
     { id: 'resilio-sync', shot: true, name: 'Resilio Sync', url: 'https://www.resilio.com',
       cat: { ru: 'Синхронизация файлов', en: 'File sync', es: 'Sincronización de archivos', uk: 'Синхронізація файлів' },
       d: { ru: 'Синхронизирует папку проекта между компьютерами команды напрямую, без облака.', en: 'Syncs the project folder between the team’s computers directly, without a cloud.', es: 'Sincroniza la carpeta del proyecto entre los ordenadores del equipo directamente, sin nube.', uk: 'Синхронізує папку проєкту між комп’ютерами команди напряму, без хмари.' },
       who: { ru: 'Нужна всем исполнителям и работает у всех одновременно.', en: 'Every team member needs it, and it runs for everyone at the same time.', es: 'La necesitan todos los miembros del equipo y funciona para todos a la vez.', uk: 'Потрібна всім виконавцям і працює в усіх одночасно.' },
-      p: { ru: 'Бесплатно для личного использования; для бизнеса — платно', en: 'Free for personal use; business plans are paid', es: 'Gratis para uso personal; los planes de empresa son de pago', uk: 'Безкоштовно для особистого використання; для бізнесу — платно' } },
+      p: { ru: 'Бесплатно для личного использования; для бизнеса – платно', en: 'Free for personal use; business plans are paid', es: 'Gratis para uso personal; los planes de empresa son de pago', uk: 'Безкоштовно для особистого використання; для бізнесу – платно' } },
     { id: 'scriptforge-ai', shot: true, name: 'ScriptForge AI', url: 'https://github.com/3h0ll7/scriptforge-ai',
       cat: { ru: 'Сценарий с ИИ', en: 'AI scriptwriting', es: 'Guion con IA', uk: 'Сценарій із ШІ' },
       d: { ru: 'Пишет сценарий и раскадровку с помощью ИИ. Работает на базе DeepSeek.', en: 'Writes the script and storyboard with AI. Runs on DeepSeek.', es: 'Escribe el guion y el storyboard con IA. Funciona con DeepSeek.', uk: 'Пише сценарій і розкадровку за допомогою ШІ. Працює на базі DeepSeek.' },
@@ -698,28 +698,28 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
       p: { ru: 'Бесплатно, открытый код (пожертвования)', en: 'Free, open source (donations)', es: 'Gratis, código abierto (donaciones)', uk: 'Безкоштовно, відкритий код (пожертви)' } },
     { id: 'soundcraft', shot: true, name: 'SoundCraft', url: 'https://getartcraft.com/apps/soundcraft',
       cat: { ru: 'Работа со звуком', en: 'Audio workstation', es: 'Estación de audio', uk: 'Робота зі звуком' },
-      d: { ru: 'Звуковая станция из набора ArtCraft — бесплатная замена платным DAW: отдельные окна монтажа и микшера, многодорожечный звук и MIDI, по десять вставок и посылов на дорожку, автоматизация, работает и в браузере.',
-           en: 'Audio workstation from the ArtCraft suite — a free alternative to paid DAWs: separate Edit and Mix windows, multitrack audio and MIDI, ten inserts and sends per track, automation, also runs in the browser.',
+      d: { ru: 'Звуковая станция из набора ArtCraft – бесплатная замена платным DAW: отдельные окна монтажа и микшера, многодорожечный звук и MIDI, по десять вставок и посылов на дорожку, автоматизация, работает и в браузере.',
+           en: 'Audio workstation from the ArtCraft suite – a free alternative to paid DAWs: separate Edit and Mix windows, multitrack audio and MIDI, ten inserts and sends per track, automation, also runs in the browser.',
            es: 'Estación de audio de la suite ArtCraft, alternativa gratuita a los DAW de pago: ventanas separadas de edición y mezcla, audio multipista y MIDI, diez inserciones y envíos por pista, automatización; también funciona en el navegador.',
-           uk: 'Звукова станція з набору ArtCraft — безкоштовна заміна платним DAW: окремі вікна монтажу й мікшера, багатодоріжковий звук і MIDI, по десять вставок і посилів на доріжку, автоматизація, працює і в браузері.' },
+           uk: 'Звукова станція з набору ArtCraft – безкоштовна заміна платним DAW: окремі вікна монтажу й мікшера, багатодоріжковий звук і MIDI, по десять вставок і посилів на доріжку, автоматизація, працює і в браузері.' },
       p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
     { id: 'youtube-download', name: 'YouTube-Download', url: 'https://github.com/yt-dlp/yt-dlp',
       cat: { ru: 'Скачивание видео · свой скрипт', en: 'Video download · in-house script', es: 'Descarga de vídeo · script propio', uk: 'Завантаження відео · власний скрипт' },
-      d: { ru: 'Свой скрипт, сделан в VS Code с DeepSeek. Кидаешь ссылку — скачивает видео со звуком в максимальном качестве ролика с YouTube и ещё примерно 1800 сайтов, без перекодирования. Внутри — yt-dlp и ffmpeg.',
+      d: { ru: 'Свой скрипт, сделан в VS Code с DeepSeek. Кидаешь ссылку – скачивает видео со звуком в максимальном качестве ролика с YouTube и ещё примерно 1800 сайтов, без перекодирования. Внутри – yt-dlp и ffmpeg.',
            en: 'In-house script built in VS Code with DeepSeek. Drop in a link and it downloads the video with sound at the clip’s maximum quality from YouTube and about 1,800 other sites, with no re-encoding. Powered by yt-dlp and ffmpeg.',
            es: 'Script propio hecho en VS Code con DeepSeek. Pegas el enlace y descarga el vídeo con sonido en la máxima calidad del clip desde YouTube y unos 1800 sitios más, sin recodificar. Por dentro: yt-dlp y ffmpeg.',
-           uk: 'Власний скрипт, зроблений у VS Code з DeepSeek. Кидаєш посилання — завантажує відео зі звуком у максимальній якості ролика з YouTube і ще приблизно 1800 сайтів, без перекодування. Всередині — yt-dlp і ffmpeg.' },
+           uk: 'Власний скрипт, зроблений у VS Code з DeepSeek. Кидаєш посилання – завантажує відео зі звуком у максимальній якості ролика з YouTube і ще приблизно 1800 сайтів, без перекодування. Всередині – yt-dlp і ffmpeg.' },
       p: { ru: 'Бесплатно: свой скрипт, движок yt-dlp с открытым кодом', en: 'Free: in-house script, open-source yt-dlp engine', es: 'Gratis: script propio, motor yt-dlp de código abierto', uk: 'Безкоштовно: власний скрипт, рушій yt-dlp з відкритим кодом' } },
     { id: 'vectorcraft', shot: true, name: 'VectorCraft', url: 'https://getartcraft.com/apps/vectorcraft',
       cat: { ru: 'Векторная графика', en: 'Vector graphics', es: 'Gráficos vectoriales', uk: 'Векторна графіка' },
-      d: { ru: 'Векторный редактор из набора ArtCraft — бесплатная замена Adobe Illustrator: привычные панели и горячие клавиши, работает и в браузере. Есть свой MCP-сервер: ИИ-агент рисует в нём по описанию.',
-           en: 'Vector editor from the ArtCraft suite — a free Adobe Illustrator alternative: familiar panels and shortcuts, also runs in the browser. Has its own MCP server, so an AI agent can draw in it from a description.',
+      d: { ru: 'Векторный редактор из набора ArtCraft – бесплатная замена Adobe Illustrator: привычные панели и горячие клавиши, работает и в браузере. Есть свой MCP-сервер: ИИ-агент рисует в нём по описанию.',
+           en: 'Vector editor from the ArtCraft suite – a free Adobe Illustrator alternative: familiar panels and shortcuts, also runs in the browser. Has its own MCP server, so an AI agent can draw in it from a description.',
            es: 'Editor vectorial de la suite ArtCraft, alternativa gratuita a Adobe Illustrator: paneles y atajos habituales, también funciona en el navegador. Tiene su propio servidor MCP: un agente de IA dibuja en él a partir de una descripción.',
-           uk: 'Векторний редактор з набору ArtCraft — безкоштовна заміна Adobe Illustrator: звичні панелі й гарячі клавіші, працює і в браузері. Має власний MCP-сервер: ШІ-агент малює в ньому за описом.' },
+           uk: 'Векторний редактор з набору ArtCraft – безкоштовна заміна Adobe Illustrator: звичні панелі й гарячі клавіші, працює і в браузері. Має власний MCP-сервер: ШІ-агент малює в ньому за описом.' },
       p: { ru: 'Бесплатно, открытый код', en: 'Free, open source', es: 'Gratis, código abierto', uk: 'Безкоштовно, відкритий код' } },
     { id: 'vscode', shot: true, name: 'VS Code', url: 'https://code.visualstudio.com',
       cat: { ru: 'Редактор кода', en: 'Code editor', es: 'Editor de código', uk: 'Редактор коду' },
-      d: { ru: 'Вместе с DeepSeek V4 Flash по API — для обслуживания и настройки пайплайна.', en: 'Together with DeepSeek V4 Flash via API — used to maintain and configure the pipeline.', es: 'Junto con DeepSeek V4 Flash por API: sirve para mantener y configurar el pipeline.', uk: 'Разом із DeepSeek V4 Flash через API — для обслуговування й налаштування пайплайна.' },
+      d: { ru: 'Вместе с DeepSeek V4 Flash по API – для обслуживания и настройки пайплайна.', en: 'Together with DeepSeek V4 Flash via API – used to maintain and configure the pipeline.', es: 'Junto con DeepSeek V4 Flash por API: sirve para mantener y configurar el pipeline.', uk: 'Разом із DeepSeek V4 Flash через API – для обслуговування й налаштування пайплайна.' },
       who: { ru: 'Есть не у каждого исполнителя.', en: 'Not every team member has it.', es: 'No todos los miembros del equipo lo tienen.', uk: 'Є не в кожного виконавця.' },
       p: { ru: 'Бесплатно', en: 'Free', es: 'Gratis', uk: 'Безкоштовно' } }
   ];
@@ -729,7 +729,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   PROGS.forEach(function (p) { PROG[p.id] = p; });
 
   /* ---------- какая карточка какие папки и программы использует ----------
-     [номер профессии, [папки f:путь и программы p:id]] — цвет берётся у исполнителя этой профессии */
+     [номер профессии, [папки f:путь и программы p:id]] – цвет берётся у исполнителя этой профессии */
   var TOOLS = {
     in:   [[1, ['f:001_Brief']]],
     b1:   [[1, ['f:001_Brief', 'p:onlyoffice']]],
@@ -783,27 +783,27 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
 
 
   /* =====================================================================
-     МОБИЛЬНАЯ ВЕРСИЯ: та же схема, но сверху вниз, и вместо наведения мышкой — касание.
+     МОБИЛЬНАЯ ВЕРСИЯ: та же схема, но сверху вниз, и вместо наведения мышкой – касание.
      Касание шага → снизу выезжает карточка: кто делает, программы, папки, откуда и куда дальше.
-     Всё в карточках — ссылки: из шага в программу, из программы в исполнителя и т. д.
+     Всё в карточках – ссылки: из шага в программу, из программы в исполнителя и т. д.
      ===================================================================== */
   var MUI = {
     tSchema: { ru: 'Схема', en: 'Pipeline', es: 'Esquema', uk: 'Схема' },
     tTeam:   { ru: 'Команда', en: 'Team', es: 'Equipo', uk: 'Команда' },
     tProgs:  { ru: 'Программы', en: 'Software', es: 'Programas', uk: 'Програми' },
     tFolder: { ru: 'Папка', en: 'Folder', es: 'Carpeta', uk: 'Папка' },
-    hintSchema: { ru: 'Весь пайплайн сверху вниз. Синие стрелки — порядок работы, красные — возврат на доработку. Коснитесь шага — подсветятся его связи, внизу — подробности.',
+    hintSchema: { ru: 'Весь пайплайн сверху вниз. Синие стрелки – порядок работы, красные – возврат на доработку. Коснитесь шага – подсветятся его связи, внизу – подробности.',
                   en: 'The whole pipeline, top to bottom. Blue arrows show the order of work, red ones send work back for rework. Tap a step to light up its links; details appear below.',
                   es: 'Todo el pipeline de arriba abajo. Flechas azules: orden del trabajo; rojas: vuelta para rehacer. Toca un paso para iluminar sus conexiones; abajo, los detalles.',
-                  uk: 'Весь пайплайн згори вниз. Сині стрілки — порядок роботи, червоні — повернення на доопрацювання. Торкніться кроку — підсвітяться його зв’язки, внизу — подробиці.' },
-    hintTeam: { ru: 'Один цвет — один человек. Коснитесь, чтобы увидеть его шаги, программы и папки.',
-                en: 'One colour — one person. Tap to see their steps, software and folders.',
+                  uk: 'Весь пайплайн згори вниз. Сині стрілки – порядок роботи, червоні – повернення на доопрацювання. Торкніться кроку – підсвітяться його зв’язки, внизу – подробиці.' },
+    hintTeam: { ru: 'Один цвет – один человек. Коснитесь, чтобы увидеть его шаги, программы и папки.',
+                en: 'One colour – one person. Tap to see their steps, software and folders.',
                 es: 'Un color, una persona. Toca para ver sus pasos, programas y carpetas.',
-                uk: 'Один колір — одна людина. Торкніться, щоб побачити її кроки, програми й папки.' },
-    hintFolder: { ru: 'Папка проекта. Стрелка раскрывает, касание названия — что лежит в папке и кто туда пишет.',
+                uk: 'Один колір – одна людина. Торкніться, щоб побачити її кроки, програми й папки.' },
+    hintFolder: { ru: 'Папка проекта. Стрелка раскрывает, касание названия – что лежит в папке и кто туда пишет.',
                   en: 'Project folder. The arrow expands; tap a name to see what is inside and who writes there.',
                   es: 'Carpeta del proyecto. La flecha la abre; toca el nombre para ver qué contiene y quién escribe ahí.',
-                  uk: 'Папка проєкту. Стрілка розкриває, торкання назви — що лежить у папці й хто туди пише.' },
+                  uk: 'Папка проєкту. Стрілка розкриває, торкання назви – що лежить у папці й хто туди пише.' },
     stage:   { ru: 'Этап', en: 'Stage', es: 'Etapa', uk: 'Етап' },
     who:     { ru: 'Кто делает', en: 'Who does it', es: 'Quién lo hace', uk: 'Хто робить' },
     progs:   { ru: 'Программы', en: 'Software', es: 'Programas', uk: 'Програми' },
@@ -825,10 +825,10 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     noTool:  { ru: 'Без отдельной программы', en: 'No dedicated software', es: 'Sin programa específico', uk: 'Без окремої програми' },
     noFold:  { ru: 'Материал в папку не пишет', en: 'Writes nothing to the folder', es: 'No escribe en la carpeta', uk: 'Матеріал у папку не пише' },
     nobody:  { ru: 'Сюда пишут все через синхронизацию', en: 'Everyone writes here via sync', es: 'Todos escriben aquí mediante la sincronización', uk: 'Сюди пишуть усі через синхронізацію' },
-    allFree: { ru: 'Остальные — бесплатные.', en: 'The rest are free.', es: 'El resto son gratuitos.', uk: 'Решта — безкоштовні.' },
+    allFree: { ru: 'Остальные – бесплатные.', en: 'The rest are free.', es: 'El resto son gratuitos.', uk: 'Решта – безкоштовні.' },
     paid:    { ru: 'Платные', en: 'Paid', es: 'De pago', uk: 'Платні' },
     markDone: { ru: 'Отметить выполненным', en: 'Mark as done', es: 'Marcar como hecho', uk: 'Позначити виконаним' },
-    isDone:  { ru: 'Выполнено — снять отметку', en: 'Done — undo', es: 'Hecho — desmarcar', uk: 'Виконано — зняти позначку' },
+    isDone:  { ru: 'Выполнено – снять отметку', en: 'Done – undo', es: 'Hecho – desmarcar', uk: 'Виконано – зняти позначку' },
     inStage: { ru: 'Шаги этапа', en: 'Steps in this stage', es: 'Pasos de la etapa', uk: 'Кроки етапу' },
     retLine: { ru: 'возврат', en: 'return', es: 'vuelta', uk: 'повернення' }
   };
@@ -840,7 +840,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     { ru: 'Утверждение', en: 'Approval', es: 'Aprobación', uk: 'Затвердження' },
     { ru: 'Выход', en: 'Output', es: 'Salida', uk: 'Вихід' }
   ];
-  /* связи шагов — те же, что стрелки на основной странице */
+  /* связи шагов – те же, что стрелки на основной странице */
   var NEXT = {
     'in': ['b1', 'b2'], b1: ['scen'], b2: ['scen'], scen: ['v20', 'txt'],
     v20: ['mont'], txt: ['mont'], mus0: ['mont'], p1: ['p3'], p2: ['p3'], p3: ['txt'], gmp: ['txt'],
@@ -848,7 +848,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     vid: ['sved', 'color', 'master'], comp: ['sved', 'color', 'master'], mus: ['sved', 'color', 'master'], fin: ['sved', 'color', 'master'],
     sved: ['fmont'], color: ['fmont'], master: ['fmont'], fmont: ['d2'], d2: ['topj'], topj: ['out'], out: []
   };
-  var BACK = { d1: 'scen', d2: 'vid' };      /* «не нравится» — куда возвращается работа */
+  var BACK = { d1: 'scen', d2: 'vid' };      /* «не нравится» – куда возвращается работа */
   var PREV = {};
   for (var a0 in NEXT) NEXT[a0].forEach(function (b) { (PREV[b] = PREV[b] || []).push(a0); });
 
@@ -862,7 +862,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     p1: 'Создание локаций в ИИ', p2: 'Создание тернараундов персонажей в ИИ', p3: 'Сборка опорных кадров', gmp: 'Запись геймплеев'
   };
   var D = { nodes: {}, rows: [], notes: {} };
-  var done = {};                              /* галочки — до перезагрузки, как у гостей на основной */
+  var done = {};                              /* галочки – до перезагрузки, как у гостей на основной */
 
   function nodeT(id) { return tr(D.nodes[id] || DEF_TEXT[id] || id); }
   function personKey(i) { var p = (D.rows[i] && D.rows[i].person || '').replace(/\s+/g, ' ').trim().toLowerCase(); return p || ('#' + i); }
@@ -919,7 +919,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
 
   /* ---------- 1. схема: вся карта пайплайна целиком, сверху вниз, со стрелками ----------
      Раскладка в «единицах» шириной 360; по горизонтали растягивается на ширину экрана,
-     по вертикали — как есть. Синие стрелки — порядок работы, зелёные — «нравится», красные — возврат. */
+     по вертикали – как есть. Синие стрелки – порядок работы, зелёные – «нравится», красные – возврат. */
   var schemaEl = document.getElementById('schema');
   var STEP_EL = {}, EDGE_EL = [];
   var LX = 36, RX = 330, GAP = 8, CM = (LX + RX) / 2, LANE = 12, G = 40;
@@ -1021,7 +1021,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     MAP.LBL.forEach(function (l) {
       h += '<span class="mlbl ' + (l.c || '') + '" style="left:' + X(l.x) + 'px; top:' + l.y + 'px">' + esc(L(MUI[l.k])) + '</span>';
     });
-    /* стрелки — под карточками */
+    /* стрелки – под карточками */
     var p = '';
     MAP.E.forEach(function (ed, i) {
       var pts = ed.pts.map(function (q) { return [q[0] * s, q[1]]; });
@@ -1053,7 +1053,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     for (var i = 0; i < els.length; i++) STEP_EL[els[i].dataset.id] = els[i];
     var eg = schemaEl.querySelectorAll('.me');
     for (i = 0; i < eg.length; i++) EDGE_EL.push(eg[i]);
-    /* длинный текст на других языках — чуть уменьшаем шрифт, пока не влезет */
+    /* длинный текст на других языках – чуть уменьшаем шрифт, пока не влезет */
     var ts = schemaEl.querySelectorAll('.mn .t');
     for (i = 0; i < ts.length; i++) {
       var t = ts[i], b = t.parentNode, fs = 10;
@@ -1113,7 +1113,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
       var k = personKey(i); if (seen[k]) continue; seen[k] = 1;
       var rows = personRows(i);
       h += '<button class="li" data-person="' + i + '"><span class="ic"><span class="dot" style="--h:' + HUE[i] + '"></span></span>' +
-        '<span class="tx"><span class="a">' + esc(tr(D.rows[i].person) || '—') + '</span><span class="b">' +
+        '<span class="tx"><span class="a">' + esc(tr(D.rows[i].person) || '–') + '</span><span class="b">' +
         esc(rows.map(function (r) { return tr(D.rows[r].role); }).join(' · ')) + '</span></span><span class="chev">' + CHEV_R + '</span></button>';
     }
     document.getElementById('team').innerHTML = h;
@@ -1166,7 +1166,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   var bsTitle = document.getElementById('bsTitle'), bsBack = document.getElementById('bsBack');
   var stack = [];
   function chipStep(id) { return '<button class="chip" data-step="' + id + '"><span class="d" style="--h:' + hueOfStep(id) + '"></span>' + esc(nodeT(id)) + '</button>'; }
-  function chipRow(r) { return '<button class="chip" data-person="' + r + '"><span class="d" style="--h:' + HUE[r] + '"></span>' + esc(tr(D.rows[r].role)) + ' — ' + esc(tr(D.rows[r].person)) + '</button>'; }
+  function chipRow(r) { return '<button class="chip" data-person="' + r + '"><span class="d" style="--h:' + HUE[r] + '"></span>' + esc(tr(D.rows[r].role)) + ' – ' + esc(tr(D.rows[r].person)) + '</button>'; }
   function chipProg(id) { var p = PROG[id]; return p ? '<button class="chip" data-prog="' + id + '"><img src="icons/' + id + '.png" alt="">' + esc(p.name) + '</button>' : ''; }
   function chipFold(path) { return '<button class="chip" data-fold="' + esc(path) + '">' + folderSvg(FCOL[path] || 'y').replace('class="tico"', 'width="18" height="15"') + esc(path || fname('')) + '</button>'; }
   function sec(title, inner) { return inner ? '<p class="sec">' + esc(title) + '</p><div class="chips">' + inner + '</div>' : ''; }
@@ -1199,7 +1199,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
       var pr = personRows(item.id), steps = stepsOfRows(pr), progs = [], folds = [];
       var nums = pr.map(function (r) { return roleNum(D.rows[r].role); });
       steps.forEach(function (s) { var t = toolsOf(s, nums); progs = progs.concat(t.p); folds = folds.concat(t.f); });
-      title = tr(D.rows[item.id].person) || '—';
+      title = tr(D.rows[item.id].person) || '–';
       h += sec(L(MUI.roles), pr.map(chipRow).join('').replace(/data-person="\d+"/g, 'data-x=""'));
       pr.forEach(function (r) { if (D.rows[r].duties) h += '<p class="sec">' + esc(L(MUI.duties)) + ' · ' + esc(tr(D.rows[r].role)) + '</p><p class="txt">' + esc(tr(D.rows[r].duties)) + '</p>'; });
       h += sec(L(MUI.steps), steps.map(chipStep).join(''));
@@ -1279,7 +1279,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     else if (c.dataset.fold != null) openSheet({ t: 'folder', id: c.dataset.fold }, true);
   });
   /* показать шаг на схеме: перейти на вкладку и прокрутить так, чтобы шаг был над карточкой */
-  /* шаг встаёт под шапку — над карточкой, чтобы подсветка была видна */
+  /* шаг встаёт под шапку – над карточкой, чтобы подсветка была видна */
   function scrollToStep(el) {
     var r = el.getBoundingClientRect(), top = 76, room = window.innerHeight * 0.46 - top;
     if (r.top >= top && r.bottom <= top + Math.max(room, r.height)) return;
@@ -1292,7 +1292,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     scrollToStep(el);
   }
 
-  /* смахивание карточки вниз — пальцем за ручку или заголовок; учитывается скорость броска */
+  /* смахивание карточки вниз – пальцем за ручку или заголовок; учитывается скорость броска */
   (function drag() {
     var y0 = 0, dy = 0, t0 = 0, on = false;
     function start(e) { on = true; y0 = e.touches[0].clientY; dy = 0; t0 = Date.now(); bs.classList.add('drag'); }
@@ -1312,7 +1312,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
       el.addEventListener('touchmove', move, { passive: true });
       el.addEventListener('touchend', end); el.addEventListener('touchcancel', end);
     });
-    /* тело карточки: если прокручено до верха и тянут вниз — тоже закрываем */
+    /* тело карточки: если прокручено до верха и тянут вниз – тоже закрываем */
     var by0 = 0, bOn = false;
     bsBody.addEventListener('touchstart', function (e) { bOn = bsBody.scrollTop <= 0; by0 = e.touches[0].clientY; t0 = Date.now(); dy = 0; }, { passive: true });
     bsBody.addEventListener('touchmove', function (e) {
@@ -1337,7 +1337,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     closeSheet(); showScreen(t.dataset.scr); window.scrollTo(0, 0);
   });
 
-  /* заголовок всегда целиком: длинный (испанский) — шрифт меньше; если и так не влез — в две строки */
+  /* заголовок всегда целиком: длинный (испанский) – шрифт меньше; если и так не влез – в две строки */
   function fitTitle() {
     var h = document.getElementById('appTitle'), fs = 17;
     h.style.whiteSpace = 'nowrap'; h.style.fontSize = fs + 'px'; h.style.lineHeight = '22px';
@@ -1388,11 +1388,11 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
 
   /* =====================================================================
      СТЕКЛО КАК У ЛУПЫ. Верхняя строка, нижняя панель вкладок и выезжающая карточка
-     показывают то, что под ними: внутри каждой — копия страницы в трёх цветовых каналах.
+     показывают то, что под ними: внутри каждой – копия страницы в трёх цветовых каналах.
      У края стекла картинка гнётся (вдавленное стекло, как у лупы), а каналы гнутся
-     по-разному — поэтому по краю появляется лёгкая радуга. В середине картинка не тронута,
+     по-разному – поэтому по краю появляется лёгкая радуга. В середине картинка не тронута,
      только чуть размыта. Копия обновляется, когда меняется страница (подсветка, галочки, язык),
-     а при прокрутке только сдвигается. ?glass=0 — выключить, чтобы сравнить.
+     а при прокрутке только сдвигается. ?glass=0 – выключить, чтобы сравнить.
      ===================================================================== */
   (function glassInit() {
     if (/[?&]glass=0/.test(location.search)) return;
@@ -1401,14 +1401,14 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     defs.setAttribute('width', '0'); defs.setAttribute('height', '0'); defs.setAttribute('aria-hidden', 'true');
     defs.style.position = 'absolute';
     document.body.appendChild(defs);
-    /* band — ширина изгибающейся полосы у края; k — сила изгиба (отрицательная = вдавленное);
-       ext — какие края уходят за экран и не гнутся: [верх, право, низ, лево] */
+    /* band – ширина изгибающейся полосы у края; k – сила изгиба (отрицательная = вдавленное);
+       ext – какие края уходят за экран и не гнутся: [верх, право, низ, лево] */
     var PANELS = [
       { el: document.querySelector('.top'),  band: 16, k: -30, blur: 1.4, rad: 0,  ext: [1, 1, 0, 1] },
       { el: document.getElementById('tabs'), band: 22, k: -40, blur: 1.6, rad: 24, ext: [0, 0, 0, 0] },
       { el: document.getElementById('bs'),   band: 34, k: -48, blur: 2.5, rad: 26, ext: [0, 0, 1, 0], dim: true, onlyOn: true }
     ];
-    var CH = [['gR', 1.12], ['gG', 1], ['gB', 0.88]];   /* каналы гнутся по-разному — радуга по краю */
+    var CH = [['gR', 1.12], ['gG', 1], ['gB', 0.88]];   /* каналы гнутся по-разному – радуга по краю */
     var main = document.querySelector('main');
     var uid = 0;
 
@@ -1434,7 +1434,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
       p.w = p.h = 0;
     });
 
-    /* карта изгиба под размер панели: у края картинка тянется наружу, в середине — ноль */
+    /* карта изгиба под размер панели: у края картинка тянется наружу, в середине – ноль */
     function buildMap(p, w, h) {
       p.w = w; p.h = h;
       var S = 2, cw = Math.max(2, Math.ceil(w / S)), chh = Math.max(2, Math.ceil(h / S));
@@ -1467,7 +1467,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
       if (old) old.remove();
       var gEl = document.createElementNS(NS, 'g');
       gEl.setAttribute('data-p', p.id);
-      gEl.innerHTML = h2.replace(/xlink:href="[^"]*"/g, '');    /* innerHTML в svg не знает xlink — ставим отдельно */
+      gEl.innerHTML = h2.replace(/xlink:href="[^"]*"/g, '');    /* innerHTML в svg не знает xlink – ставим отдельно */
       defs.appendChild(gEl);
       var fe = gEl.querySelectorAll('feImage');
       for (var i = 0; i < fe.length; i++) fe[i].setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', url);
@@ -1475,7 +1475,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
       p.chs.forEach(function (ch, i) { ch.style.filter = 'none'; void ch.offsetWidth; ch.style.filter = 'url(#' + p.id + '_' + i + ')'; });
     }
 
-    /* копия активного экрана — в каждый канал каждой панели */
+    /* копия активного экрана – в каждый канал каждой панели */
     var SX = 0, SY = 0;
     function strip(n) {
       if (n.nodeType !== 1) return;
@@ -1546,9 +1546,9 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
 
   /* =====================================================================
      ЛУПА (как на основной странице: увеличение, вдавленное стекло, радуга по краю, инерция).
-     Маленькая стоит справа под шапкой и не уезжает при прокрутке. Коснулся — выросла,
+     Маленькая стоит справа под шапкой и не уезжает при прокрутке. Коснулся – выросла,
      её можно таскать пальцем. Короткое касание по большой лупе нажимает то, что под ней.
-     Красный крестик — лупа уменьшается и возвращается на место.
+     Красный крестик – лупа уменьшается и возвращается на место.
      ===================================================================== */
   (function mobileLens() {
     var L = 180, MAG = 2.4, SPLIT = 0.02, BULGE = -28, SMALL = 50 / L;
@@ -1581,7 +1581,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     xb.className = 'mlX'; xb.setAttribute('aria-label', 'Закрыть лупу');
     xb.innerHTML = '<svg viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8"/></svg>';
     document.body.appendChild(xb);
-    /* подпись под маленькой лупой — чтобы не путали с поиском */
+    /* подпись под маленькой лупой – чтобы не путали с поиском */
     var TIP = { ru: 'Нажми<br>на меня', en: 'Tap<br>me', es: 'Tócame<br>aquí', uk: 'Натисни<br>на мене' };
     var tip = document.createElement('button');
     tip.className = 'mlTip';
@@ -1627,7 +1627,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
       xb.style.transform = 'translate(' + (cx + o).toFixed(1) + 'px,' + (cy - o).toFixed(1) + 'px)';
       tip.style.transform = 'translate(' + cx.toFixed(1) + 'px,' + (cy + L / 2 * sc + 6).toFixed(1) + 'px) translateX(-50%)';
     }
-    /* пружины как на основной странице: положение — отклик 0,6 с, размер — побыстрее */
+    /* пружины как на основной странице: положение – отклик 0,6 с, размер – побыстрее */
     var RESP = 0.6, ZETA = 0.85, OM = 2 * Math.PI / RESP, KS = OM * OM, CD = 2 * ZETA * OM;
     var OM2 = 2 * Math.PI / 0.38, KS2 = OM2 * OM2, CD2 = 2 * 0.78 * OM2;
     function step(now) {
@@ -1656,7 +1656,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     }
     var d0 = dock(); cx = tx = d0.x; cy = ty = d0.y;
 
-    /* пальцем: тянем за то место, где взяли; короткое касание большой лупы — нажатие того, что под ней */
+    /* пальцем: тянем за то место, где взяли; короткое касание большой лупы – нажатие того, что под ней */
     var gx = 0, gy = 0, sx0 = 0, sy0 = 0, t0 = 0, moved = false, wasBig = false;
     lens.addEventListener('touchstart', function (e) {
       if (e.touches.length !== 1) return;
@@ -1674,14 +1674,14 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     }, { passive: false });
     lens.addEventListener('touchend', function (e) {
       if (moved || !wasBig || Date.now() - t0 > 350) return;
-      /* короткое касание — нажать то, что под лупой в этой точке */
+      /* короткое касание – нажать то, что под лупой в этой точке */
       var Z = MAG, ux = cx + (sx0 - cx) / Z, uy = cy + (sy0 - cy) / Z;
       lens.style.pointerEvents = 'none';
       var el = document.elementFromPoint(ux, uy);
       lens.style.pointerEvents = '';
       if (el && el.closest) { var b = el.closest('button, [data-id], [data-stage]'); if (b) b.click(); }
     });
-    /* мышью (на компьютере в узком окне) — то же самое */
+    /* мышью (на компьютере в узком окне) – то же самое */
     lens.addEventListener('mousedown', function (e) {
       e.preventDefault();
       if (!big) grow();
@@ -1705,8 +1705,8 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     window.__lens = { grow: grow, dock: toDock };
   })();
 
-  /* свежая версия: страница хранится в кэше телефона до 10 минут — сверяемся с сервером и один раз перезагружаемся */
-  var MBUILD = 'm-2026-11-08-8';
+  /* свежая версия: страница хранится в кэше телефона до 10 минут – сверяемся с сервером и один раз перезагружаемся */
+  var MBUILD = 'm-2026-11-08-9';
   (function freshCheck() {
     try {
       fetch(location.pathname + '?nc=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
