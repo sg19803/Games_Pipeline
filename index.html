@@ -3400,7 +3400,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-08-13 lupa-ustoichivaya',
+    build: '2026-11-08-14 lupa-silnee-medlennee',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3447,7 +3447,7 @@ body{
     var L = TOUCH ? 170 : 220;            /* диаметр линзы, px экрана */
     var MAG = TOUCH ? 3 : 2.2;            /* увеличение относительно того, что видно на экране */
     var SPLIT = TOUCH ? 0.02 : 0.025;     /* расхождение каналов: на краю ≈ SPLIT × радиус линзы (≈ 2–3 px) */
-    var BULGE = TOUCH ? -56 : -72;        /* вдавленное стекло: к краям изображение растягивается и гнётся */
+    var BULGE = TOUCH ? -100 : -140;      /* вдавленное стекло: к краям изображение растягивается и гнётся (на краю до ~75 px) */
 
     /* карта смещений для вдавленного стекла: центр не трогаем, к краю — резко сильнее */
     var cv = document.createElement('canvas');
@@ -3455,7 +3455,7 @@ body{
     var g2 = cv.getContext('2d'), img = g2.createImageData(128, 128);
     for (var yy = 0; yy < 128; yy++) for (var xx = 0; xx < 128; xx++) {
       var ddx = (xx - 63.5) / 63.5, ddy = (yy - 63.5) / 63.5, kk = 4 * (yy * 128 + xx);
-      var rr = Math.sqrt(ddx * ddx + ddy * ddy), ff = Math.pow(Math.min(1, rr), 2.4), ln = rr || 1;
+      var rr = Math.sqrt(ddx * ddx + ddy * ddy), ff = Math.pow(Math.min(1, rr), 2.1), ln = rr || 1;
       img.data[kk] = Math.round(128 + 127 * ff * ddx / ln);
       img.data[kk + 1] = Math.round(128 + 127 * ff * ddy / ln);
       img.data[kk + 2] = 128; img.data[kk + 3] = 255;
@@ -3606,7 +3606,7 @@ body{
     }
     /* инерция: линза догоняет стрелку пружиной (как физический предмет) — чуть отстаёт,
        быстро доезжает и мягко останавливается. В линзе всегда то, что лежит под её центром */
-    var RESP = 0.16, ZETA = 0.82;                       /* время отклика пружины, с; демпфирование (1 — без перелёта) */
+    var RESP = 0.38, ZETA = 0.85;                       /* время отклика пружины, с; демпфирование (1 — без перелёта) */
     var OM = 2 * Math.PI / RESP, KS = OM * OM, CD = 2 * ZETA * OM;
     var tx = 0, ty = 0, cx = 0, cy = 0, vx = 0, vy = 0, offY = 0, springT = 0, lastT = 0, slow = [], warpOn = true;
     function step(now) {
@@ -3617,7 +3617,7 @@ body{
       /* если компьютер не тянет искажение (кадр дольше ~24 мс подряд) — выключаем только его, лупа остаётся */
       if (raw > 0 && raw < 200) { slow.push(raw); if (slow.length > 24) slow.shift();
         if (slow.length === 24 && warpOn) { var sum = 0; for (var q = 0; q < 24; q++) sum += slow[q];
-          if (sum / 24 > 24) { warpOn = false; lens.firstChild.classList.remove('warp'); } } }
+          if (sum / 24 > 45) { warpOn = false; lens.firstChild.classList.remove('warp'); } } }
       /* пружину считаем мелкими шагами по 4 мс: при редких кадрах (тяжёлая страница, слабое железо)
          один большой шаг раскачивал её — лупа улетала и прыгала */
       if (raw > 150) { cx = tx; cy = ty; vx = vy = 0; }
