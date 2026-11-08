@@ -797,6 +797,10 @@ body{
 @media (hover: none), (pointer: coarse){
   .node, .trow, .prow, .nrow, .nrow input{cursor:pointer}
 }
+
+/* закреплённая кликом программа — тонкая синяя полоса слева */
+.prow.pin{box-shadow:inset 3px 0 0 #0066cc, inset 0 1px 0 rgba(255,255,255,.65), 0 1px 2px rgba(55,63,71,.12)}
+.prow.pin.hl{box-shadow:inset 3px 0 0 #0066cc, inset 0 1px 0 rgba(255,255,255,.6), 0 0 0 1px hsla(var(--ph,212),70%,45%,.55), 0 0 16px hsla(var(--ph,212),90%,60%,.55)}
 </style>
 </head>
 <body>
@@ -2951,7 +2955,7 @@ body{
     plistEl.innerHTML = '';
     PROGS.forEach(function (p) {
       var row = document.createElement('div');
-      row.className = 'prow' + (infoCur === p.id ? ' on' : '');
+      row.className = 'prow' + (infoCur === p.id ? ' on' : '') + (pinned === p.id ? ' pin' : '');
       row.dataset.id = p.id;
       row.innerHTML = '<img src="icons/' + p.id + '.png" alt="" loading="lazy" decoding="async"><span class="pn">' +
         esc(p.name) + '</span>' + priceBadge(p);
@@ -2967,7 +2971,8 @@ body{
       var paid = PROGS.filter(function (x) { return x.paid; });
       var names = paid.map(function (x) { return x.name; }).join(', ');
       var n = PROGS.length, k = paid.length, m = n - k;
-      var head = { ru: n + ' программ', en: n + ' programs', es: n + ' programas', uk: n + ' програм' };
+      var n10 = n % 10, n100 = n % 100, f1 = n10 === 1 && n100 !== 11, f2 = n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14);
+      var head = { ru: n + (f1 ? ' программа' : f2 ? ' программы' : ' программ'), en: n + ' programs', es: n + ' programas', uk: n + (f1 ? ' програма' : f2 ? ' програми' : ' програм') };
       var line = {
         ru: 'Платные — ' + k + ': ' + names + '. Остальные ' + m + ' — бесплатные.',
         en: k + ' paid: ' + names + '. The other ' + m + ' are free.',
@@ -3001,11 +3006,33 @@ body{
       infoEl.innerHTML = '<div class="itext">' + html + '</div>';
     }
   }
+  /* описание: по умолчанию — сводка по всем программам. Навёл на что-то — показывает
+     нужную программу, убрал мышку — возвращается сводка. Клик по программе закрепляет её:
+     тогда после наведений в другие места описание возвращается к закреплённой.
+     Повторный клик по закреплённой — открепить */
+  var pinned = null, revertT = 0;
   function pickProgram(id) {
+    clearTimeout(revertT);
+    if (id === infoCur && infoEl && infoEl.firstChild) return;
     if (infoCur && PROW[infoCur]) PROW[infoCur].classList.remove('on');
     infoCur = id;
-    if (PROW[id]) PROW[id].classList.add('on');
+    if (id && PROW[id]) PROW[id].classList.add('on');
     renderInfo(id);
+  }
+  function infoRevert() {
+    clearTimeout(revertT);
+    revertT = setTimeout(function () {
+      if (pinned) { pickProgram(pinned); return; }
+      if (infoCur && PROW[infoCur]) PROW[infoCur].classList.remove('on');
+      infoCur = null;
+      renderInfo(null);
+    }, 150);
+  }
+  function setPin(id) {
+    if (pinned && PROW[pinned]) PROW[pinned].classList.remove('pin');
+    pinned = (pinned === id) ? null : id;
+    if (pinned && PROW[pinned]) PROW[pinned].classList.add('pin');
+    if (pinned) pickProgram(pinned); else { infoCur = '__'; pickProgram(id); }
   }
   buildPrograms();
   renderInfo(null);
@@ -3051,8 +3078,10 @@ body{
     pickProgram(id);
   }
   function toolsOff() {
+    var was = toolHl.length || cycList.length;
     clearInterval(cycT); cycT = 0;
     unmark(toolHl); toolHl = []; cycList = [];
+    if (was) infoRevert();
   }
   function toolsOn(id) {
     toolsOff();
@@ -3091,6 +3120,7 @@ body{
   var progHl = [], litKey = null;
   function progOff() {
     if (litKey && litKey.indexOf('p:') !== 0) { clearInterval(cycT); cycT = 0; cycList = []; }
+    if (litKey) infoRevert();
     unmark(progHl); progHl = []; litKey = null;
     rolesOff();
   }
@@ -3171,16 +3201,21 @@ body{
     plistEl.addEventListener(TOUCH ? 'click' : 'mouseover', function (e) {
       var row = e.target.closest && e.target.closest('.prow');
       if (!row) return;
-      if (row.dataset.id !== infoCur) pickProgram(row.dataset.id);
       progOn(row.dataset.id);
+      if (TOUCH) setPin(row.dataset.id); else pickProgram(row.dataset.id);
     });
     if (!TOUCH) {
       plistEl.addEventListener('click', function (e) {
         var row = e.target.closest && e.target.closest('.prow');
-        if (row) pickProgram(row.dataset.id);
+        if (row) setPin(row.dataset.id);
       });
       plistEl.addEventListener('mouseleave', progOff);
     }
+  }
+  /* мышка ушла из списка в описание (за ссылкой или скриншотом) — описание не меняется */
+  if (infoEl && !TOUCH) {
+    infoEl.addEventListener('mouseenter', function () { clearTimeout(revertT); });
+    infoEl.addEventListener('mouseleave', infoRevert);
   }
   /* телефон: касание карточки = наведение. iPhone не всегда шлёт «мышиные» события
      обычным блокам, поэтому подсветку вешаем ещё и на касание */
@@ -3326,7 +3361,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-28',
+    build: '2026-11-07-3 glass-trial-29',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
