@@ -806,6 +806,7 @@ body{
 .lens{position:fixed; left:0; top:0; z-index:70; border-radius:50%; overflow:hidden; pointer-events:none; opacity:0;
   transition:opacity .18s ease; will-change:transform}
 .lens.on{opacity:1}
+.lensView.warp{filter:url(#lensWarp)}
 .lensView{position:absolute; inset:0; overflow:hidden; background:#000; isolation:isolate; border-radius:50%;
   -webkit-mask-image:radial-gradient(circle closest-side, #000 99%, transparent 100%); mask-image:radial-gradient(circle closest-side, #000 99%, transparent 100%)}
 /* каждый канал: копия листа × сплошной цвет (multiply) = только этот канал; каналы складываются через screen */
@@ -3399,7 +3400,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-08-11 lupa-inerciya',
+    build: '2026-11-08-12 lupa-vdavlennaya-slabaya-ca',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3445,12 +3446,34 @@ body{
   (function lensInit() {
     var L = TOUCH ? 170 : 220;            /* диаметр линзы, px экрана */
     var MAG = TOUCH ? 3 : 2.2;            /* увеличение относительно того, что видно на экране */
-    var SPLIT = TOUCH ? 0.05 : 0.075;     /* расхождение каналов: на краю ≈ SPLIT × радиус линзы */
+    var SPLIT = TOUCH ? 0.02 : 0.025;     /* расхождение каналов: на краю ≈ SPLIT × радиус линзы (≈ 2–3 px) */
+    var BULGE = TOUCH ? -56 : -72;        /* вдавленное стекло: к краям изображение растягивается и гнётся */
+
+    /* карта смещений для вдавленного стекла: центр не трогаем, к краю — резко сильнее */
+    var cv = document.createElement('canvas');
+    cv.width = cv.height = 128;
+    var g2 = cv.getContext('2d'), img = g2.createImageData(128, 128);
+    for (var yy = 0; yy < 128; yy++) for (var xx = 0; xx < 128; xx++) {
+      var ddx = (xx - 63.5) / 63.5, ddy = (yy - 63.5) / 63.5, kk = 4 * (yy * 128 + xx);
+      var rr = Math.sqrt(ddx * ddx + ddy * ddy), ff = Math.pow(Math.min(1, rr), 2.4), ln = rr || 1;
+      img.data[kk] = Math.round(128 + 127 * ff * ddx / ln);
+      img.data[kk + 1] = Math.round(128 + 127 * ff * ddy / ln);
+      img.data[kk + 2] = 128; img.data[kk + 3] = 255;
+    }
+    g2.putImageData(img, 0, 0);
+    var wsvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    wsvg.setAttribute('width', '0'); wsvg.setAttribute('height', '0'); wsvg.setAttribute('aria-hidden', 'true');
+    wsvg.style.position = 'absolute';
+    /* одна операция смещения поверх уже собранной картинки — видеокарта делает её за один проход */
+    wsvg.innerHTML = '<filter id="lensWarp" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">' +
+      '<feImage href="' + cv.toDataURL('image/png') + '" x="0" y="0" width="' + L + '" height="' + L + '" preserveAspectRatio="none" result="m"/>' +
+      '<feDisplacementMap in="SourceGraphic" in2="m" scale="' + BULGE + '" xChannelSelector="R" yChannelSelector="G"/></filter>';
+    document.body.appendChild(wsvg);
 
     var lens = document.createElement('div');
     lens.className = 'lens';
     lens.style.width = lens.style.height = L + 'px';
-    lens.innerHTML = '<div class="lensView">' +
+    lens.innerHTML = '<div class="lensView warp">' +
       '<div class="lensCh lensR"><i></i></div><div class="lensCh lensG"><i></i></div><div class="lensCh lensB"><i></i></div>' +
       '</div><div class="lensRim"></div>';
     document.body.appendChild(lens);
@@ -3585,11 +3608,16 @@ body{
        быстро доезжает и мягко останавливается. В линзе всегда то, что лежит под её центром */
     var RESP = 0.16, ZETA = 0.82;                       /* время отклика пружины, с; демпфирование (1 — без перелёта) */
     var OM = 2 * Math.PI / RESP, KS = OM * OM, CD = 2 * ZETA * OM;
-    var tx = 0, ty = 0, cx = 0, cy = 0, vx = 0, vy = 0, offY = 0, springT = 0, lastT = 0;
+    var tx = 0, ty = 0, cx = 0, cy = 0, vx = 0, vy = 0, offY = 0, springT = 0, lastT = 0, slow = [], warpOn = true;
     function step(now) {
       springT = 0;
       if (!shown) return;
-      var dt = Math.min(0.032, Math.max(0.001, (now - lastT) / 1000)); lastT = now;
+      var raw = now - lastT;
+      var dt = Math.min(0.032, Math.max(0.001, raw / 1000)); lastT = now;
+      /* если компьютер не тянет искажение (кадр дольше ~24 мс подряд) — выключаем только его, лупа остаётся */
+      if (raw > 0 && raw < 200) { slow.push(raw); if (slow.length > 24) slow.shift();
+        if (slow.length === 24 && warpOn) { var sum = 0; for (var q = 0; q < 24; q++) sum += slow[q];
+          if (sum / 24 > 24) { warpOn = false; lens.firstChild.classList.remove('warp'); } } }
       vx += (KS * (tx - cx) - CD * vx) * dt; cx += vx * dt;
       vy += (KS * (ty - cy) - CD * vy) * dt; cy += vy * dt;
       px = cx; py = cy; lx = cx; ly = cy + offY;
