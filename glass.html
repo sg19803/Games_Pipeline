@@ -806,7 +806,13 @@ body{
 .lens{position:fixed; left:0; top:0; z-index:70; border-radius:50%; overflow:hidden; pointer-events:none; opacity:0;
   transition:opacity .18s ease; will-change:transform}
 .lens.on{opacity:1}
-.lensView{position:absolute; inset:-48px; overflow:hidden; filter:url(#lensCA); background:#c8ccd0}
+.lensView{position:absolute; inset:0; overflow:hidden; background:#000; isolation:isolate; border-radius:50%;
+  -webkit-mask-image:radial-gradient(circle closest-side, #000 99%, transparent 100%); mask-image:radial-gradient(circle closest-side, #000 99%, transparent 100%)}
+/* каждый канал: копия листа × сплошной цвет (multiply) = только этот канал; каналы складываются через screen */
+.lensCh{position:absolute; inset:0; overflow:hidden; isolation:isolate; background:#c8ccd0}
+.lensCh i{position:absolute; inset:0; mix-blend-mode:multiply; pointer-events:none}
+.lensR i{background:#f00} .lensG i{background:#0f0} .lensB i{background:#00f}
+.lensG, .lensB{mix-blend-mode:screen}
 .lensClone{transition:none !important}
 .lensClone *{animation:none !important; transition:none !important}
 /* стеклянный край: тонкий блик сверху, тень внизу, лёгкая выпуклость */
@@ -818,6 +824,23 @@ body{
 @media (hover: none), (pointer: coarse){
   body.guest #sheet{-webkit-touch-callout:none; -webkit-user-select:none; user-select:none}
 }
+
+/* в копии внутри лупы — без размытия фона: на вид почти то же, а считать в разы легче */
+.lensClone, .lensClone *{-webkit-backdrop-filter:none !important; backdrop-filter:none !important}
+.lensClone .pulse, .lensClone .caustics, .lensClone .langbar{display:none !important}
+.lensClone{will-change:transform}
+/* мышка над листом остаётся стрелкой, в том числе над полями текста; во время правки — текстовый курсор */
+#sheet, #sheet input, #sheet textarea, #sheet [contenteditable]{cursor:default}
+#sheet input:focus, #sheet textarea:focus, #sheet [contenteditable="true"]:focus{cursor:text}
+#sheet button, #sheet .chk, #sheet .trow.has, #sheet .prow, #sheet .ilink, #sheet .lflag, #sheet .ndbtn{cursor:pointer}
+#sheet .ishot{cursor:zoom-in}
+
+/* в копиях внутри лупы — лёгкие тени вместо тяжёлых размытых: картинка та же по смыслу,
+   а перерисовка при движении в разы дешевле (именно тени давали тормоза) */
+.lensClone *{box-shadow:none !important; text-shadow:none !important; filter:none !important}
+.lensClone .node:not(.diamondWrap), .lensClone .frame, .lensClone .note, .lensClone .spanel,
+.lensClone .ninput, .lensClone .nperson, .lensClone .ndbtn, .lensClone .diamondInner, .lensClone .smiley{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.55), 0 1px 3px rgba(40,50,60,.28) !important}
 </style>
 </head>
 <body>
@@ -3378,7 +3401,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-33',
+    build: '2026-11-07-3 glass-trial-35',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3413,107 +3436,161 @@ body{
   bootRestore();
   langInit();
   /* =====================================================================
-     ЛУПА: стеклянная линза над листом с увеличением и хроматической аберрацией —
-     каналы R и B расходятся к краю линзы, в центре картинка чистая.
-     Компьютер — линза ходит за мышкой над листом.
-     Телефон — появляется, пока палец держат на экране (долгое нажатие), исчезает, когда отпустили.
+     ЛУПА: стеклянная линза над листом с увеличением и хроматической аберрацией.
+     Как устроено (чтобы не тормозило): внутри линзы три копии листа — красный, зелёный
+     и синий каналы. Красная копия чуть крупнее, синяя чуть мельче, поэтому в центре линзы
+     каналы совпадают, а к краям расходятся всё сильнее — как у настоящей линзы.
+     Всё это — слои видеокарты: при движении мыши они только сдвигаются, ничего не перерисовывается.
+     Подсветка на листе переносится в копии точечно, по изменившимся элементам.
+     Компьютер — линза ходит за мышкой над листом. Телефон — появляется при долгом нажатии.
      ===================================================================== */
   (function lensInit() {
     var L = TOUCH ? 170 : 220;            /* диаметр линзы, px экрана */
     var MAG = TOUCH ? 3 : 2.2;            /* увеличение относительно того, что видно на экране */
-    var CA = TOUCH ? 24 : 30;             /* сила расслоения каналов на краю линзы */
-    var BULGE = TOUCH ? -56 : -72;        /* искажение формы к краю: минус — вдавленное (вогнутое) стекло, плюс — выпуклое */
-    var NS = 'http://www.w3.org/2000/svg';
-
-    /* карта смещений: красный канал — смещение по X, зелёный — по Y, растёт от центра к краю */
-    var cv = document.createElement('canvas');
-    cv.width = cv.height = 128;
-    var cx = cv.getContext('2d'), img = cx.createImageData(128, 128);
-    for (var y = 0; y < 128; y++) for (var x = 0; x < 128; x++) {
-      var dx = (x - 63.5) / 63.5, dy = (y - 63.5) / 63.5, k = 4 * (y * 128 + x);
-      var r = Math.min(1, Math.sqrt(dx * dx + dy * dy)), f = Math.pow(r, 2.4);   /* центр чистый, к краю резко сильнее */
-      var len = Math.sqrt(dx * dx + dy * dy) || 1;
-      img.data[k] = Math.round(128 + 127 * f * dx / len);
-      img.data[k + 1] = Math.round(128 + 127 * f * dy / len);
-      img.data[k + 2] = 128; img.data[k + 3] = 255;
-    }
-    cx.putImageData(img, 0, 0);
-    var map = cv.toDataURL('image/png');
-
-    var svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('width', '0'); svg.setAttribute('height', '0');
-    svg.setAttribute('aria-hidden', 'true');
-    svg.style.position = 'absolute';
-    svg.innerHTML =
-      '<filter id="lensCA" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">' +
-      '<feImage href="' + map + '" x="0" y="0" width="' + (L + 96) + '" height="' + (L + 96) + '" preserveAspectRatio="none" result="m"/>' +
-      '<feDisplacementMap in="SourceGraphic" in2="m" scale="' + (BULGE + CA) + '" xChannelSelector="R" yChannelSelector="G" result="dr"/>' +
-      '<feColorMatrix in="dr" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0 1" result="r"/>' +
-      '<feDisplacementMap in="SourceGraphic" in2="m" scale="' + (BULGE - CA) + '" xChannelSelector="R" yChannelSelector="G" result="db"/>' +
-      '<feDisplacementMap in="SourceGraphic" in2="m" scale="' + BULGE + '" xChannelSelector="R" yChannelSelector="G" result="dg"/>' +
-      '<feColorMatrix in="db" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 0 1" result="b"/>' +
-      '<feColorMatrix in="dg" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 0 1" result="g"/>' +
-      '<feBlend mode="screen" in="r" in2="g" result="rg"/>' +
-      '<feBlend mode="screen" in="rg" in2="b"/>' +
-      '</filter>';
-    document.body.appendChild(svg);
+    var SPLIT = TOUCH ? 0.05 : 0.075;     /* расхождение каналов: на краю ≈ SPLIT × радиус линзы */
 
     var lens = document.createElement('div');
     lens.className = 'lens';
     lens.style.width = lens.style.height = L + 'px';
-    lens.innerHTML = '<div class="lensView"></div><div class="lensRim"></div>';
+    lens.innerHTML = '<div class="lensView">' +
+      '<div class="lensCh lensR"><i></i></div><div class="lensCh lensG"><i></i></div><div class="lensCh lensB"><i></i></div>' +
+      '</div><div class="lensRim"></div>';
     document.body.appendChild(lens);
-    var view = lens.firstChild;
+    var chs = lens.querySelectorAll('.lensCh');
+    var SCALE = [1 + SPLIT, 1, 1 - SPLIT];
 
-    var clone = null, dirty = true, shown = false, lastClone = 0, px = 0, py = 0, raf = 0;
-    function makeClone() {
-      var c = sheetEl.cloneNode(true);
-      c.removeAttribute('id');
-      var kill = c.querySelectorAll('.caustics, .langbar');
-      for (var i = 0; i < kill.length; i++) kill[i].parentNode.removeChild(kill[i]);
-      /* значения полей в копию не переносятся сами */
-      var src = sheetEl.querySelectorAll('input, textarea'), dst = c.querySelectorAll('input, textarea');
-      for (i = 0; i < src.length && i < dst.length; i++) {
-        if (dst[i].tagName === 'TEXTAREA') dst[i].textContent = src[i].value; else dst[i].setAttribute('value', src[i].value);
-        dst[i].scrollTop = src[i].scrollTop;
+    var clones = [], dirty = true, shown = false;
+    var px = 0, py = 0, lx = 0, ly = 0;
+    /* список элементов в порядке документа без содержимого svg (там бегут импульсы — в линзе их нет) */
+    function walk(root) {
+      var out = [], st = [root];
+      while (st.length) {
+        var e = st.pop();
+        out.push(e);
+        if (e.namespaceURI === 'http://www.w3.org/2000/svg' && e.tagName.toLowerCase() === 'svg') continue;
+        for (var c = e.lastElementChild; c; c = c.previousElementSibling) st.push(c);
       }
-      c.style.position = 'absolute'; c.style.left = '0'; c.style.top = '0';
-      c.style.transformOrigin = '0 0'; c.style.margin = '0'; c.style.pointerEvents = 'none';
-      c.classList.add('lensClone');
-      if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
-      view.appendChild(clone = c);
-      dirty = false; lastClone = Date.now();
+      return out;
+    }
+    var oArr = [], oIdx = null, cArr = [];
+    function reindex() {
+      oArr = walk(sheetEl); oIdx = new Map();
+      for (var i = 0; i < oArr.length; i++) oIdx.set(oArr[i], i);
+      cArr = clones.map(function (c) { return walk(c); });
+    }
+    function copyValues(from, to) {
+      var src = from.querySelectorAll ? from.querySelectorAll('input, textarea') : [], dst = to.querySelectorAll ? to.querySelectorAll('input, textarea') : [];
+      if (from.matches && from.matches('input, textarea')) { src = [from]; dst = [to]; }
+      for (var i = 0; i < src.length && i < dst.length; i++) {
+        if (dst[i].tagName === 'TEXTAREA') dst[i].textContent = src[i].value; else dst[i].setAttribute('value', src[i].value);
+      }
+    }
+    function makeClones() {
+      var base = sheetEl.cloneNode(true);
+      base.removeAttribute('id');
+      copyValues(sheetEl, base);
+      base.classList.add('lensClone');
+      base.style.position = 'absolute'; base.style.left = '0'; base.style.top = '0';
+      base.style.transformOrigin = '0 0'; base.style.margin = '0';
+      clones = [];
+      for (var c = 0; c < 3; c++) {
+        var cl = c === 0 ? base : base.cloneNode(true);
+        var host = chs[c];
+        if (host.firstChild && host.firstChild.classList && host.firstChild.classList.contains('lensClone')) host.removeChild(host.firstChild);
+        host.insertBefore(cl, host.firstChild);
+        clones.push(cl);
+      }
+      reindex();
+      dirty = false;
+    }
+    /* изменения на листе переносим в копии точечно: атрибут — в тот же элемент,
+       новое содержимое блока — копией только этого блока. Полная пересборка — только в крайнем случае */
+    var pend = [], pendT = 0;
+    function flush() {
+      pendT = 0;
+      if (!clones.length) { pend = []; return; }
+      var structural = false;
+      for (var i = 0; i < pend.length; i++) {
+        var p = pend[i], k = oIdx.get(p.el);
+        if (k === undefined) { if (p.el.isConnected && p.el !== sheetEl) dirty = true; continue; }
+        if (p.el === sheetEl && p.kind === 'tree') { dirty = true; continue; }
+        for (var c = 0; c < clones.length; c++) {
+          var e = cArr[c][k];
+          if (!e) { dirty = true; break; }
+          if (p.kind === 'attr') {
+            var v = p.el.getAttribute(p.name);
+            if (v === null) e.removeAttribute(p.name); else e.setAttribute(p.name, v);
+          } else if (p.kind === 'val') {
+            copyValues(p.el, e);
+          } else {
+            var n = p.el.cloneNode(true);
+            copyValues(p.el, n);
+            if (e.parentNode) e.parentNode.replaceChild(n, e);
+            structural = true;
+          }
+        }
+        if (dirty) break;
+      }
+      pend = [];
+      if (dirty) { if (shown) makeClones(); return; }
+      if (structural) reindex();
+    }
+    function queue(item) {
+      pend.push(item);
+      if (!pendT) pendT = setTimeout(flush, 30);
     }
     if (window.MutationObserver) {
-      new MutationObserver(function () { dirty = true; }).observe(sheetEl,
-        { subtree: true, childList: true, attributes: true, characterData: true });
+      new MutationObserver(function (recs) {
+        for (var i = 0; i < recs.length; i++) {
+          var rec = recs[i], t = rec.target;
+          if (t && t.nodeType !== 1) t = t.parentNode;
+          if (!t || (t.closest && t.closest('svg'))) continue;
+          if (rec.type === 'attributes') queue({ kind: 'attr', el: t, name: rec.attributeName });
+          else queue({ kind: 'tree', el: t });
+        }
+      }).observe(sheetEl, { subtree: true, childList: true, attributes: true, characterData: true });
     }
-    sheetEl.addEventListener('input', function () { dirty = true; }, true);
+    sheetEl.addEventListener('input', function (e) {
+      var t = e.target;
+      if (t && t.matches && t.matches('input, textarea')) queue({ kind: 'val', el: t });
+    }, true);
+
+    /* положение листа на экране запоминаем; обновляем при прокрутке, изменении окна и масштаба */
+    var SR = null, SS = 1;
+    function measure() {
+      var r = sheetEl.getBoundingClientRect();
+      SR = { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+      SS = r.width / (sheetEl.offsetWidth || 1);
+    }
+    measure();
+    window.addEventListener('resize', function () { setTimeout(measure, 50); });
+    document.addEventListener('scroll', function () { measure(); if (shown) place(); }, true);
+    document.addEventListener('keydown', function () { setTimeout(measure, 50); });
+    document.addEventListener('wheel', function () { setTimeout(measure, 50); }, { passive: true });
+    setInterval(function () { if (!shown) measure(); }, 1000);
+    function overSheet(x, y) {
+      var r = SR;
+      return r && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    }
 
     function place() {
-      raf = 0;
       if (!shown) return;
-      if (!clone || (dirty && Date.now() - lastClone > 120)) makeClone();
-      var r = sheetEl.getBoundingClientRect();
-      var s = r.width / sheetEl.offsetWidth;          /* текущий масштаб листа на экране */
-      var Z = s * MAG;
-      var u = (px - r.left) / s, v = (py - r.top) / s;  /* точка под курсором в координатах листа */
-      clone.style.transform = 'translate(' + (L / 2 + 48 - u * Z) + 'px,' + (L / 2 + 48 - v * Z) + 'px) scale(' + Z + ')';   /* +48 — запас вокруг линзы, чтобы края не цвели */
-      lens.style.transform = 'translate(' + (lx - L / 2) + 'px,' + (ly - L / 2) + 'px)';
+      if (!clones.length || dirty) makeClones();
+      var u = (px - SR.left) / SS, v = (py - SR.top) / SS;   /* точка под курсором в координатах листа */
+      for (var c = 0; c < 3; c++) {
+        var Z = SS * MAG * SCALE[c];
+        clones[c].style.transform = 'translate3d(' + (L / 2 - u * Z) + 'px,' + (L / 2 - v * Z) + 'px,0) scale(' + Z + ')';
+      }
+      lens.style.transform = 'translate3d(' + (lx - L / 2) + 'px,' + (ly - L / 2) + 'px,0)';
     }
-    var lx = 0, ly = 0;
-    function show(x, y, lensX, lensY) {
-      px = x; py = y; lx = lensX; ly = lensY;
+    function show(x, y, ax, ay) {
+      px = x; py = y; lx = ax; ly = ay;
       if (!shown) { shown = true; lens.classList.add('on'); }
-      if (!raf) raf = requestAnimationFrame(place);
+      place();   /* сразу, без ожидания кадра: линза не отстаёт от стрелки */
     }
     function hide() {
       if (!shown) return;
       shown = false; lens.classList.remove('on');
-    }
-    function overSheet(x, y) {
-      var r = sheetEl.getBoundingClientRect();
-      return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
     }
 
     if (!TOUCH) {
@@ -3522,20 +3599,19 @@ body{
       }, { passive: true });
       document.addEventListener('mouseleave', hide);
       window.addEventListener('blur', hide);
-      document.addEventListener('scroll', function () { if (shown && !raf) raf = requestAnimationFrame(place); }, true);
       return;
     }
 
-    /* телефон: держишь палец ~0,35 с на месте — появляется лупа над пальцем, ведёшь — она идёт следом */
+    /* телефон: держишь палец ~0,35 с на месте — над пальцем появляется лупа, ведёшь — идёт следом */
     var holdT = 0, sx = 0, sy = 0, active = false;
-    function at(t) { return { x: t.clientX, y: t.clientY, lx: t.clientX, ly: t.clientY - L * 0.75 }; }
     document.addEventListener('touchstart', function (e) {
       if (e.touches.length !== 1) { clearTimeout(holdT); return; }
-      var p = at(e.touches[0]); sx = p.x; sy = p.y;
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY;
       clearTimeout(holdT);
       holdT = setTimeout(function () {
+        measure();
         if (!overSheet(sx, sy)) return;
-        active = true; dirty = true;
+        active = true;
         show(sx, sy, sx, sy - L * 0.75);
       }, 350);
     }, { passive: true });
@@ -3546,8 +3622,7 @@ body{
         return;
       }
       e.preventDefault();                        /* пока лупа на экране — страница не прокручивается */
-      var p = at(t);
-      show(p.x, p.y, p.lx, p.ly);
+      show(t.clientX, t.clientY, t.clientX, t.clientY - L * 0.75);
     }, { passive: false });
     function end() { clearTimeout(holdT); if (active) { active = false; hide(); } }
     document.addEventListener('touchend', end, { passive: true });
