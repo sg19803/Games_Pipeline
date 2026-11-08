@@ -75,7 +75,7 @@ button{font:inherit; color:inherit; border:0; background:none; padding:0; cursor
   background:linear-gradient(180deg, rgba(5,13,17,.86), rgba(5,13,17,.62));
   -webkit-backdrop-filter:blur(20px) saturate(160%); backdrop-filter:blur(20px) saturate(160%);
   box-shadow:0 1px 0 rgba(255,255,255,.06)}
-.top h1{flex:1 1 auto; margin:0; font-size:17px; line-height:22px; font-weight:600; letter-spacing:-.022em; color:#e9eef1;
+.top h1{flex:1 1 auto; min-width:0; margin:0; font-size:17px; line-height:22px; font-weight:600; letter-spacing:-.022em; color:#e9eef1;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .flags{display:flex; gap:4px; flex:0 0 auto}
 .flags button{width:24px; height:16px; display:block}
@@ -1337,11 +1337,21 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     closeSheet(); showScreen(t.dataset.scr); window.scrollTo(0, 0);
   });
 
+  /* заголовок всегда целиком: длинный (испанский) — шрифт меньше; если и так не влез — в две строки */
+  function fitTitle() {
+    var h = document.getElementById('appTitle'), fs = 17;
+    h.style.whiteSpace = 'nowrap'; h.style.fontSize = fs + 'px'; h.style.lineHeight = '22px';
+    while (fs > 13 && h.scrollWidth > h.clientWidth + .5) { fs -= .5; h.style.fontSize = fs + 'px'; }
+    if (h.scrollWidth > h.clientWidth + .5) { h.style.whiteSpace = 'normal'; h.style.fontSize = '15px'; h.style.lineHeight = '18px'; }
+  }
+  window.addEventListener('resize', function () { fitTitle(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fitTitle(); });
   /* ---------- язык ---------- */
   function renderAll() {
     document.documentElement.lang = LANG;
     document.title = L(UI.title);
     document.getElementById('appTitle').textContent = L(UI.title);
+    fitTitle();
     var t = document.querySelectorAll('[data-t]');
     for (var i = 0; i < t.length; i++) t[i].textContent = L(MUI[t[i].dataset.t]);
     document.getElementById('hintSchema').textContent = L(MUI.hintSchema);
