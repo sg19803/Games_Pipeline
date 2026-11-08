@@ -57,13 +57,15 @@ body{
   font-family:"InterPage","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; font-optical-sizing:auto;
   font-size:17px; line-height:25px; letter-spacing:-.022em; color:var(--gl-ink);
   -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  background:#050d11;
+  overscroll-behavior-y:none;
+}
+/* фон стоит на месте при прокрутке (на iPhone обычный «fixed» у фона не работает — поэтому отдельный слой) */
+body::before{content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
   background:
     radial-gradient(700px 520px at 100% -10%, rgba(78,168,196,.85), rgba(40,110,135,.35) 45%, transparent 75%),
     radial-gradient(600px 480px at 0% 110%, rgba(20,70,88,.55), transparent 65%),
-    linear-gradient(160deg, #0b1c22 0%, #050d11 55%, #020507 100%) fixed;
-  background-color:#050d11;
-  overscroll-behavior-y:none;
-}
+    linear-gradient(160deg, #0b1c22 0%, #050d11 55%, #020507 100%)}
 html.apple body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","InterPage",sans-serif}
 button{font:inherit; color:inherit; border:0; background:none; padding:0; cursor:pointer}
 
@@ -290,7 +292,7 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
 .mlG, .mlB{mix-blend-mode:screen}
 .mlSrc{position:absolute; left:0; top:0; transform-origin:0 0; will-change:auto !important;
   font-size:17px; line-height:25px; letter-spacing:-.022em; color:var(--gl-ink); text-align:left; font-weight:400;
-  background:radial-gradient(700px 520px at 100% -10%, rgba(78,168,196,.85), rgba(40,110,135,.35) 45%, transparent 75%), linear-gradient(160deg, #0b1c22 0%, #050d11 55%, #020507 100%);
+  background:radial-gradient(700px 520px at 100% -10%, rgba(78,168,196,.85), rgba(40,110,135,.35) 45%, transparent 75%), radial-gradient(600px 480px at 0% 110%, rgba(20,70,88,.55), transparent 65%), linear-gradient(160deg, #0b1c22 0%, #050d11 55%, #020507 100%);
   background-repeat:no-repeat; background-color:#050d11}
 .mlSrc *{transition:none !important; animation:none !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; will-change:auto !important}
 .mlRim{position:absolute; inset:0; border-radius:50%; pointer-events:none;
@@ -328,6 +330,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   font-size:17px; line-height:25px; letter-spacing:-.022em; color:var(--gl-ink); text-align:left; font-weight:400;
   background:
     radial-gradient(700px 520px at 100% -10%, rgba(78,168,196,.85), rgba(40,110,135,.35) 45%, transparent 75%),
+    radial-gradient(600px 480px at 0% 110%, rgba(20,70,88,.55), transparent 65%),
     linear-gradient(160deg, #0b1c22 0%, #050d11 55%, #020507 100%);
   background-size:100vw 100vh; background-repeat:no-repeat; background-color:#050d11}
 .gsrc *{transition:none !important; animation:none !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; will-change:auto !important}
@@ -1497,7 +1500,8 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
       if (Math.abs(w - p.w) > 1 || Math.abs(h - p.h) > 1) buildMap(p, w, h);
       var x = -r.left - window.scrollX, y = -r.top - window.scrollY;
       var tf = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)';
-      for (var i = 0; i < p.srcs.length; i++) p.srcs[i].style.transform = tf;
+      var bp = window.scrollX + 'px ' + window.scrollY + 'px';     /* фон в копии стоит там же, где на экране */
+      for (var i = 0; i < p.srcs.length; i++) { p.srcs[i].style.transform = tf; p.srcs[i].style.backgroundPosition = bp; }
     }
     var until = 0, raf = 0;
     function tick() {
@@ -1606,6 +1610,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
       for (var c = 0; c < 3; c++) {
         var Z = MAG * SCALE[c];
         srcs[c].style.transform = 'translate(' + (L / 2 - u * Z).toFixed(1) + 'px,' + (L / 2 - v * Z).toFixed(1) + 'px) scale(' + Z + ')';
+        srcs[c].style.backgroundPosition = window.scrollX + 'px ' + window.scrollY + 'px';
       }
       lens.style.transform = 'translate(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px) scale(' + sc.toFixed(3) + ')';
       var o = L / 2 * sc * 0.72;
