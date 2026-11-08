@@ -2,6 +2,27 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
+<script>
+/* с телефона – сразу мобильная версия; с компьютера и планшета – эта. Ссылка «Десктоп-версия» в мобильной
+   приходит сюда с ?desktop=1 – тогда до закрытия вкладки остаёмся здесь. Владелец (?owner=1) – всегда здесь */
+(function () {
+  try {
+    var q = location.search;
+    if (/[?&]desktop=1(&|$)/.test(q)) {
+      sessionStorage.setItem('gp_desktop', '1');
+      history.replaceState(null, '', location.pathname + q.replace(/([?&])desktop=1(&|$)/, '$1').replace(/[?&]$/, '') + location.hash);
+      return;
+    }
+    if (/[?&]owner=1(&|#|$)/.test(q) || sessionStorage.getItem('gp_desktop')) return;
+    var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    var small = Math.min(screen.width, screen.height) < 700;
+    if (coarse && small) {
+      var lg = /[?&]lang=([a-z]{2})/.exec(q);
+      location.replace('mobile' + (lg ? '?lang=' + lg[1] : '') + location.hash);
+    }
+  } catch (e) {}
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Как рождается рекламное видео для игры: от брифа до выгрузки – роли, этапы, программы и папки проекта.">
 <meta property="og:type" content="website">
@@ -3435,7 +3456,7 @@ body.tab-hidden .tabPoster{display:flex}
 
   /* отладочный крючок – для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-08-24 title-headline',
+    build: '2026-11-08-25 phone-to-mobile',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
