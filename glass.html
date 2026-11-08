@@ -754,7 +754,7 @@ body{
 .isum img{width:36px; height:36px; filter:drop-shadow(0 1px 2px rgba(0,0,0,.22))}
 
 /* стеклянная подсказка у папки */
-.gtip{position:fixed; z-index:60; max-width:320px; padding:10px 14px; border-radius:14px; pointer-events:none;
+.gtip{position:fixed; z-index:80; max-width:320px; padding:10px 14px; border-radius:14px; pointer-events:none;
   font-size:13px; line-height:18px; letter-spacing:-.01em; color:var(--gl-ink);
   background:linear-gradient(180deg, rgba(236,241,244,.78), rgba(220,227,232,.70));
   -webkit-backdrop-filter:blur(16px) saturate(160%); backdrop-filter:blur(16px) saturate(160%);
@@ -2947,7 +2947,7 @@ body{
     if (!t) { var nm = path.split('/').pop(); t = FTIP[nm]; }
     return t ? L(t) : '';
   }
-  function tipShow(row) {
+  function tipShow(row, ev) {
     var path = row.dataset.path, txt = tipText(path);
     if (!txt) { tipHide(); return; }
     tipEl.innerHTML = '<b>' + esc(TN[path].name) + '</b>' + esc(txt);
@@ -2956,8 +2956,14 @@ body{
     tipEl.style.left = '0px'; tipEl.style.top = '0px';
     tipEl.classList.add('on');
     var tw = tipEl.offsetWidth, th = tipEl.offsetHeight;
+    /* на компьютере лупа стоит под мышкой — подсказку ставим сбоку от линзы, чтобы её не закрывало */
+    var LR = window.__lensR || 0;
+    if (ev && LR) {
+      x = ev.clientX + LR + 14; y = ev.clientY - th / 2;
+      if (x + tw > window.innerWidth - 8) x = ev.clientX - LR - 14 - tw;
+    }
     if (x + tw > window.innerWidth - 8) x = window.innerWidth - 8 - tw;
-    if (y + th > window.innerHeight - 8) y = r.top - 6 - th;
+    if (y + th > window.innerHeight - 8) y = (ev && LR) ? window.innerHeight - 8 - th : r.top - 6 - th;
     tipEl.style.left = Math.round(Math.max(8, x)) + 'px';
     tipEl.style.top = Math.round(Math.max(8, y)) + 'px';
   }
@@ -2977,9 +2983,10 @@ body{
       }
     });
     if (!TOUCH) {
-      treeEl.addEventListener('mouseover', function (e) {
+      /* подсказка едет рядом с мышкой (и линзой), пока мышка над строкой папки */
+      treeEl.addEventListener('mousemove', function (e) {
         var row = e.target.closest && e.target.closest('.trow');
-        if (row) tipShow(row);
+        if (row) tipShow(row, e); else tipHide();
       });
       treeEl.addEventListener('mouseleave', tipHide);
     }
@@ -3402,7 +3409,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-43',
+    build: '2026-11-07-3 glass-trial-44',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3447,6 +3454,7 @@ body{
      ===================================================================== */
   (function lensInit() {
     var L = TOUCH ? 170 : 220;            /* диаметр линзы, px экрана */
+    if (!TOUCH) window.__lensR = L / 2;
     var MAG = TOUCH ? 3 : 2.2;            /* увеличение относительно того, что видно на экране */
     var SPLIT = TOUCH ? 0.02 : 0.025;     /* расхождение каналов: на краю ≈ SPLIT × радиус линзы (≈ 2–3 px) */
     var BULGE = TOUCH ? -25 : -35;       /* вдавленное стекло: к краям изображение растягивается и гнётся (на краю до ~75 px) */
