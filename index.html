@@ -3400,7 +3400,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-08-17 lupa-iskazhenie-v-dvizhenii',
+    build: '2026-11-08-18 lupa-inerciya-medlennee',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3606,7 +3606,7 @@ body{
     }
     /* инерция: линза догоняет стрелку пружиной (как физический предмет) — чуть отстаёт,
        быстро доезжает и мягко останавливается. В линзе всегда то, что лежит под её центром */
-    var RESP = 0.38, ZETA = 0.85;                       /* время отклика пружины, с; демпфирование (1 — без перелёта) */
+    var RESP = 0.6, ZETA = 0.85;                       /* время отклика пружины, с; демпфирование (1 — без перелёта) */
     var OM = 2 * Math.PI / RESP, KS = OM * OM, CD = 2 * ZETA * OM;
     var tx = 0, ty = 0, cx = 0, cy = 0, vx = 0, vy = 0, offY = 0, springT = 0, lastT = 0;
     function step(now) {
