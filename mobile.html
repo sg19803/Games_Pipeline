@@ -1711,7 +1711,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   })();
 
   /* свежая версия: страница хранится в кэше телефона до 10 минут – сверяемся с сервером и один раз перезагружаемся */
-  var MBUILD = 'm-2026-11-08-10';
+  var MBUILD = 'm-2026-11-08-11';
   (function freshCheck() {
     try {
       fetch(location.pathname + '?nc=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
@@ -1720,7 +1720,8 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
         var k = 'gp_m_reloaded_' + m[1];
         if (sessionStorage.getItem(k)) return;
         sessionStorage.setItem(k, '1');
-        location.reload();
+        /* новый адрес с номером версии — мимо кэша и телефона, и сервера */
+        location.replace(location.pathname + '?v=' + encodeURIComponent(m[1]) + location.hash);
       }).catch(function () {});
     } catch (e) {}
   })();
