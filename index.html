@@ -806,7 +806,7 @@ body{
 .lens{position:fixed; left:0; top:0; z-index:70; border-radius:50%; overflow:hidden; pointer-events:none; opacity:0;
   transition:opacity .18s ease; will-change:transform}
 .lens.on{opacity:1}
-.lensView{position:absolute; inset:-24px; overflow:hidden; filter:url(#lensCA); background:#c8ccd0}
+.lensView{position:absolute; inset:-48px; overflow:hidden; filter:url(#lensCA); background:#c8ccd0}
 .lensClone{transition:none !important}
 .lensClone *{animation:none !important; transition:none !important}
 /* стеклянный край: тонкий блик сверху, тень внизу, лёгкая выпуклость */
@@ -3376,7 +3376,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-08-6 lupa',
+    build: '2026-11-08-7 lupa-iskazhenie',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3419,7 +3419,8 @@ body{
   (function lensInit() {
     var L = TOUCH ? 170 : 220;            /* диаметр линзы, px экрана */
     var MAG = TOUCH ? 3 : 2.2;            /* увеличение относительно того, что видно на экране */
-    var CA = TOUCH ? 10 : 12;             /* сила расслоения каналов на краю линзы */
+    var CA = TOUCH ? 24 : 30;             /* сила расслоения каналов на краю линзы */
+    var BULGE = TOUCH ? 56 : 72;          /* искажение формы к краю линзы, как у толстого стекла */
     var NS = 'http://www.w3.org/2000/svg';
 
     /* карта смещений: красный канал — смещение по X, зелёный — по Y, растёт от центра к краю */
@@ -3428,7 +3429,7 @@ body{
     var cx = cv.getContext('2d'), img = cx.createImageData(128, 128);
     for (var y = 0; y < 128; y++) for (var x = 0; x < 128; x++) {
       var dx = (x - 63.5) / 63.5, dy = (y - 63.5) / 63.5, k = 4 * (y * 128 + x);
-      var r = Math.min(1, Math.sqrt(dx * dx + dy * dy)), f = r * r;   /* к краю сильнее */
+      var r = Math.min(1, Math.sqrt(dx * dx + dy * dy)), f = Math.pow(r, 2.4);   /* центр чистый, к краю резко сильнее */
       var len = Math.sqrt(dx * dx + dy * dy) || 1;
       img.data[k] = Math.round(128 + 127 * f * dx / len);
       img.data[k + 1] = Math.round(128 + 127 * f * dy / len);
@@ -3443,12 +3444,13 @@ body{
     svg.style.position = 'absolute';
     svg.innerHTML =
       '<filter id="lensCA" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">' +
-      '<feImage href="' + map + '" x="0" y="0" width="' + (L + 48) + '" height="' + (L + 48) + '" preserveAspectRatio="none" result="m"/>' +
-      '<feDisplacementMap in="SourceGraphic" in2="m" scale="' + CA + '" xChannelSelector="R" yChannelSelector="G" result="dr"/>' +
+      '<feImage href="' + map + '" x="0" y="0" width="' + (L + 96) + '" height="' + (L + 96) + '" preserveAspectRatio="none" result="m"/>' +
+      '<feDisplacementMap in="SourceGraphic" in2="m" scale="' + (BULGE + CA) + '" xChannelSelector="R" yChannelSelector="G" result="dr"/>' +
       '<feColorMatrix in="dr" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0 1" result="r"/>' +
-      '<feDisplacementMap in="SourceGraphic" in2="m" scale="' + (-CA) + '" xChannelSelector="R" yChannelSelector="G" result="db"/>' +
+      '<feDisplacementMap in="SourceGraphic" in2="m" scale="' + (BULGE - CA) + '" xChannelSelector="R" yChannelSelector="G" result="db"/>' +
+      '<feDisplacementMap in="SourceGraphic" in2="m" scale="' + BULGE + '" xChannelSelector="R" yChannelSelector="G" result="dg"/>' +
       '<feColorMatrix in="db" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 0 1" result="b"/>' +
-      '<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 0 1" result="g"/>' +
+      '<feColorMatrix in="dg" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 0 1" result="g"/>' +
       '<feBlend mode="screen" in="r" in2="g" result="rg"/>' +
       '<feBlend mode="screen" in="rg" in2="b"/>' +
       '</filter>';
@@ -3494,7 +3496,7 @@ body{
       var s = r.width / sheetEl.offsetWidth;          /* текущий масштаб листа на экране */
       var Z = s * MAG;
       var u = (px - r.left) / s, v = (py - r.top) / s;  /* точка под курсором в координатах листа */
-      clone.style.transform = 'translate(' + (L / 2 + 24 - u * Z) + 'px,' + (L / 2 + 24 - v * Z) + 'px) scale(' + Z + ')';   /* +24 — запас вокруг линзы, чтобы края не цвели */
+      clone.style.transform = 'translate(' + (L / 2 + 48 - u * Z) + 'px,' + (L / 2 + 48 - v * Z) + 'px) scale(' + Z + ')';   /* +48 — запас вокруг линзы, чтобы края не цвели */
       lens.style.transform = 'translate(' + (lx - L / 2) + 'px,' + (ly - L / 2) + 'px)';
     }
     var lx = 0, ly = 0;
