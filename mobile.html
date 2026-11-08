@@ -1590,7 +1590,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     var lens = document.createElement('div');
     lens.className = 'mlens'; lens.style.setProperty('--L', L + 'px');
     lens.innerHTML = '<div class="mlView"><div class="mlCh mlR"><div class="mlSrc"></div><i></i></div><div class="mlCh mlG"><div class="mlSrc"></div><i></i></div><div class="mlCh mlB"><div class="mlSrc"></div><i></i></div></div>' +
-      '<div class="mlRim"></div><div class="mlIcon"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg></div>';
+      '<div class="mlRim"></div>';
     document.body.appendChild(lens);
     var xb = document.createElement('button');
     xb.className = 'mlX'; xb.setAttribute('aria-label', 'Закрыть лупу');
@@ -1725,7 +1725,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   })();
 
   /* свежая версия: страница хранится в кэше телефона до 10 минут – сверяемся с сервером и один раз перезагружаемся */
-  var MBUILD = 'm-2026-11-08-13';
+  var MBUILD = 'm-2026-11-08-14';
   (function freshCheck() {
     try {
       fetch(location.pathname + '?nc=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {

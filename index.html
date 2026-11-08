@@ -3456,7 +3456,7 @@ body.tab-hidden .tabPoster{display:flex}
 
   /* отладочный крючок – для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-08-25 phone-to-mobile',
+    build: '2026-11-08-26 lens-no-icon',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3731,10 +3731,6 @@ body.tab-hidden .tabPoster{display:flex}
     var SMALL = 50 / L, LSt = SMALL, vs = 0, big = false, sRaf = 0, sLast = 0;
     LS = SMALL;
     lens.classList.add('dockable');
-    var ico = document.createElement('div');
-    ico.className = 'lensIcon';
-    ico.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg>';
-    lens.appendChild(ico);
     var xb = document.createElement('button');
     xb.className = 'lensX'; xb.setAttribute('aria-label', '✕');
     xb.innerHTML = '<svg viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8"/></svg>';
