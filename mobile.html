@@ -1704,6 +1704,21 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     reclone(); place();
     window.__lens = { grow: grow, dock: toDock };
   })();
+
+  /* свежая версия: страница хранится в кэше телефона до 10 минут — сверяемся с сервером и один раз перезагружаемся */
+  var MBUILD = 'm-2026-11-08-8';
+  (function freshCheck() {
+    try {
+      fetch(location.pathname + '?nc=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
+        var m = /MBUILD = '([^']+)'/.exec(t || '');
+        if (!m || m[1] === MBUILD) return;
+        var k = 'gp_m_reloaded_' + m[1];
+        if (sessionStorage.getItem(k)) return;
+        sessionStorage.setItem(k, '1');
+        location.reload();
+      }).catch(function () {});
+    } catch (e) {}
+  })();
   window.__m = { show: showScreen, open: openSheet, close: closeSheet, lang: function () { return LANG; } };
 
 })();
