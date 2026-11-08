@@ -53,7 +53,7 @@ html.apple body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inte
 .copy a:hover{color:var(--blue); border-bottom-color:rgba(0,113,227,.35)}
 /* ---- панели сверху нет: только подпись автора, остальное окно — лист ---- */
 /* ---- полотно: белый лист на сером столе ---- */
-.scroller{flex:1 1 auto; overflow:auto; padding:28px 28px 84px; -webkit-overflow-scrolling:touch; display:flex}
+.scroller{flex:1 1 auto; overflow:auto; padding:48px 28px 84px; -webkit-overflow-scrolling:touch; display:flex}
 .scroller::-webkit-scrollbar{height:12px; width:12px}
 .scroller::-webkit-scrollbar-track{background:transparent}
 .scroller::-webkit-scrollbar-thumb{background:#d2d2d7; border-radius:6px; border:3px solid var(--bg)}
@@ -1726,7 +1726,7 @@ body{
   }
   function fit() {
     var aw = scroller.clientWidth - 56;
-    var ah = scroller.clientHeight - 112;   /* 28 сверху + 84 снизу (место под кнопку «Сохранить») */
+    var ah = scroller.clientHeight - 132;   /* 48 сверху (место под флаги) + 84 снизу (место под кнопку «Сохранить») */
     zoom = Math.max(0.25, Math.min(1, aw / SW, ah / SH));
     zoom = Math.round(zoom * 100) / 100;
     manual = false;
@@ -3359,7 +3359,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-08-4 opisanie-vozvrat-zakrep',
+    build: '2026-11-08-5 flagi-ne-obrezany',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
