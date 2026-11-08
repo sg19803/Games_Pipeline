@@ -237,11 +237,11 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
 
 /* ---- карта пайплайна ---- */
 .map{position:relative; margin:4px 0 0}
-.mband{position:absolute; border-radius:20px; background:var(--sheetBg); box-shadow:var(--sheetShadow)}
-.mhead{position:absolute; z-index:2; padding:0 8px 0 2px; border-radius:11px; background:rgba(200,214,220,.96); box-shadow:0 0 0 2px rgba(200,214,220,.96); display:flex; align-items:center; gap:6px; height:22px; font-size:12px; line-height:14px; font-weight:600; letter-spacing:.02em; text-transform:uppercase; color:#2f6f82}
+.mband{position:absolute; border-radius:16px; background:var(--sheetBg); box-shadow:var(--sheetShadow)}
+.mhead{position:absolute; z-index:2; padding:0 8px 0 2px; border-radius:11px; background:rgba(200,214,220,.96); box-shadow:0 0 0 2px rgba(200,214,220,.96); display:flex; align-items:center; gap:6px; height:20px; font-size:11px; line-height:14px; font-weight:600; letter-spacing:.02em; text-transform:uppercase; color:#2f6f82}
 .mhead b{display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:rgba(47,111,130,.16); font-size:11px}
 .mhead i{display:flex; color:#6f8f99} .mhead i svg{width:6px; height:10px}
-.mlbl{position:absolute; font-size:10px; line-height:12px; font-weight:600; color:#5a6a72; letter-spacing:.02em; text-transform:uppercase; pointer-events:none}
+.mlbl{position:absolute; font-size:9px; line-height:11px; font-weight:600; color:#5a6a72; letter-spacing:.02em; text-transform:uppercase; pointer-events:none}
 .mlbl.r{color:#c0392b} .mlbl.g{color:#1f7a44}
 .medges{position:absolute; left:0; top:0; overflow:visible; pointer-events:none}
 .me .ln{fill:none; stroke:#3f6fae; stroke-width:1.6; stroke-linejoin:round}
@@ -252,13 +252,13 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
 .schema.focus .me:not(.hot){opacity:.18}
 .me.hot .ln{stroke-width:2.6} .me.hot{filter:drop-shadow(0 0 3px rgba(90,160,255,.7))}
 .me.b.hot{filter:drop-shadow(0 0 3px rgba(240,80,70,.7))} .me.g.hot{filter:drop-shadow(0 0 3px rgba(60,200,110,.7))}
-.mn{position:absolute; display:flex; align-items:center; justify-content:center; padding:4px 9px; border-radius:11px; text-align:center;
+.mn{position:absolute; display:flex; align-items:center; justify-content:center; padding:2px 6px; border-radius:9px; text-align:center;
   background:var(--tintbg, none), var(--gl-tint); box-shadow:var(--gl-e4); color:#23292d; transition:opacity .25s ease, filter .25s ease, box-shadow .25s ease}
-.mn .t{display:block; min-width:0; font-size:11px; line-height:13px; font-weight:500; letter-spacing:-.01em; overflow:hidden}
+.mn .t{display:block; min-width:0; font-size:10px; line-height:12px; font-weight:500; letter-spacing:-.01em; overflow:hidden}
 .mn .dots{position:absolute; right:3px; top:2px; display:flex; gap:2px}
-.mn .dots i{width:6px; height:6px; border-radius:50%; background:hsl(var(--h),75%,52%); box-shadow:0 0 0 1px rgba(255,255,255,.7)}
+.mn .dots i{width:5px; height:5px; border-radius:50%; background:hsl(var(--h),75%,52%); box-shadow:0 0 0 1px rgba(255,255,255,.7)}
 .mn.key{background:var(--gl-greenFill); color:#1b5e36}
-.mn.key .t{font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:11.5px}
+.mn.key .t{font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:10.5px}
 .mn.peach{background:linear-gradient(180deg, rgba(200,140,80,.22), rgba(200,140,80,.08)), var(--gl-tint)}
 .mn.blue{background:linear-gradient(180deg, rgba(90,140,220,.24), rgba(90,140,220,.08)), var(--gl-tint)}
 .mn.done{background:linear-gradient(0deg, rgba(55,175,100,.50) 0%, rgba(55,175,100,.22) 40%, rgba(55,175,100,0) 85%), var(--gl-tint)}
@@ -278,6 +278,36 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
 .doneBtn svg path{fill:none; stroke:transparent; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round}
 .doneBtn.on{background:rgba(55,175,100,.22); color:#1b5e36}
 .doneBtn.on svg{background:#2fae5c; box-shadow:none} .doneBtn.on svg path{stroke:#fff}
+
+/* ---- лупа: маленькая стоит сверху справа; коснулся — выросла, тащишь пальцем; красный крестик — обратно ---- */
+.mlens{position:fixed; left:0; top:0; z-index:35; width:var(--L); height:var(--L); margin:calc(var(--L) / -2) 0 0 calc(var(--L) / -2);
+  border-radius:50%; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; will-change:transform}
+.mlView{position:absolute; inset:0; border-radius:50%; overflow:hidden; isolation:isolate; background:#050d11; filter:url(#mLensWarp);
+  -webkit-mask-image:radial-gradient(circle closest-side, #000 99%, transparent 100%); mask-image:radial-gradient(circle closest-side, #000 99%, transparent 100%)}
+.mlCh{position:absolute; inset:0; overflow:hidden; isolation:isolate; background:#050d11}
+.mlCh > i{position:absolute; inset:0; z-index:2; mix-blend-mode:multiply}
+.mlR > i{background:#f00} .mlG > i{background:#0f0} .mlB > i{background:#00f}
+.mlG, .mlB{mix-blend-mode:screen}
+.mlSrc{position:absolute; left:0; top:0; transform-origin:0 0; will-change:auto !important;
+  font-size:17px; line-height:25px; letter-spacing:-.022em; color:var(--gl-ink); text-align:left; font-weight:400;
+  background:radial-gradient(700px 520px at 100% -10%, rgba(78,168,196,.85), rgba(40,110,135,.35) 45%, transparent 75%), linear-gradient(160deg, #0b1c22 0%, #050d11 55%, #020507 100%);
+  background-repeat:no-repeat; background-color:#050d11}
+.mlSrc *{transition:none !important; animation:none !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; will-change:auto !important}
+.mlRim{position:absolute; inset:0; border-radius:50%; pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.55), inset 0 2px 1px rgba(255,255,255,.55),
+             inset 0 -10px 24px rgba(0,0,0,.18), inset 0 10px 30px rgba(255,255,255,.18),
+             0 0 0 1px rgba(20,30,40,.18), 0 10px 24px rgba(0,0,0,.28), 0 24px 60px rgba(0,0,0,.22);
+  background:radial-gradient(120% 90% at 30% 15%, rgba(255,255,255,.22), transparent 45%)}
+.mlIcon{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; transition:opacity .2s ease}
+.mlIcon svg{width:42%; height:42%; filter:drop-shadow(0 1px 3px rgba(0,0,0,.6))}
+.mlIcon svg *{fill:none; stroke:#fff; stroke-width:2.2; stroke-linecap:round}
+.mlens.big .mlIcon{opacity:0}
+.mlens:not(.big) .mlRim{box-shadow:inset 0 0 0 2px rgba(255,255,255,.7), 0 0 0 2px rgba(90,160,255,.55), 0 0 22px rgba(90,160,255,.55), 0 8px 18px rgba(0,0,0,.4)}
+.mlX{position:fixed; left:0; top:0; z-index:36; width:30px; height:30px; margin:-15px 0 0 -15px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #ff7a70, #e0443c 55%, #b8322b); box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 0 0 1.5px rgba(255,255,255,.85), 0 4px 10px rgba(0,0,0,.35);
+  display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .2s ease}
+.mlX.on{opacity:1; pointer-events:auto}
+.mlX svg{width:12px; height:12px} .mlX svg *{fill:none; stroke:#fff; stroke-width:2.4; stroke-linecap:round}
 /* ---- стекло как у лупы: под панелями — копия страницы, по краям она гнётся и расходится на цвета ---- */
 .rf{background:transparent !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; isolation:isolate}
 .gv{position:absolute; inset:0; z-index:-1; border-radius:inherit; overflow:hidden; pointer-events:none; background:#050d11}
@@ -880,13 +910,13 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
      по вертикали — как есть. Синие стрелки — порядок работы, зелёные — «нравится», красные — возврат. */
   var schemaEl = document.getElementById('schema');
   var STEP_EL = {}, EDGE_EL = [];
-  var LX = 16, RX = 344, GAP = 6;
+  var LX = 36, RX = 330, GAP = 8, CM = (LX + RX) / 2, LANE = 12, G = 40;
   function col(n, i, span) {
     var w = (RX - LX - (n - 1) * GAP) / n;
     span = span || 1;
     return { x: LX + i * (w + GAP), w: w * span + GAP * (span - 1) };
   }
-  function mid(w) { return { x: 180 - w / 2, w: w }; }
+  function mid(w) { return { x: CM - w / 2, w: w }; }
   var MAP = (function () {
     var N = {}, B = [], E = [], LBL = [];
     function n(id, c, y, h, cls) { N[id] = { x: c.x, y: y, w: c.w, h: h, cls: cls || '' }; }
@@ -894,55 +924,77 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
     function top(id) { return N[id].y; }
     function bot(id) { return N[id].y + N[id].h; }
     function e(a, b, pts, kind) { E.push({ a: a, b: b, pts: pts, k: kind || 'f' }); }
-    /* шина: от низа источника вниз до yb, вбок, вниз в верх цели */
     function bus(a, b, yb, fa, fb) { var x1 = cx(a, fa), x2 = cx(b, fb); e(a, b, [[x1, bot(a)], [x1, yb], [x2, yb], [x2, top(b)]]); }
+    function band(k, y0, y1) { B.push({ n: k, y: y0, h: y1 - y0 }); }
+    var HD = 36, PB = 16, BG = 30, y, y0;
 
-    B.push({ n: 0, y: 0, h: 136 });
-    n('in', mid(170), 30, 30, 'key');
-    n('b1', col(2, 0), 82, 42); n('b2', col(2, 1), 82, 42);
-    bus('in', 'b1', 71); bus('in', 'b2', 71);
+    /* 1. вход */
+    y0 = 0; y = y0 + HD;
+    n('in', mid(140), y, 24, 'key'); y += 24 + G;
+    n('b1', col(2, 0), y, 34); n('b2', col(2, 1), y, 34);
+    bus('in', 'b1', bot('in') + G / 2); bus('in', 'b2', bot('in') + G / 2);
+    y += 34; band(0, y0, y + PB);
 
-    B.push({ n: 1, y: 148, h: 288 });
-    n('scen', col(3, 0), 190, 46);
-    n('p1', col(3, 1), 190, 46, 'peach'); n('p2', col(3, 2), 190, 46, 'peach');
-    n('p3', col(3, 1), 254, 40, 'peach'); n('gmp', col(3, 2), 254, 40, 'blue');
-    LBL.push({ x: col(3, 1).x, y: 178, k: 'support' });
-    bus('b1', 'scen', 141); bus('b2', 'scen', 141);
+    /* 2. препродакшн */
+    y0 = y + PB + BG; y = y0 + HD + 14;
+    LBL.push({ x: col(3, 1).x, y: y - 15, k: 'support' });
+    n('scen', col(3, 0), y, 40); n('p1', col(3, 1), y, 40, 'peach'); n('p2', col(3, 2), y, 40, 'peach');
+    var yb12 = bot('b1') + (y0 - bot('b1')) / 2 + 2;
+    bus('b1', 'scen', yb12); bus('b2', 'scen', yb12);
+    y += 40 + G;
+    n('p3', col(3, 1), y, 34, 'peach'); n('gmp', col(3, 2), y, 34, 'blue');
     e('p1', 'p3', [[cx('p1'), bot('p1')], [cx('p1'), top('p3')]]);
-    e('p2', 'p3', [[cx('p2'), bot('p2')], [cx('p2'), 245], [cx('p3', .8), 245], [cx('p3', .8), top('p3')]]);
-    n('v20', col(3, 0), 322, 46); n('txt', col(3, 1), 322, 46); n('mus0', col(3, 2), 322, 46);
+    e('p2', 'p3', [[cx('p2'), bot('p2')], [cx('p2'), top('p3') - 16], [cx('p3', .8), top('p3') - 16], [cx('p3', .8), top('p3')]]);
+    y += 34 + G;
+    n('v20', col(3, 0), y, 44); n('txt', col(3, 1), y, 44); n('mus0', col(3, 2), y, 44);
     e('scen', 'v20', [[cx('scen'), bot('scen')], [cx('scen'), top('v20')]]);
-    e('scen', 'txt', [[cx('scen'), bot('scen')], [cx('scen'), 306], [cx('txt', .22), 306], [cx('txt', .22), top('txt')]]);
-    e('p3', 'txt', [[cx('p3'), bot('p3')], [cx('txt'), top('txt')]]);
-    e('gmp', 'txt', [[cx('gmp'), bot('gmp')], [cx('gmp'), 309], [cx('txt', .78), 309], [cx('txt', .78), top('txt')]]);
-    n('mont', mid(210), 392, 34);
-    ['v20', 'txt', 'mus0'].forEach(function (k) { bus(k, 'mont', 380); });
+    e('scen', 'txt', [[cx('scen'), bot('scen')], [cx('scen'), y - 18], [cx('txt', .2), y - 18], [cx('txt', .2), y]]);
+    e('p3', 'txt', [[cx('p3'), bot('p3')], [cx('txt'), y]]);
+    e('gmp', 'txt', [[cx('gmp'), bot('gmp')], [cx('gmp'), y - 14], [cx('txt', .8), y - 14], [cx('txt', .8), y]]);
+    y += 44 + G;
+    n('mont', mid(180), y, 28);
+    ['v20', 'txt', 'mus0'].forEach(function (k) { bus(k, 'mont', y - G / 2); });
+    y += 28; band(1, y0, y + PB);
 
-    B.push({ n: 2, y: 448, h: 112 });
-    N.d1 = { x: 152, y: 478, w: 56, h: 56, cls: 'dia' };
-    e('mont', 'd1', [[180, bot('mont')], [180, 478]]);
-    e('d1', 'scen', [[152, 506], [4, 506], [4, N.scen.y + 23], [LX, N.scen.y + 23]], 'b');
-    LBL.push({ x: 60, y: 490, k: 'badT', c: 'r' }); LBL.push({ x: 188, y: 540, k: 'likeT', c: 'g' });
+    /* 3. утверждение */
+    var D = 48;
+    y0 = y + PB + BG; y = y0 + HD;
+    N.d1 = { x: CM - D / 2, y: y, w: D, h: D, cls: 'dia' };
+    e('mont', 'd1', [[CM, bot('mont')], [CM, y]]);
+    e('d1', 'scen', [[CM - D / 2, y + D / 2], [LANE, y + D / 2], [LANE, top('scen') + 20], [LX, top('scen') + 20]], 'b');
+    LBL.push({ x: 70, y: y + D / 2 - 15, k: 'badT', c: 'r' }); LBL.push({ x: CM + 8, y: y + D + 6, k: 'likeT', c: 'g' });
+    var d1b = y + D;
+    y += D + 22; band(2, y0, y + PB);
 
-    B.push({ n: 3, y: 572, h: 228 });
-    ['vid', 'comp', 'mus', 'fin'].forEach(function (k, i) { n(k, col(4, i), 610, 52); e('d1', k, [[180, 534], [180, 600], [cx(k), 600], [cx(k), 610]], 'g'); });
-    ['sved', 'color', 'master'].forEach(function (k, i) { n(k, col(3, i), 690, 42); });
-    ['vid', 'comp', 'mus', 'fin'].forEach(function (a) { ['sved', 'color', 'master'].forEach(function (b) { bus(a, b, 676); }); });
-    n('fmont', mid(210), 754, 34);
-    ['sved', 'color', 'master'].forEach(function (k) { bus(k, 'fmont', 743); });
+    /* 4. продакшн */
+    y0 = y + PB + BG; y = y0 + HD + 18;
+    ['vid', 'comp', 'mus', 'fin'].forEach(function (k, i) { n(k, col(4, i), y, 44); e('d1', k, [[CM, d1b], [CM, y - 16], [cx(k), y - 16], [cx(k), y]], 'g'); });
+    y += 44 + G;
+    ['sved', 'color', 'master'].forEach(function (k, i) { n(k, col(3, i), y, 34); });
+    ['vid', 'comp', 'mus', 'fin'].forEach(function (a) { ['sved', 'color', 'master'].forEach(function (b) { bus(a, b, y - G / 2); }); });
+    y += 34 + G;
+    n('fmont', mid(180), y, 28);
+    ['sved', 'color', 'master'].forEach(function (k) { bus(k, 'fmont', y - G / 2); });
+    y += 28; band(3, y0, y + PB);
 
-    B.push({ n: 4, y: 812, h: 112 });
-    N.d2 = { x: 152, y: 842, w: 56, h: 56, cls: 'dia' };
-    e('fmont', 'd2', [[180, bot('fmont')], [180, 842]]);
-    e('d2', 'vid', [[152, 870], [4, 870], [4, 636], [LX, 636]], 'b');
-    LBL.push({ x: 60, y: 854, k: 'badT', c: 'r' }); LBL.push({ x: 188, y: 904, k: 'likeT', c: 'g' });
+    /* 5. утверждение */
+    y0 = y + PB + BG; y = y0 + HD;
+    N.d2 = { x: CM - D / 2, y: y, w: D, h: D, cls: 'dia' };
+    e('fmont', 'd2', [[CM, bot('fmont')], [CM, y]]);
+    e('d2', 'vid', [[CM - D / 2, y + D / 2], [LANE, y + D / 2], [LANE, top('vid') + 22], [LX, top('vid') + 22]], 'b');
+    LBL.push({ x: 70, y: y + D / 2 - 15, k: 'badT', c: 'r' }); LBL.push({ x: CM + 8, y: y + D + 6, k: 'likeT', c: 'g' });
+    var d2b = y + D;
+    y += D + 22; band(4, y0, y + PB);
 
-    B.push({ n: 5, y: 936, h: 122 });
-    n('topj', mid(210), 966, 34);
-    e('d2', 'topj', [[180, 898], [180, 966]], 'g');
-    n('out', mid(170), 1016, 30, 'key');
-    e('topj', 'out', [[180, bot('topj')], [180, 1016]]);
-    return { N: N, B: B, E: E, LBL: LBL, H: 1066 };
+    /* 6. выход */
+    y0 = y + PB + BG; y = y0 + HD + 8;
+    n('topj', mid(180), y, 28);
+    e('d2', 'topj', [[CM, d2b], [CM, y]], 'g');
+    y += 28 + G;
+    n('out', mid(140), y, 24, 'key');
+    e('topj', 'out', [[CM, bot('topj')], [CM, y]]);
+    y += 24; band(5, y0, y + PB);
+    return { N: N, B: B, E: E, LBL: LBL, H: y + PB + 10 };
   })();
 
   function renderSchema() {
@@ -950,8 +1002,8 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
     function X(v) { return (v * s).toFixed(1); }
     var h = '<div class="map" style="height:' + MAP.H + 'px">';
     MAP.B.forEach(function (b) {
-      h += '<div class="mband" style="top:' + b.y + 'px; height:' + b.h + 'px; left:' + X(10) + 'px; width:' + X(340) + 'px"></div>' +
-        '<button class="mhead" data-stage="' + b.n + '" style="top:' + (b.y + 6) + 'px; left:' + X(18) + 'px">' +
+      h += '<div class="mband" style="top:' + b.y + 'px; height:' + b.h + 'px; left:' + X(LX - 10) + 'px; width:' + X(RX - LX + 20) + 'px"></div>' +
+        '<button class="mhead" data-stage="' + b.n + '" style="top:' + (b.y + 8) + 'px; left:' + X(LX - 2) + 'px">' +
         '<b>' + (b.n + 1) + '</b>' + esc(L(STAGE_T[b.n])) + '<i>' + CHEV_R + '</i></button>';
     });
     MAP.LBL.forEach(function (l) {
@@ -992,9 +1044,9 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
     /* длинный текст на других языках — чуть уменьшаем шрифт, пока не влезет */
     var ts = schemaEl.querySelectorAll('.mn .t');
     for (i = 0; i < ts.length; i++) {
-      var t = ts[i], b = t.parentNode, fs = 11;
-      var cw = b.clientWidth - 18, chh = b.clientHeight - 8;
-      while (fs > 8 && (t.offsetHeight > chh || t.scrollWidth > cw + .5 || t.offsetWidth > cw + .5)) { fs -= .5; t.style.fontSize = fs + 'px'; t.style.lineHeight = (fs + 2) + 'px'; }
+      var t = ts[i], b = t.parentNode, fs = 10;
+      var cw = b.clientWidth - 12, chh = b.clientHeight - 4;
+      while (fs > 7.5 && (t.offsetHeight > chh || t.scrollWidth > cw + .5 || t.offsetWidth > cw + .5)) { fs -= .5; t.style.fontSize = fs + 'px'; t.style.lineHeight = (fs + 2) + 'px'; }
     }
     if (cur) relight();
   }
@@ -1460,6 +1512,156 @@ body.bsOpen #scr-schema{padding-bottom:54vh}
     new MutationObserver(function () { kick(700); }).observe(document.getElementById('bs'), { attributes: true, attributeFilter: ['class', 'style'] });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(reclone);
     reclone();
+  })();
+
+  /* =====================================================================
+     ЛУПА (как на основной странице: увеличение, вдавленное стекло, радуга по краю, инерция).
+     Маленькая стоит справа под шапкой и не уезжает при прокрутке. Коснулся — выросла,
+     её можно таскать пальцем. Короткое касание по большой лупе нажимает то, что под ней.
+     Красный крестик — лупа уменьшается и возвращается на место.
+     ===================================================================== */
+  (function mobileLens() {
+    var L = 180, MAG = 2.4, SPLIT = 0.02, BULGE = -28, SMALL = 50 / L;
+    var SCALE = [1 + SPLIT, 1, 1 - SPLIT];
+    var cv = document.createElement('canvas'); cv.width = cv.height = 128;
+    var g2 = cv.getContext('2d'), img = g2.createImageData(128, 128);
+    for (var yy = 0; yy < 128; yy++) for (var xx = 0; xx < 128; xx++) {
+      var ddx = (xx - 63.5) / 63.5, ddy = (yy - 63.5) / 63.5, kk = 4 * (yy * 128 + xx);
+      var rr = Math.sqrt(ddx * ddx + ddy * ddy), ff = Math.pow(Math.min(1, rr), 2.1), ln = rr || 1;
+      img.data[kk] = Math.round(128 + 127 * ff * ddx / ln); img.data[kk + 1] = Math.round(128 + 127 * ff * ddy / ln);
+      img.data[kk + 2] = 128; img.data[kk + 3] = 255;
+    }
+    g2.putImageData(img, 0, 0);
+    var url = cv.toDataURL('image/png');
+    var NS = 'http://www.w3.org/2000/svg';
+    var sv = document.createElementNS(NS, 'svg');
+    sv.setAttribute('width', '0'); sv.setAttribute('height', '0'); sv.style.position = 'absolute';
+    sv.innerHTML = '<filter id="mLensWarp" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">' +
+      '<feImage href="' + url + '" x="0" y="0" width="' + L + '" height="' + L + '" preserveAspectRatio="none" result="m"/>' +
+      '<feDisplacementMap in="SourceGraphic" in2="m" scale="' + BULGE + '" xChannelSelector="R" yChannelSelector="G"/></filter>';
+    document.body.appendChild(sv);
+    sv.querySelector('feImage').setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', url);
+
+    var lens = document.createElement('div');
+    lens.className = 'mlens'; lens.style.setProperty('--L', L + 'px');
+    lens.innerHTML = '<div class="mlView"><div class="mlCh mlR"><div class="mlSrc"></div><i></i></div><div class="mlCh mlG"><div class="mlSrc"></div><i></i></div><div class="mlCh mlB"><div class="mlSrc"></div><i></i></div></div>' +
+      '<div class="mlRim"></div><div class="mlIcon"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg></div>';
+    document.body.appendChild(lens);
+    var xb = document.createElement('button');
+    xb.className = 'mlX'; xb.setAttribute('aria-label', 'Закрыть лупу');
+    xb.innerHTML = '<svg viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8"/></svg>';
+    document.body.appendChild(xb);
+    var srcs = lens.querySelectorAll('.mlSrc');
+    var main = document.querySelector('main');
+
+    /* копия активного экрана в координатах документа */
+    function reclone() {
+      var scr = main.querySelector('.screen.on'); if (!scr) return;
+      var r = scr.getBoundingClientRect(), sx = r.left + window.scrollX, sy = r.top + window.scrollY;
+      var dw = document.documentElement.scrollWidth, dh = document.documentElement.scrollHeight;
+      for (var i = 0; i < srcs.length; i++) {
+        var s = srcs[i], c = scr.cloneNode(true);
+        c.removeAttribute('id');
+        var ids = c.querySelectorAll('[id]'); for (var j = 0; j < ids.length; j++) ids[j].removeAttribute('id');
+        c.style.cssText = 'position:absolute; margin:0; left:' + sx + 'px; top:' + sy + 'px; width:' + r.width + 'px';
+        s.style.width = dw + 'px'; s.style.height = dh + 'px'; s.style.backgroundSize = window.innerWidth + 'px ' + window.innerHeight + 'px';
+        s.textContent = ''; s.appendChild(c);
+      }
+      place();
+    }
+    var mt = 0;
+    new MutationObserver(function () { clearTimeout(mt); mt = setTimeout(reclone, 40); })
+      .observe(main, { subtree: true, childList: true, attributes: true, characterData: true });
+
+    /* положение: центр линзы (cx, cy) в окне, масштаб линзы sc (маленькая ↔ большая) */
+    var cx = 0, cy = 0, sc = SMALL, vx = 0, vy = 0, vs = 0, tx = 0, ty = 0, ts = SMALL, big = false, raf = 0, lastT = 0;
+    function dock() { var hd = document.querySelector('.top').getBoundingClientRect(); return { x: window.innerWidth - 36, y: hd.bottom + 38 }; }
+    function place() {
+      var u = cx + window.scrollX, v = cy + window.scrollY;
+      for (var c = 0; c < 3; c++) {
+        var Z = MAG * SCALE[c];
+        srcs[c].style.transform = 'translate(' + (L / 2 - u * Z).toFixed(1) + 'px,' + (L / 2 - v * Z).toFixed(1) + 'px) scale(' + Z + ')';
+      }
+      lens.style.transform = 'translate(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px) scale(' + sc.toFixed(3) + ')';
+      var o = L / 2 * sc * 0.72;
+      xb.style.transform = 'translate(' + (cx + o).toFixed(1) + 'px,' + (cy - o).toFixed(1) + 'px)';
+    }
+    /* пружины как на основной странице: положение — отклик 0,6 с, размер — побыстрее */
+    var RESP = 0.6, ZETA = 0.85, OM = 2 * Math.PI / RESP, KS = OM * OM, CD = 2 * ZETA * OM;
+    var OM2 = 2 * Math.PI / 0.38, KS2 = OM2 * OM2, CD2 = 2 * 0.78 * OM2;
+    function step(now) {
+      raf = 0;
+      var raw = now - lastT, dt = Math.min(0.032, Math.max(0.001, raw / 1000)); lastT = now;
+      if (raw > 150) { cx = tx; cy = ty; sc = ts; vx = vy = vs = 0; }
+      else for (var rest = dt; rest > 0; rest -= 0.004) {
+        var h = Math.min(0.004, rest);
+        vx += (KS * (tx - cx) - CD * vx) * h; cx += vx * h;
+        vy += (KS * (ty - cy) - CD * vy) * h; cy += vy * h;
+        vs += (KS2 * (ts - sc) - CD2 * vs) * h; sc += vs * h;
+      }
+      place();
+      if (Math.abs(tx - cx) > .05 || Math.abs(ty - cy) > .05 || Math.abs(ts - sc) > .001 || Math.abs(vx) > .5 || Math.abs(vy) > .5 || Math.abs(vs) > .01) raf = requestAnimationFrame(step);
+      else { cx = tx; cy = ty; sc = ts; vx = vy = vs = 0; place(); }
+    }
+    function go() { if (!raf) { lastT = performance.now(); raf = requestAnimationFrame(step); } }
+    function clamp(x, y, s) {
+      var r = L / 2 * s, hd = document.querySelector('.top').getBoundingClientRect().bottom;
+      return { x: Math.min(window.innerWidth - r * .6, Math.max(r * .6, x)), y: Math.min(window.innerHeight - r * .6, Math.max(hd + r * .3, y)) };
+    }
+    function toDock() { var d = dock(); big = false; lens.classList.remove('big'); xb.classList.remove('on'); tx = d.x; ty = d.y; ts = SMALL; go(); }
+    function grow() {
+      big = true; lens.classList.add('big'); xb.classList.add('on'); ts = 1;
+      var p = clamp(window.innerWidth - L / 2 - 14, dock().y + L / 2 - 30, 1); tx = p.x; ty = p.y; go();
+    }
+    var d0 = dock(); cx = tx = d0.x; cy = ty = d0.y;
+
+    /* пальцем: тянем за то место, где взяли; короткое касание большой лупы — нажатие того, что под ней */
+    var gx = 0, gy = 0, sx0 = 0, sy0 = 0, t0 = 0, moved = false, wasBig = false;
+    lens.addEventListener('touchstart', function (e) {
+      if (e.touches.length !== 1) return;
+      e.preventDefault();
+      var t = e.touches[0]; sx0 = t.clientX; sy0 = t.clientY; t0 = Date.now(); moved = false; wasBig = big;
+      if (!big) { grow(); gx = 0; gy = 0; } else { gx = tx - t.clientX; gy = ty - t.clientY; }
+    }, { passive: false });
+    lens.addEventListener('touchmove', function (e) {
+      e.preventDefault();
+      var t = e.touches[0];
+      if (Math.abs(t.clientX - sx0) > 8 || Math.abs(t.clientY - sy0) > 8) moved = true;
+      if (!moved) return;
+      if (!wasBig) { gx = 0; gy = Math.min(-L * 0.35, gy); wasBig = true; gy = -L * 0.45; }   /* выросшую лупу держим чуть ниже центра, чтобы палец не закрывал */
+      var p = clamp(t.clientX + gx, t.clientY + gy, 1); tx = p.x; ty = p.y; go();
+    }, { passive: false });
+    lens.addEventListener('touchend', function (e) {
+      if (moved || !wasBig || Date.now() - t0 > 350) return;
+      /* короткое касание — нажать то, что под лупой в этой точке */
+      var Z = MAG, ux = cx + (sx0 - cx) / Z, uy = cy + (sy0 - cy) / Z;
+      lens.style.pointerEvents = 'none';
+      var el = document.elementFromPoint(ux, uy);
+      lens.style.pointerEvents = '';
+      if (el && el.closest) { var b = el.closest('button, [data-id], [data-stage]'); if (b) b.click(); }
+    });
+    /* мышью (на компьютере в узком окне) — то же самое */
+    lens.addEventListener('mousedown', function (e) {
+      e.preventDefault();
+      if (!big) grow();
+      gx = tx - e.clientX; gy = ty - e.clientY;
+      function mv(ev) { var p = clamp(ev.clientX + gx, ev.clientY + gy, 1); tx = p.x; ty = p.y; go(); }
+      function up() { document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); }
+      document.addEventListener('mousemove', mv); document.addEventListener('mouseup', up);
+    });
+    xb.addEventListener('click', function (e) { e.stopPropagation(); toDock(); });
+    xb.addEventListener('touchstart', function (e) { e.stopPropagation(); }, { passive: true });
+    window.addEventListener('scroll', function () { place(); }, { passive: true });
+    var rt = 0;
+    window.addEventListener('resize', function () {
+      clearTimeout(rt);
+      rt = setTimeout(function () { if (!big) { var d = dock(); tx = d.x; ty = d.y; } else { var p = clamp(tx, ty, 1); tx = p.x; ty = p.y; } go(); reclone(); }, 120);
+    });
+    /* на других вкладках и под карточкой лупа не нужна */
+    var tabsEl = document.getElementById('tabs');
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(reclone);
+    reclone(); place();
+    window.__lens = { grow: grow, dock: toDock };
   })();
   window.__m = { show: showScreen, open: openSheet, close: closeSheet, lang: function () { return LANG; } };
 
