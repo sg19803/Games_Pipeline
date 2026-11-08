@@ -763,9 +763,10 @@ body{
 .gtip b{display:block; font-weight:600; margin-bottom:2px}
 
 /* флаги языков — плоские, над правым верхним углом листа */
-.langbar{position:absolute; right:28px; bottom:100%; margin-bottom:8px; display:flex; gap:4px; z-index:5}
-.lflag{position:relative; width:30px; height:20px; padding:0; border:0; background:none; cursor:pointer}
-.lflag svg{display:block; width:30px; height:20px}
+/* флаги живут внутри листа и масштабируются вместе с ним: на компьютере ~30×20, на телефоне пропорционально меньше */
+.langbar{position:absolute; right:40px; bottom:100%; margin-bottom:12px; display:flex; gap:6px; z-index:5}
+.lflag{position:relative; width:48px; height:32px; padding:0; border:0; background:none; cursor:pointer}
+.lflag svg{display:block; width:48px; height:32px}
 
 .lflag:focus-visible{outline:2px solid #6aa8ff; outline-offset:2px}
 
@@ -791,6 +792,11 @@ body{
 
 /* ромб «Утверждение», где участвует исполнитель или папка под мышкой */
 .diamondWrap.phl .diamondInner{box-shadow:var(--gl-blueRim), 0 0 0 2px hsla(var(--ph,212),70%,48%,.75), 0 0 26px hsla(var(--ph,212),90%,60%,.7) !important}
+
+/* iPhone присылает касания обычным блокам, только если они выглядят кликабельными */
+@media (hover: none), (pointer: coarse){
+  .node, .trow, .prow, .nrow, .nrow input{cursor:pointer}
+}
 </style>
 </head>
 <body>
@@ -798,8 +804,8 @@ body{
 <div class="copy" id="copy"><span>&copy; 2026 Serhii Horbunov</span><span class="sep">&middot;</span><a href="https://sergiovida.com" target="_blank" rel="noopener">sergiovida.com</a></div>
 <div class="scroller" id="scroller">
   <div class="zoomer" id="zoomer">
-    <div class="langbar" id="langbar" role="group" aria-label="Language"></div>
     <div class="sheet" id="sheet">
+      <div class="langbar" id="langbar" role="group" aria-label="Language"></div>
       <div class="caustics" aria-hidden="true"><i></i><i></i></div>
       <div class="headrow">
         <input class="headline" id="cnum" type="text" placeholder="Номер креатива" spellcheck="false" autocomplete="off" aria-label="Номер креатива">
@@ -3176,6 +3182,15 @@ body{
       plistEl.addEventListener('mouseleave', progOff);
     }
   }
+  /* телефон: касание карточки = наведение. iPhone не всегда шлёт «мышиные» события
+     обычным блокам, поэтому подсветку вешаем ещё и на касание */
+  if (TOUCH) for (var nid1 in TOOLS) {
+    (function (nid) {
+      var el = R[nid] && R[nid].el;
+      if (!el) return;
+      el.addEventListener('click', function () { progOff(); rolesOn(nid); toolsOn(nid); });
+    })(nid1);
+  }
   if (TOUCH) document.addEventListener('touchstart', function (e) {
     if (!(e.target.closest && e.target.closest('.node'))) toolsOff();
     if (!(e.target.closest && e.target.closest('.trow'))) tipHide();
@@ -3311,7 +3326,7 @@ body{
 
   /* отладочный крючок — для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-07-3 glass-trial-27',
+    build: '2026-11-07-3 glass-trial-28',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
