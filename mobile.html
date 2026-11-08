@@ -86,7 +86,7 @@ button{font:inherit; color:inherit; border:0; background:none; padding:0; cursor
 
 /* ---- лист схемы: этапы сверху вниз ---- */
 .schema{position:relative}
-body.bsOpen #scr-schema{padding-bottom:64vh}
+body.bsOpen #scr-schema{padding-bottom:54vh}
 .retl{position:absolute; inset:0; pointer-events:none; overflow:visible; z-index:3}
 .retl path{fill:none; stroke:var(--gl-red); stroke-width:1.5}
 .stage{position:relative; margin:0 0 14px 14px; border-radius:22px; padding:14px 12px 14px;
@@ -200,7 +200,7 @@ body.bsOpen #scr-schema{padding-bottom:64vh}
 .scrim{background:rgba(0,0,0,.16)}
 .schema.focus .step:not(.sel):not(.rel):not(.flow), .schema.focus .dia:not(.sel):not(.rel):not(.flow){opacity:.42; filter:saturate(.6); transition:opacity .25s ease, filter .25s ease}
 .schema .step, .schema .dia{transition:opacity .25s ease, filter .25s ease}
-.bs{position:fixed; left:0; right:0; bottom:0; z-index:50; max-height:62vh; display:flex; flex-direction:column;
+.bs{position:fixed; left:0; right:0; bottom:0; z-index:50; max-height:52vh; display:flex; flex-direction:column;
   border-radius:26px 26px 0 0; background:var(--sheetBg); box-shadow:var(--sheetShadow), 0 -10px 40px rgba(0,0,0,.4);
   transform:translateY(105%); transition:transform .42s cubic-bezier(.2,.9,.25,1); will-change:transform; padding-bottom:var(--safeB)}
 .bs.on{transform:translateY(0)}
@@ -234,6 +234,50 @@ body.bsOpen #scr-schema{padding-bottom:64vh}
 
 @media (prefers-reduced-motion: reduce){ .bs{transition:none} }
 
+
+/* ---- карта пайплайна ---- */
+.map{position:relative; margin:4px 0 0}
+.mband{position:absolute; border-radius:20px; background:var(--sheetBg); box-shadow:var(--sheetShadow)}
+.mhead{position:absolute; z-index:2; padding:0 8px 0 2px; border-radius:11px; background:rgba(200,214,220,.96); box-shadow:0 0 0 2px rgba(200,214,220,.96); display:flex; align-items:center; gap:6px; height:22px; font-size:12px; line-height:14px; font-weight:600; letter-spacing:.02em; text-transform:uppercase; color:#2f6f82}
+.mhead b{display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:rgba(47,111,130,.16); font-size:11px}
+.mhead i{display:flex; color:#6f8f99} .mhead i svg{width:6px; height:10px}
+.mlbl{position:absolute; font-size:10px; line-height:12px; font-weight:600; color:#5a6a72; letter-spacing:.02em; text-transform:uppercase; pointer-events:none}
+.mlbl.r{color:#c0392b} .mlbl.g{color:#1f7a44}
+.medges{position:absolute; left:0; top:0; overflow:visible; pointer-events:none}
+.me .ln{fill:none; stroke:#3f6fae; stroke-width:1.6; stroke-linejoin:round}
+.me .hd{fill:#3f6fae}
+.me.g .ln{stroke:#2fae5c} .me.g .hd{fill:#2fae5c}
+.me.b .ln{stroke:#e0443c; stroke-width:2} .me.b .hd{fill:#e0443c}
+.me{transition:opacity .25s ease}
+.schema.focus .me:not(.hot){opacity:.18}
+.me.hot .ln{stroke-width:2.6} .me.hot{filter:drop-shadow(0 0 3px rgba(90,160,255,.7))}
+.me.b.hot{filter:drop-shadow(0 0 3px rgba(240,80,70,.7))} .me.g.hot{filter:drop-shadow(0 0 3px rgba(60,200,110,.7))}
+.mn{position:absolute; display:flex; align-items:center; justify-content:center; padding:4px 9px; border-radius:11px; text-align:center;
+  background:var(--tintbg, none), var(--gl-tint); box-shadow:var(--gl-e4); color:#23292d; transition:opacity .25s ease, filter .25s ease, box-shadow .25s ease}
+.mn .t{display:block; min-width:0; font-size:11px; line-height:13px; font-weight:500; letter-spacing:-.01em; overflow:hidden}
+.mn .dots{position:absolute; right:3px; top:2px; display:flex; gap:2px}
+.mn .dots i{width:6px; height:6px; border-radius:50%; background:hsl(var(--h),75%,52%); box-shadow:0 0 0 1px rgba(255,255,255,.7)}
+.mn.key{background:var(--gl-greenFill); color:#1b5e36}
+.mn.key .t{font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:11.5px}
+.mn.peach{background:linear-gradient(180deg, rgba(200,140,80,.22), rgba(200,140,80,.08)), var(--gl-tint)}
+.mn.blue{background:linear-gradient(180deg, rgba(90,140,220,.24), rgba(90,140,220,.08)), var(--gl-tint)}
+.mn.done{background:linear-gradient(0deg, rgba(55,175,100,.50) 0%, rgba(55,175,100,.22) 40%, rgba(55,175,100,0) 85%), var(--gl-tint)}
+.mn.sel{box-shadow:var(--gl-e4), 0 0 0 2px hsla(var(--ph),70%,48%,.9), 0 0 18px hsla(var(--ph),90%,60%,.7)}
+.mn.rel{box-shadow:var(--gl-e4), 0 0 0 1.5px hsla(var(--ph),70%,48%,.65), 0 0 14px hsla(var(--ph),90%,60%,.45)}
+.mn.flow{box-shadow:var(--gl-e4), 0 0 0 1.5px rgba(63,111,174,.6), 0 0 12px rgba(90,160,255,.4)}
+.schema.focus .mn:not(.sel):not(.rel):not(.flow), .schema.focus .mdia:not(.sel):not(.rel):not(.flow){opacity:.35; filter:saturate(.5)}
+.mdia{position:absolute; display:block}
+.mdia i{position:absolute; inset:8px; transform:rotate(45deg); border-radius:9px;
+  background:linear-gradient(-45deg, rgba(70,135,225,.55) 0%, rgba(70,135,225,.24) 42%, rgba(70,135,225,0) 88%), var(--gl-tint); box-shadow:var(--gl-e4)}
+.mdia.sel i{box-shadow:var(--gl-e4), 0 0 0 2px rgba(63,111,174,.9), 0 0 18px rgba(90,160,255,.7)}
+.mdia.flow i{box-shadow:var(--gl-e4), 0 0 0 1.5px rgba(63,111,174,.6), 0 0 12px rgba(90,160,255,.4)}
+.mdia.rel i{box-shadow:var(--gl-e4), 0 0 0 1.5px hsla(var(--ph),70%,48%,.65), 0 0 14px hsla(var(--ph),90%,60%,.45)}
+.doneBtn{display:inline-flex; align-items:center; gap:8px; margin:2px 0 6px; padding:8px 14px 8px 10px; border-radius:999px; font-size:15px;
+  background:rgba(255,255,255,.4); box-shadow:var(--gl-rimThin); color:#2a3237}
+.doneBtn svg{width:18px; height:18px; border-radius:50%; background:rgba(255,255,255,.7); box-shadow:inset 0 0 0 1.5px rgba(80,90,100,.35)}
+.doneBtn svg path{fill:none; stroke:transparent; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round}
+.doneBtn.on{background:rgba(55,175,100,.22); color:#1b5e36}
+.doneBtn.on svg{background:#2fae5c; box-shadow:none} .doneBtn.on svg path{stroke:#fff}
 /* ---- стекло как у лупы: под панелями — копия страницы, по краям она гнётся и расходится на цвета ---- */
 .rf{background:transparent !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; isolation:isolate}
 .gv{position:absolute; inset:0; z-index:-1; border-radius:inherit; overflow:hidden; pointer-events:none; background:#050d11}
@@ -706,10 +750,10 @@ body.bsOpen #scr-schema{padding-bottom:64vh}
     tTeam:   { ru: 'Команда', en: 'Team', es: 'Equipo', uk: 'Команда' },
     tProgs:  { ru: 'Программы', en: 'Software', es: 'Programas', uk: 'Програми' },
     tFolder: { ru: 'Папка', en: 'Folder', es: 'Carpeta', uk: 'Папка' },
-    hintSchema: { ru: 'Путь задачи сверху вниз. Коснитесь шага — увидите, кто его делает, в каких программах и куда идёт материал.',
-                  en: 'The task flows top to bottom. Tap a step to see who does it, in which software and where the material goes.',
-                  es: 'La tarea va de arriba abajo. Toca un paso para ver quién lo hace, con qué programas y adónde va el material.',
-                  uk: 'Шлях задачі згори вниз. Торкніться кроку — побачите, хто його робить, у яких програмах і куди йде матеріал.' },
+    hintSchema: { ru: 'Весь пайплайн сверху вниз. Синие стрелки — порядок работы, красные — возврат на доработку. Коснитесь шага — подсветятся его связи, внизу — подробности.',
+                  en: 'The whole pipeline, top to bottom. Blue arrows show the order of work, red ones send work back for rework. Tap a step to light up its links; details appear below.',
+                  es: 'Todo el pipeline de arriba abajo. Flechas azules: orden del trabajo; rojas: vuelta para rehacer. Toca un paso para iluminar sus conexiones; abajo, los detalles.',
+                  uk: 'Весь пайплайн згори вниз. Сині стрілки — порядок роботи, червоні — повернення на доопрацювання. Торкніться кроку — підсвітяться його зв’язки, внизу — подробиці.' },
     hintTeam: { ru: 'Один цвет — один человек. Коснитесь, чтобы увидеть его шаги, программы и папки.',
                 en: 'One colour — one person. Tap to see their steps, software and folders.',
                 es: 'Un color, una persona. Toca para ver sus pasos, programas y carpetas.',
@@ -741,6 +785,9 @@ body.bsOpen #scr-schema{padding-bottom:64vh}
     nobody:  { ru: 'Сюда пишут все через синхронизацию', en: 'Everyone writes here via sync', es: 'Todos escriben aquí mediante la sincronización', uk: 'Сюди пишуть усі через синхронізацію' },
     allFree: { ru: 'Остальные — бесплатные.', en: 'The rest are free.', es: 'El resto son gratuitos.', uk: 'Решта — безкоштовні.' },
     paid:    { ru: 'Платные', en: 'Paid', es: 'De pago', uk: 'Платні' },
+    markDone: { ru: 'Отметить выполненным', en: 'Mark as done', es: 'Marcar como hecho', uk: 'Позначити виконаним' },
+    isDone:  { ru: 'Выполнено — снять отметку', en: 'Done — undo', es: 'Hecho — desmarcar', uk: 'Виконано — зняти позначку' },
+    inStage: { ru: 'Шаги этапа', en: 'Steps in this stage', es: 'Pasos de la etapa', uk: 'Кроки етапу' },
     retLine: { ru: 'возврат', en: 'return', es: 'vuelta', uk: 'повернення' }
   };
   var STAGE_T = [
@@ -828,118 +875,171 @@ body.bsOpen #scr-schema{padding-bottom:64vh}
   })(TREE, null);
   function fname(path) { return path ? path.split('/').pop() : TREE[0]; }
 
-  /* ---------- 1. схема ---------- */
+  /* ---------- 1. схема: вся карта пайплайна целиком, сверху вниз, со стрелками ----------
+     Раскладка в «единицах» шириной 360; по горизонтали растягивается на ширину экрана,
+     по вертикали — как есть. Синие стрелки — порядок работы, зелёные — «нравится», красные — возврат. */
   var schemaEl = document.getElementById('schema');
-  var STEP_EL = {};
-  function stepHtml(id, cls) {
-    var rows = rowsOfStep(id), hs = [];
-    rows.forEach(function (r) { if (hs.indexOf(HUE[r]) < 0) hs.push(HUE[r]); });
-    var tint = hs.length > 1
-      ? 'linear-gradient(90deg, hsla(' + hs[0] + ',85%,62%,.10), hsla(' + hs[1] + ',85%,62%,.10))'
-      : (hs.length ? 'linear-gradient(0deg, hsla(' + hs[0] + ',85%,62%,.10) 0%, hsla(' + hs[0] + ',85%,62%,0) 85%)' : 'none');
-    var who = rows.map(function (r) { return '<i style="--h:' + HUE[r] + '">' + esc(tr(D.rows[r].role)) + '</i>'; }).join('');
-    return '<button class="step' + (cls ? ' ' + cls : '') + (done[id] ? ' done' : '') + '" data-id="' + id + '" style="--tintbg:' + tint + '">' +
-      (cls === 'key' ? '' : '<span class="chk" role="checkbox" aria-checked="' + (done[id] ? 'true' : 'false') + '">' + CHECK + '</span>') +
-      '<span class="t">' + esc(nodeT(id)) + '</span>' + (who ? '<span class="w">' + who + '</span>' : '') + '</button>';
+  var STEP_EL = {}, EDGE_EL = [];
+  var LX = 16, RX = 344, GAP = 6;
+  function col(n, i, span) {
+    var w = (RX - LX - (n - 1) * GAP) / n;
+    span = span || 1;
+    return { x: LX + i * (w + GAP), w: w * span + GAP * (span - 1) };
   }
-  var JOIN = '<div class="join"><svg viewBox="0 0 12 22"><path d="M6 0v15"/><path class="hd" d="M1.5 14h9L6 21z"/></svg></div>';
-  function row(ids, cls) { return '<div class="row" style="--n:' + Math.min(ids.length, 2) + '">' + ids.map(function (k) { return stepHtml(k, cls); }).join('') + '</div>'; }
-  function gate(id, n) {
-    var goodTo = (NEXT[id] || []).map(nodeT).join(', ');
-    var back = BACK[id];
-    return '<div class="gate"><button class="dia" data-id="' + id + '"><i></i><b>' + esc(nodeT(id)) + '</b></button>' +
-      '<div class="outs">' +
-      '<button class="out good" data-go="' + (n + 1) + '"><svg viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="rgba(255,255,255,.5)" stroke="#2fae5c" stroke-width="1.5"/><circle cx="9.5" cy="10.5" r="1.4" fill="#2fae5c"/><circle cx="16.5" cy="10.5" r="1.4" fill="#2fae5c"/><path d="M8.5 15.2c2.6 2.6 6.4 2.6 9 0" fill="none" stroke="#2fae5c" stroke-width="1.6" stroke-linecap="round"/></svg>' +
-        '<b>' + esc(L(MUI.likeT)) + '</b>' + esc(L(MUI.goNext)) + esc(L(STAGE_T[n + 1])) + '</button>' +
-      '<button class="out bad" data-back="' + back + '" id="bad-' + id + '"><svg viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="rgba(255,255,255,.5)" stroke="#e0443c" stroke-width="1.5"/><circle cx="9.5" cy="10.5" r="1.4" fill="#e0443c"/><circle cx="16.5" cy="10.5" r="1.4" fill="#e0443c"/><path d="M8.5 18c2.6-2.6 6.4-2.6 9 0" fill="none" stroke="#e0443c" stroke-width="1.6" stroke-linecap="round"/></svg>' +
-        '<b>' + esc(L(MUI.badT)) + '</b>' + esc(L(MUI.goBack)) + esc(nodeT(back)) + '</button>' +
-      '</div></div>';
-  }
-  function stageWrap(n, inner) {
-    var note = D.notes[String(n + 1)];
-    return '<section class="stage" id="stage' + n + '"><div class="stHead"><span class="stNum">' + esc(L(MUI.stage)) + ' ' + (n + 1) + '</span>' +
-      '<h3 class="stTitle">' + esc(L(STAGE_T[n])) + '</h3></div>' + (note ? '<p class="stNote">' + esc(tr(note)) + '</p>' : '') + inner + '</section>';
-  }
+  function mid(w) { return { x: 180 - w / 2, w: w }; }
+  var MAP = (function () {
+    var N = {}, B = [], E = [], LBL = [];
+    function n(id, c, y, h, cls) { N[id] = { x: c.x, y: y, w: c.w, h: h, cls: cls || '' }; }
+    function cx(id, f) { var a = N[id]; return a.x + a.w * (f == null ? .5 : f); }
+    function top(id) { return N[id].y; }
+    function bot(id) { return N[id].y + N[id].h; }
+    function e(a, b, pts, kind) { E.push({ a: a, b: b, pts: pts, k: kind || 'f' }); }
+    /* шина: от низа источника вниз до yb, вбок, вниз в верх цели */
+    function bus(a, b, yb, fa, fb) { var x1 = cx(a, fa), x2 = cx(b, fb); e(a, b, [[x1, bot(a)], [x1, yb], [x2, yb], [x2, top(b)]]); }
+
+    B.push({ n: 0, y: 0, h: 136 });
+    n('in', mid(170), 30, 30, 'key');
+    n('b1', col(2, 0), 82, 42); n('b2', col(2, 1), 82, 42);
+    bus('in', 'b1', 71); bus('in', 'b2', 71);
+
+    B.push({ n: 1, y: 148, h: 288 });
+    n('scen', col(3, 0), 190, 46);
+    n('p1', col(3, 1), 190, 46, 'peach'); n('p2', col(3, 2), 190, 46, 'peach');
+    n('p3', col(3, 1), 254, 40, 'peach'); n('gmp', col(3, 2), 254, 40, 'blue');
+    LBL.push({ x: col(3, 1).x, y: 178, k: 'support' });
+    bus('b1', 'scen', 141); bus('b2', 'scen', 141);
+    e('p1', 'p3', [[cx('p1'), bot('p1')], [cx('p1'), top('p3')]]);
+    e('p2', 'p3', [[cx('p2'), bot('p2')], [cx('p2'), 245], [cx('p3', .8), 245], [cx('p3', .8), top('p3')]]);
+    n('v20', col(3, 0), 322, 46); n('txt', col(3, 1), 322, 46); n('mus0', col(3, 2), 322, 46);
+    e('scen', 'v20', [[cx('scen'), bot('scen')], [cx('scen'), top('v20')]]);
+    e('scen', 'txt', [[cx('scen'), bot('scen')], [cx('scen'), 306], [cx('txt', .22), 306], [cx('txt', .22), top('txt')]]);
+    e('p3', 'txt', [[cx('p3'), bot('p3')], [cx('txt'), top('txt')]]);
+    e('gmp', 'txt', [[cx('gmp'), bot('gmp')], [cx('gmp'), 309], [cx('txt', .78), 309], [cx('txt', .78), top('txt')]]);
+    n('mont', mid(210), 392, 34);
+    ['v20', 'txt', 'mus0'].forEach(function (k) { bus(k, 'mont', 380); });
+
+    B.push({ n: 2, y: 448, h: 112 });
+    N.d1 = { x: 152, y: 478, w: 56, h: 56, cls: 'dia' };
+    e('mont', 'd1', [[180, bot('mont')], [180, 478]]);
+    e('d1', 'scen', [[152, 506], [4, 506], [4, N.scen.y + 23], [LX, N.scen.y + 23]], 'b');
+    LBL.push({ x: 60, y: 490, k: 'badT', c: 'r' }); LBL.push({ x: 188, y: 540, k: 'likeT', c: 'g' });
+
+    B.push({ n: 3, y: 572, h: 228 });
+    ['vid', 'comp', 'mus', 'fin'].forEach(function (k, i) { n(k, col(4, i), 610, 52); e('d1', k, [[180, 534], [180, 600], [cx(k), 600], [cx(k), 610]], 'g'); });
+    ['sved', 'color', 'master'].forEach(function (k, i) { n(k, col(3, i), 690, 42); });
+    ['vid', 'comp', 'mus', 'fin'].forEach(function (a) { ['sved', 'color', 'master'].forEach(function (b) { bus(a, b, 676); }); });
+    n('fmont', mid(210), 754, 34);
+    ['sved', 'color', 'master'].forEach(function (k) { bus(k, 'fmont', 743); });
+
+    B.push({ n: 4, y: 812, h: 112 });
+    N.d2 = { x: 152, y: 842, w: 56, h: 56, cls: 'dia' };
+    e('fmont', 'd2', [[180, bot('fmont')], [180, 842]]);
+    e('d2', 'vid', [[152, 870], [4, 870], [4, 636], [LX, 636]], 'b');
+    LBL.push({ x: 60, y: 854, k: 'badT', c: 'r' }); LBL.push({ x: 188, y: 904, k: 'likeT', c: 'g' });
+
+    B.push({ n: 5, y: 936, h: 122 });
+    n('topj', mid(210), 966, 34);
+    e('d2', 'topj', [[180, 898], [180, 966]], 'g');
+    n('out', mid(170), 1016, 30, 'key');
+    e('topj', 'out', [[180, bot('topj')], [180, 1016]]);
+    return { N: N, B: B, E: E, LBL: LBL, H: 1066 };
+  })();
+
   function renderSchema() {
-    var h = '';
-    h += stageWrap(0, row(['in'], 'key') + JOIN + row(['b1', 'b2']));
-    h += stageWrap(1,
-      row(['scen']) + JOIN + row(['v20', 'txt']) +
-      '<div class="sub peach"><p class="subT">' + esc(L(MUI.support)) + ' ↑</p><div class="row" style="--n:2">' + stepHtml('p1') + stepHtml('p2') + '</div>' + JOIN + row(['p3']) + '</div>' +
-      '<div class="sub blue"><div class="subs">' + stepHtml('gmp') + '</div></div>' +
-      JOIN + row(['mus0']) + JOIN + row(['mont']));
-    h += stageWrap(2, gate('d1', 2));
-    h += stageWrap(3, '<div class="row" style="--n:2">' + ['vid', 'comp', 'mus', 'fin'].map(function (k) { return stepHtml(k); }).join('') + '</div>' + JOIN +
-      '<div class="row" style="--n:2">' + ['sved', 'color', 'master'].map(function (k) { return stepHtml(k); }).join('') + '</div>' + JOIN + row(['fmont']));
-    h += stageWrap(4, gate('d2', 4));
-    h += stageWrap(5, row(['topj']) + JOIN + row(['out'], 'key'));
-    schemaEl.innerHTML = '<svg class="retl" id="retl"></svg>' + h;
-    STEP_EL = {};
+    var W = schemaEl.clientWidth || 366, s = W / 360;
+    function X(v) { return (v * s).toFixed(1); }
+    var h = '<div class="map" style="height:' + MAP.H + 'px">';
+    MAP.B.forEach(function (b) {
+      h += '<div class="mband" style="top:' + b.y + 'px; height:' + b.h + 'px; left:' + X(10) + 'px; width:' + X(340) + 'px"></div>' +
+        '<button class="mhead" data-stage="' + b.n + '" style="top:' + (b.y + 6) + 'px; left:' + X(18) + 'px">' +
+        '<b>' + (b.n + 1) + '</b>' + esc(L(STAGE_T[b.n])) + '<i>' + CHEV_R + '</i></button>';
+    });
+    MAP.LBL.forEach(function (l) {
+      h += '<span class="mlbl ' + (l.c || '') + '" style="left:' + X(l.x) + 'px; top:' + l.y + 'px">' + esc(L(MUI[l.k])) + '</span>';
+    });
+    /* стрелки — под карточками */
+    var p = '';
+    MAP.E.forEach(function (ed, i) {
+      var pts = ed.pts.map(function (q) { return [q[0] * s, q[1]]; });
+      var d = 'M' + pts.map(function (q) { return q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join('L');
+      var a = pts[pts.length - 1], b = pts[pts.length - 2];
+      var dx = a[0] - b[0], dy = a[1] - b[1], ln = Math.sqrt(dx * dx + dy * dy) || 1; dx /= ln; dy /= ln;
+      var hd = 'M' + (a[0] - dx * 7 - dy * 4).toFixed(1) + ' ' + (a[1] - dy * 7 + dx * 4).toFixed(1) + 'L' + a[0].toFixed(1) + ' ' + a[1].toFixed(1) +
+        'L' + (a[0] - dx * 7 + dy * 4).toFixed(1) + ' ' + (a[1] - dy * 7 - dx * 4).toFixed(1) + 'Z';
+      p += '<g class="me ' + ed.k + '" data-e="' + i + '"><path class="ln" d="' + d + '"/><path class="hd" d="' + hd + '"/></g>';
+    });
+    h += '<svg class="medges" width="' + W + '" height="' + MAP.H + '">' + p + '</svg>';
+    for (var id in MAP.N) {
+      var nd = MAP.N[id], rows = rowsOfStep(id), hs = [];
+      rows.forEach(function (r) { if (hs.indexOf(HUE[r]) < 0) hs.push(HUE[r]); });
+      var st = 'left:' + X(nd.x) + 'px; top:' + nd.y + 'px; width:' + X(nd.w) + 'px; height:' + nd.h + 'px;';
+      if (nd.cls === 'dia') {
+        h += '<button class="mdia" data-id="' + id + '" style="' + st + 'width:' + nd.w + 'px; left:' + X(nd.x + nd.w / 2) + 'px; margin-left:-' + nd.w / 2 + 'px"><i></i></button>';
+        continue;
+      }
+      var tint = hs.length ? 'linear-gradient(0deg, hsla(' + hs[0] + ',85%,62%,.16) 0%, hsla(' + hs[0] + ',85%,62%,0) 80%)' : 'none';
+      var dots = hs.map(function (hh) { return '<i style="--h:' + hh + '"></i>'; }).join('');
+      h += '<button class="mn ' + nd.cls + (done[id] ? ' done' : '') + '" data-id="' + id + '" style="' + st + '--tintbg:' + tint + '">' +
+        '<span class="t">' + esc(nodeT(id)) + '</span>' + (dots ? '<span class="dots">' + dots + '</span>' : '') + '</button>';
+    }
+    h += '</div>';
+    schemaEl.innerHTML = h;
+    STEP_EL = {}; EDGE_EL = [];
     var els = schemaEl.querySelectorAll('[data-id]');
     for (var i = 0; i < els.length; i++) STEP_EL[els[i].dataset.id] = els[i];
-    requestAnimationFrame(drawReturns);
+    var eg = schemaEl.querySelectorAll('.me');
+    for (i = 0; i < eg.length; i++) EDGE_EL.push(eg[i]);
+    /* длинный текст на других языках — чуть уменьшаем шрифт, пока не влезет */
+    var ts = schemaEl.querySelectorAll('.mn .t');
+    for (i = 0; i < ts.length; i++) {
+      var t = ts[i], b = t.parentNode, fs = 11;
+      var cw = b.clientWidth - 18, chh = b.clientHeight - 8;
+      while (fs > 8 && (t.offsetHeight > chh || t.scrollWidth > cw + .5 || t.offsetWidth > cw + .5)) { fs -= .5; t.style.fontSize = fs + 'px'; t.style.lineHeight = (fs + 2) + 'px'; }
+    }
+    if (cur) relight();
   }
-  /* красные линии возврата: от «не нравится» по левому краю вверх к шагу, куда возвращается работа */
-  function drawReturns() {
-    var svg = document.getElementById('retl');
-    if (!svg) return;
-    var base = schemaEl.getBoundingClientRect(), d = '';
-    ['d1', 'd2'].forEach(function (g, k) {
-      var from = document.getElementById('bad-' + g), to = STEP_EL[BACK[g]];
-      if (!from || !to) return;
-      var a = from.getBoundingClientRect(), b = to.getBoundingClientRect();
-      /* из-под кнопки «не нравится» вниз, влево под «нравится», по левому краю вверх к шагу */
-      var x = 5 + k * 4, ax = a.left + a.width / 2 - base.left, ay = a.bottom - base.top, yb = ay + 9;
-      var y2 = b.top + b.height / 2 - base.top, bx = b.left - base.left;
-      d += 'M' + ax + ' ' + ay + 'V' + yb + 'H' + x + 'V' + y2 + 'H' + (bx - 1) + ' ';
-      d += 'M' + (bx - 7) + ' ' + (y2 - 4) + 'L' + (bx - 1) + ' ' + y2 + 'L' + (bx - 7) + ' ' + (y2 + 4) + ' ';
-    });
-    svg.setAttribute('width', base.width); svg.setAttribute('height', base.height);
-    svg.innerHTML = '<path d="' + d + '"/>';
-  }
-  window.addEventListener('resize', function () { requestAnimationFrame(drawReturns); });
+  function drawReturns() {}
+  var lastW = 0;
+  window.addEventListener('resize', function () { var w = schemaEl.clientWidth; if (w && Math.abs(w - lastW) > 2) { lastW = w; renderSchema(); } });
 
-  /* подсветка в схеме: выбранный шаг, шаги того же человека, соседние по стрелкам */
-  var lit = [];
-  function unlight() { schemaEl.classList.remove('focus'); lit.forEach(function (e) { e.classList.remove('sel', 'rel', 'flow'); e.style.removeProperty('--ph'); }); lit = []; }
+  /* подсветка: выбранный шаг, его стрелки и соседи, шаги того же человека; остальное притушено */
+  var lit = [], cur = null;
+  function unlight() {
+    cur = null;
+    schemaEl.classList.remove('focus');
+    lit.forEach(function (e) { e.classList.remove('sel', 'rel', 'flow', 'hot'); e.style.removeProperty('--ph'); });
+    lit = [];
+  }
+  function mark(e, c, hue) { if (!e) return; e.classList.add(c); if (hue != null) e.style.setProperty('--ph', hue); lit.push(e); }
+  function relight() { var c = cur; if (c.t === 's') lightStep(c.id); else lightSteps(c.ids, c.h); }
   function lightStep(id) {
-    unlight();
-    var el = STEP_EL[id]; if (!el) return;
-    var h = hueOfStep(id);
-    function mark(e, c, hue) { if (!e || e.classList.contains('sel')) return; e.classList.add(c); if (hue != null) e.style.setProperty('--ph', hue); lit.push(e); }
+    unlight(); cur = { t: 's', id: id };
     schemaEl.classList.add('focus');
-    mark(el, 'sel', h);
-    (NEXT[id] || []).concat(PREV[id] || []).forEach(function (k) { mark(STEP_EL[k], 'flow'); });
-    var rows = rowsOfStep(id), mine = [];
-    rows.forEach(function (r) { personRows(r).forEach(function (x) { if (mine.indexOf(x) < 0) mine.push(x); }); });
-    stepsOfRows(mine).forEach(function (k) { if (k !== id && STEP_EL[k] && !STEP_EL[k].classList.contains('flow')) mark(STEP_EL[k], 'rel', h); });
+    var h = hueOfStep(id), near = {};
+    mark(STEP_EL[id], 'sel', h);
+    MAP.E.forEach(function (ed, i) {
+      if (ed.a !== id && ed.b !== id) return;
+      mark(EDGE_EL[i], 'hot');
+      near[ed.a === id ? ed.b : ed.a] = 1;
+    });
+    for (var k in near) if (k !== id) mark(STEP_EL[k], 'flow');
+    var mine = [];
+    rowsOfStep(id).forEach(function (r) { personRows(r).forEach(function (x) { if (mine.indexOf(x) < 0) mine.push(x); }); });
+    stepsOfRows(mine).forEach(function (k) { if (k !== id && !near[k]) mark(STEP_EL[k], 'rel', h); });
   }
   function lightSteps(ids, h) {
-    unlight(); schemaEl.classList.add('focus');
-    ids.forEach(function (k) { var e = STEP_EL[k]; if (e) { e.classList.add('rel'); e.style.setProperty('--ph', h); lit.push(e); } });
-  }
-  function lightRows(rows) {
-    unlight();
-    var h = rows.length ? HUE[rows[0]] : 212;
+    unlight(); cur = { t: 'm', ids: ids, h: h };
     schemaEl.classList.add('focus');
-    stepsOfRows(rows).forEach(function (k) { var e = STEP_EL[k]; if (e) { e.classList.add('rel'); e.style.setProperty('--ph', h); lit.push(e); } });
+    ids.forEach(function (k) { mark(STEP_EL[k], 'rel', h); });
+    MAP.E.forEach(function (ed, i) { if (ids.indexOf(ed.a) >= 0 && ids.indexOf(ed.b) >= 0) mark(EDGE_EL[i], 'hot'); });
   }
+  function lightRows(rows) { lightSteps(stepsOfRows(rows), rows.length ? HUE[rows[0]] : 212); }
 
   schemaEl.addEventListener('click', function (e) {
-    var chk = e.target.closest('.chk');
-    if (chk) {
-      var st = chk.closest('.step'), id = st.dataset.id;
-      done[id] = !done[id];
-      st.classList.toggle('done', done[id]);
-      chk.setAttribute('aria-checked', done[id] ? 'true' : 'false');
-      return;
-    }
-    var good = e.target.closest('.out.good');
-    if (good) { var s = document.getElementById('stage' + good.dataset.go); if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
-    var bad = e.target.closest('.out.bad');
-    if (bad) { goStep(bad.dataset.back, true); return; }
-    var st2 = e.target.closest('[data-id]');
-    if (st2) { openSheet({ t: 'step', id: st2.dataset.id }, false); scrollToStep(st2); }
+    var hd = e.target.closest('[data-stage]');
+    if (hd) { openSheet({ t: 'stage', id: +hd.dataset.stage }, false); return; }
+    var st = e.target.closest('[data-id]');
+    if (st) { openSheet({ t: 'step', id: st.dataset.id }, false); scrollToStep(st); }
   });
 
   /* ---------- 2. команда ---------- */
@@ -1013,6 +1113,7 @@ body.bsOpen #scr-schema{padding-bottom:64vh}
     if (item.t === 'step') {
       var id = item.id, rows = rowsOfStep(id), tl = toolsOf(id);
       title = nodeT(id);
+      if (!/^(in|out|d1|d2)$/.test(id)) h += '<button class="doneBtn' + (done[id] ? ' on' : '') + '" data-done="' + id + '">' + CHECK + esc(L(done[id] ? MUI.isDone : MUI.markDone)) + '</button>';
       h += sec(L(MUI.who), rows.map(chipRow).join(''));
       h += sec(L(MUI.progs), tl.p.map(chipProg).join('') || '<span class="txt">' + esc(L(MUI.noTool)) + '</span>');
       h += sec(L(MUI.folders), tl.f.map(chipFold).join('') || '<span class="txt">' + esc(L(MUI.noFold)) + '</span>');
@@ -1022,6 +1123,14 @@ body.bsOpen #scr-schema{padding-bottom:64vh}
         h += sec(L(MUI.badT), chipStep(BACK[id]).replace('class="chip"', 'class="chip red"'));
       } else if (NEXT[id] && NEXT[id].length) h += sec(L(MUI.next), NEXT[id].map(chipStep).join(''));
       lightStep(id);
+    } else if (item.t === 'stage') {
+      var bnd = MAP.B[item.id], ids = [];
+      for (var nid in MAP.N) { var q = MAP.N[nid]; if (q.y >= bnd.y && q.y < bnd.y + bnd.h) ids.push(nid); }
+      title = L(MUI.stage) + ' ' + (item.id + 1) + ' · ' + L(STAGE_T[item.id]);
+      var note = D.notes[String(item.id + 1)];
+      if (note) h += '<p class="txt">' + esc(tr(note)) + '</p>';
+      h += sec(L(MUI.inStage), ids.map(chipStep).join(''));
+      lightSteps(ids, 212);
     } else if (item.t === 'person') {
       var pr = personRows(item.id), steps = stepsOfRows(pr), progs = [], folds = [];
       var nums = pr.map(function (r) { return roleNum(D.rows[r].role); });
@@ -1092,6 +1201,12 @@ body.bsOpen #scr-schema{padding-bottom:64vh}
   scrim.addEventListener('click', closeSheet);
   /* переход по связям внутри карточки */
   bsBody.addEventListener('click', function (e) {
+    var dn = e.target.closest('[data-done]');
+    if (dn) {
+      var did = dn.dataset.done; done[did] = !done[did];
+      if (STEP_EL[did]) STEP_EL[did].classList.toggle('done', done[did]);
+      render(stack[stack.length - 1]); return;
+    }
     var c = e.target.closest('[data-step],[data-person],[data-prog],[data-fold]');
     if (!c) return;
     if (c.dataset.step) { openSheet({ t: 'step', id: c.dataset.step }, true); goStep(c.dataset.step, false); }
@@ -1102,7 +1217,7 @@ body.bsOpen #scr-schema{padding-bottom:64vh}
   /* показать шаг на схеме: перейти на вкладку и прокрутить так, чтобы шаг был над карточкой */
   /* шаг встаёт под шапку — над карточкой, чтобы подсветка была видна */
   function scrollToStep(el) {
-    var r = el.getBoundingClientRect(), top = 76, room = window.innerHeight * 0.38 - top;
+    var r = el.getBoundingClientRect(), top = 76, room = window.innerHeight * 0.46 - top;
     if (r.top >= top && r.bottom <= top + Math.max(room, r.height)) return;
     window.scrollTo({ top: window.scrollY + r.top - top - Math.max(0, (room - r.height) / 2), behavior: 'smooth' });
   }
