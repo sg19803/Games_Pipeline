@@ -3860,6 +3860,12 @@ body.tab-hidden .tabPoster{display:flex}
 
 
 
+
+
+
+
+
+
 <script>
 /* =====================================================================
    ПРЕЗЕНТАЦИЯ SIRI. Голос ведёт по странице: крупные слова в стиле презентаций Apple,
@@ -3951,7 +3957,7 @@ body.tab-hidden .tabPoster{display:flex}
     '  background:rgba(4,10,14,.42); -webkit-backdrop-filter:blur(16px) saturate(.85); backdrop-filter:blur(16px) saturate(.85);',
     '  -webkit-mask-size:100% 100%; mask-size:100% 100%; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat}',
     '.pzBlur.on{opacity:1}',
-    '.pzStage{position:fixed; inset:0; z-index:66; pointer-events:none; overflow:hidden}',
+    '.pzStage{position:fixed; inset:0; z-index:74; pointer-events:none; overflow:hidden}',
     '.pzText{--k:1; position:absolute; left:0; top:0; width:max-content; max-width:92vw; text-align:center; color:#fff; opacity:0;',
     '  transform:translate(-50%,-50%) translateY(18px) scale(.985); filter:blur(8px);',
     '  transition:opacity .6s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1), filter .6s ease}',
@@ -3968,13 +3974,13 @@ body.tab-hidden .tabPoster{display:flex}
     '.pzText .sep{margin:0 .25em; color:rgba(143,208,230,.8)}',
     '.pzCur{position:fixed; left:0; top:0; z-index:75; width:30px; height:36px; pointer-events:none; opacity:0; transition:opacity .4s ease; filter:drop-shadow(0 2px 4px rgba(0,0,0,.45))}',
     '.pzCur.on{opacity:1}',
-    '.pzTap{position:fixed; left:0; top:0; z-index:75; width:44px; height:44px; margin:-22px 0 0 -22px; border-radius:50%; pointer-events:none; opacity:0;',
-    '  background:radial-gradient(circle, rgba(255,255,255,.55), rgba(255,255,255,.18) 60%, rgba(255,255,255,0) 72%); box-shadow:0 0 0 2px rgba(255,255,255,.75); transition:opacity .3s ease}',
+    '.pzTap{position:fixed; left:0; top:0; z-index:75; width:44px; height:44px; margin:-22px 0 0 -22px; border-radius:50%; pointer-events:none; opacity:0}',
     '.pzTap.on{opacity:1} .pzTap.hit i{position:absolute; inset:0; border-radius:50%; box-shadow:0 0 0 2px rgba(255,255,255,.9); animation:pzHit .5s ease-out forwards}',
     '@keyframes pzHit{from{transform:scale(.6); opacity:1} to{transform:scale(1.9); opacity:0}}',
     'body.pz-intro .pzHide{opacity:0 !important; transform:scale(.975); filter:blur(10px)}',
     '.pzHide{transition:opacity .9s ease, transform 1.1s cubic-bezier(.2,.7,.2,1), filter .9s ease}',
-    'body.pz-on #toast, body.pz-on .guestbadge, body.pz-on .mlens, body.pz-on .mlTip, body.pz-on .mlX{opacity:0 !important; pointer-events:none !important; transition:opacity .4s ease}',
+    'body.pz-on #toast, body.pz-on .guestbadge, body.pz-on .mlTip, body.pz-on .mlX, body.pz-on .mlens:not(.big){opacity:0 !important; pointer-events:none !important; transition:opacity .4s ease}',
+    'body.pz-on .mlens{z-index:72 !important; pointer-events:none !important}',
     'body.pz-intro .lens{opacity:0 !important}',
     '.pzUi{position:fixed; z-index:95; border:0; cursor:pointer; color:#fff; font:600 16px/20px -apple-system, "InterPage", system-ui, sans-serif; letter-spacing:-.01em;',
     '  background:radial-gradient(circle at 35% 25%, #ff7a70, #e0443c 60%, #c4362e); box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 6px 18px rgba(0,0,0,.35);',
@@ -3994,10 +4000,10 @@ body.tab-hidden .tabPoster{display:flex}
     '.pzStart b{font-size:40px; line-height:44px; font-weight:700; letter-spacing:-.03em}',
     '.pzStart i{font-style:normal; font-size:18px; color:rgba(225,238,243,.8)}',
     /* телефон */
-    '.pzM .pzText b{font-size:calc(12.5vw * var(--k))} .pzM .pzText i{font-size:calc(5.4vw * var(--k))}',
-    '.pzM .pzText.huge b{font-size:calc(25vw * var(--k))} .pzM .pzText.title b{font-size:calc(15vw * var(--k))} .pzM .pzText.title i{font-size:calc(6.4vw * var(--k))}',
-    '.pzM .pzText.list b{font-size:calc(11vw * var(--k))}',
-    '.pzM .pzSkip{left:50%; right:auto; transform:translateX(-50%); bottom:calc(22px + env(safe-area-inset-bottom)); padding:12px 20px; font-size:15px; white-space:nowrap}', '.pzM .pzSkip:active{transform:translateX(-50%) scale(.97)}',
+    '.pzM .pzText b{font-size:calc(9.4vw * var(--k)); line-height:1.04} .pzM .pzText i{font-size:calc(4.5vw * var(--k))}',
+    '.pzM .pzText.huge b{font-size:calc(19vw * var(--k))} .pzM .pzText.title b{font-size:calc(11.5vw * var(--k))} .pzM .pzText.title i{font-size:calc(5.2vw * var(--k))}',
+    '.pzM .pzText.list b{font-size:calc(8.6vw * var(--k))}',
+    '.pzM .pzSkip{right:10px; top:calc(env(safe-area-inset-top) + 11px); bottom:auto; padding:8px 13px; font-size:13px; line-height:16px; white-space:nowrap}',
     '.pzM .pzAsk{right:12px; bottom:calc(96px + env(safe-area-inset-bottom))}',
     '.pzM .pzStart b{font-size:30px; line-height:34px} .pzM .pzStart i{font-size:16px}'
   ].join('\n');
@@ -4034,7 +4040,7 @@ body.tab-hidden .tabPoster{display:flex}
   ['mousemove', 'mouseover', 'mouseout', 'mouseenter', 'mouseleave', 'mousedown', 'mouseup', 'click', 'pointermove', 'pointerover', 'pointerout', 'pointerdown', 'pointerup', 'dblclick', 'contextmenu', 'touchstart', 'touchmove', 'touchend', 'wheel'].forEach(function (t) {
     window.addEventListener(t, function (e) {
       if (!on || !e.isTrusted) return;
-      if (e.target && e.target.closest && e.target.closest('.pzUi, .pzStart')) return;
+      if (e.target && e.target.closest && e.target.closest('.pzUi, .pzStart, .lflag, #flags button')) return;
       e.stopImmediatePropagation();
       if (e.cancelable && /^(click|mousedown|touchstart|touchmove|touchend|wheel|contextmenu|dblclick)$/.test(t)) e.preventDefault();
     }, { capture: true, passive: false });
@@ -4108,15 +4114,24 @@ body.tab-hidden .tabPoster{display:flex}
 
   /* ---------- телефон: касание пальцем (кружок) + те же действия, что у человека ---------- */
   var M = window.__m;
+  /* телефон: указка – большая лупа (та же, что на странице, с искажениями); она плывёт к цели,
+     на месте – кольцо «касания» и само действие */
+  var LZ = window.__lens;
   function tapAt(e, then) {
     if (!e) { if (then) then(); return; }
-    var r = e.getBoundingClientRect();
-    cur.classList.add('on');
-    moveTo(r.left + r.width / 2, r.top + r.height / 2, 600, function () {
+    var r = e.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+    /* лупа – только над схемой; над списками и карточками – просто касание */
+    var onMap = document.getElementById('scr-schema') && document.getElementById('scr-schema').classList.contains('on') && !(document.getElementById('bs') || {}).classList.contains('on');
+    if (LZ) { if (onMap) LZ.to(x, y); else LZ.dock(); }
+    var gen = ++tapGen;
+    setTimeout(function () {
+      if (!on || gen !== tapGen) return;
+      setCur(x, y); cur.classList.add('on');
       cur.classList.remove('hit'); void cur.offsetWidth; cur.classList.add('hit');
-      if (then) setTimeout(then, 140);
-    });
+      if (then) setTimeout(then, 120);
+    }, 650);
   }
+  var tapGen = 0;
   /* прокрутка сразу (под размытием переход не виден) – так «окно» в размытии всегда точно на месте */
   function scrollToEl(e, top) {
     if (!e) return;
@@ -4170,6 +4185,10 @@ body.tab-hidden .tabPoster{display:flex}
   function spot() {
     var W = window.innerWidth, H = window.innerHeight;
     var rs = (focusSpec || []).map(function (s) { return rectOf(s, 0); }).filter(Boolean);
+    /* телефон: открытая карточка снизу – тоже занятое место */
+    var bsEl = MOBILE && document.getElementById('bs');
+    if (bsEl && bsEl.classList.contains('on')) rs.push(rectOf(bsEl, 0));
+    if (MOBILE && rs.length) { var tp = rectOf('.top', 0); if (tp) rs.push(tp); }
     if (!rs.length) return { x: W / 2, y: H / 2, w: W, h: H };
     var l = Infinity, t = Infinity, r = -Infinity, b = -Infinity;
     rs.forEach(function (q) { l = Math.min(l, q.l); t = Math.min(t, q.t); r = Math.max(r, q.r); b = Math.max(b, q.b); });
@@ -4185,7 +4204,7 @@ body.tab-hidden .tabPoster{display:flex}
   }
   /* текст не выходит за край экрана и за свободное место; если не влез – уменьшаем шрифт */
   function fitText(d, p) {
-    var W = window.innerWidth, H = window.innerHeight, pad = MOBILE ? 12 : 24;
+    var W = window.innerWidth, H = window.innerHeight, pad = MOBILE ? 20 : 24;
     var maxW = Math.max(220, Math.min(W - pad * 2, p.w - pad * 2)), maxH = Math.max(110, Math.min(H - pad * 2, p.h - pad * 2));
     d.style.maxWidth = maxW + 'px';
     var k = 1;
@@ -4198,8 +4217,11 @@ body.tab-hidden .tabPoster{display:flex}
     d.style.left = Math.min(W - pad - r2.width / 2, Math.max(pad + r2.width / 2, p.x)) + 'px';
     d.style.top = Math.min(H - pad - r2.height / 2, Math.max(pad + r2.height / 2, p.y)) + 'px';
   }
+  /* слова не висят: если 6 с ничего не добавилось – плавно уходят */
+  var hideT = 0;
+  function touchText() { clearTimeout(hideT); hideT = setTimeout(function () { if (on) clearText(); }, 6000); }
   function say(big, small, cls) {
-    clearText();
+    clearText(); touchText();
     var d = mk('div', 'pzText' + (cls ? ' ' + cls : ''));
     d.innerHTML = '<b>' + big + '</b>' + (small ? '<i>' + small + '</i>' : '');
     stage.appendChild(d);
@@ -4211,12 +4233,14 @@ body.tab-hidden .tabPoster{display:flex}
   function words(list) { return say(list.map(function (w, i) { return (i ? '<span class="w sep">·</span>' : '') + '<span class="w">' + w + '</span>'; }).join('')); }
   function addWord() {
     var t = texts[texts.length - 1]; if (!t) return;
+    touchText();
     var w = t.querySelectorAll('.w:not(.on)');
     if (w[0]) w[0].classList.add('on');
     if (w[0] && w[0].classList.contains('sep') && w[1]) w[1].classList.add('on');
   }
   function sub(text) {
     var t = texts[texts.length - 1]; if (!t) return;
+    touchText();
     var i = t.querySelector('i');
     if (!i) { i = document.createElement('i'); t.appendChild(i); }
     i.style.transition = 'opacity .3s ease'; i.style.opacity = 0;
@@ -4224,7 +4248,7 @@ body.tab-hidden .tabPoster{display:flex}
   }
   function lines(list) { return say(list.map(function (w) { return '<span class="w" style="display:block">' + w + '</span>'; }).join(''), '', 'list'); }
   function curOn(v) { cur.classList.toggle('on', !!v); }
-  function park() { if (MOBILE) { curOn(false); M.close(); M.unlight(); return; } moveTo(window.innerWidth * .5, window.innerHeight - 40, 900); setTimeout(vLeave, 950); }
+  function park() { if (MOBILE) { curOn(false); M.close(); M.unlight(); if (LZ) LZ.dock(); return; } moveTo(window.innerWidth * .5, window.innerHeight - 40, 900); setTimeout(vLeave, 950); }
   function stageT(n, k) { say(X('stage') + n, X(k)); }
 
   /* ---------- сцены: D – компьютер, Mo – телефон; ключи совпадают со временем в T ---------- */
@@ -4244,7 +4268,7 @@ body.tab-hidden .tabPoster{display:flex}
   both('tores', function () { say(X('tores')); });
   both('h2', function () { say(X('h2'), '', 'huge'); });
   D.free = function () { focus(['.pcol', '.icol']); say(X('free')); curOn(true); setCur(window.innerWidth * .62, window.innerHeight * .2); hover('prog:comfyui', 900); };
-  Mo.free = function () { mShow('progs'); focus(['#progs']); say(X('free')); setCur(window.innerWidth * .5, window.innerHeight * .5); mOpen({ t: 'prog', id: 'comfyui' }, el('prog:comfyui')); setTimeout(function () { focus(['#bs']); }, 1000); };
+  Mo.free = function () { mShow('progs'); focus(['#progs']); say(X('free')); mOpen({ t: 'prog', id: 'comfyui' }, el('prog:comfyui')); setTimeout(function () { focus(['#bs']); }, 1000); };
   D.davinci = function () { hover('prog:davinci-resolve', 700); };
   Mo.davinci = function () { M.open({ t: 'prog', id: 'davinci-resolve' }, false); };
   D.free2 = function () { sub(X('free2')); hover('prog:reaper', 700); };
@@ -4258,8 +4282,8 @@ body.tab-hidden .tabPoster{display:flex}
   D.folder = function () { focus(['.tcol']); say(X('folder')); };
   Mo.folder = function () { mShow('folder'); focus(['#folder']); say(X('folder')); };
   both('folder2', function () { sub(X('folder2')); });
-  D.h004 = function () { hover('folder:004_Project', 1000); };
-  Mo.h004 = function () { curOn(true); setCur(window.innerWidth * .5, window.innerHeight * .75); tapAt(el('folder:004_Project')); };
+  D.h004 = function () { clearText(); hover('folder:004_Project', 1000); };
+  Mo.h004 = function () { clearText(); tapAt(el('folder:004_Project')); };
   D.hcomfy = function () { hover('folder:004_Project/ComfyUI', 700); clearText(); };
   Mo.hcomfy = function () { clearText(); mOpen({ t: 'folder', id: '004_Project/ComfyUI' }, el('folder:004_Project/ComfyUI')); setTimeout(function () { focus(['#bs']); }, 1000); };
   D.who = function () { focus(['.tcol', '#names']); say(X('who')); };
@@ -4323,7 +4347,7 @@ body.tab-hidden .tabPoster{display:flex}
   D.out = function () { hover('node:out', 800); };
   Mo.out = function () { mLight('out'); };
   D.center = function () { focus(null); clearText(); moveTo(window.innerWidth / 2, window.innerHeight / 2, 900); };
-  Mo.center = function () { focus(null); clearText(); M.unlight(); curOn(false); };
+  Mo.center = function () { focus(null); clearText(); M.unlight(); curOn(false); if (LZ) LZ.dock(); };
   both('turn', function () { focus([]); say(X('turn')); if (!MOBILE) { vLeave(); curOn(false); } });
   both('near', function () { sub(X('near')); });
   both('go', function () { say(X('go'), '', 'huge'); });
@@ -4350,7 +4374,7 @@ body.tab-hidden .tabPoster{display:flex}
     on = true;
     document.body.classList.add('pz-intro', 'pz-on');
     skip.hidden = false; ask.hidden = true; start.hidden = true;
-    if (MOBILE) { M.close(); M.unlight(); M.show('schema'); window.scrollTo(0, 0); } else vLeave();
+    if (MOBILE) { M.close(); M.unlight(); M.show('schema'); window.scrollTo(0, 0); if (LZ) LZ.dock(); } else vLeave();
     curOn(false); clearText(); focus(null);
     cx = window.innerWidth / 2; cy = window.innerHeight / 2; setCur(cx, cy);
     var src = AUDIO[lang];
@@ -4375,27 +4399,30 @@ body.tab-hidden .tabPoster{display:flex}
   function finish() {
     on = false; cancelAnimationFrame(raf); cancelAnimationFrame(moveT);
     try { audio.pause(); } catch (e) {}
-    if (MOBILE) { M.close(); M.unlight(); window.scrollTo({ top: 0, behavior: 'smooth' }); } else vLeave();
+    if (MOBILE) { M.close(); M.unlight(); window.scrollTo({ top: 0, behavior: 'smooth' }); if (LZ) LZ.dock(); } else vLeave();
     curOn(false); clearText(); focus(null);
     document.body.classList.remove('pz-intro', 'pz-on');
     uiText();
     skip.hidden = true; start.hidden = true; ask.hidden = false;
-    try { localStorage.setItem('gp_siri_seen', '1'); } catch (e) {}
+    try { sessionStorage.setItem('gp_siri_seen', '1'); } catch (e) {}
   }
   skip.addEventListener('click', function () { finish(); });
   ask.addEventListener('click', function () { begin(); });
   document.addEventListener('keydown', function (e) { if (on && e.key === 'Escape') finish(); });
   /* язык поменяли флагом – подписи кнопок на новом языке */
+  /* флаг поменяли: подписи – на новом языке; если показ идёт – начинаем заново со звуком этого языка */
   document.addEventListener('click', function (e) {
-    if (!on && e.target.closest && e.target.closest('.lflag, #flags button')) setTimeout(function () { lang = pageLang(); uiText(); }, 80);
+    if (!(e.target.closest && e.target.closest('.lflag, #flags button'))) return;
+    var was = on;
+    setTimeout(function () { var nl = pageLang(); if (was && nl !== lang) begin(); else { lang = nl; uiText(); } }, 120);
   });
 
-  /* первый визит – сразу презентация; потом – только «Спроси у Siri». ?siri=1 – показать всегда.
+  /* каждый новый заход – сразу презентация; в той же вкладке после показа – только «Спроси у Siri». ?siri=1 – всегда.
      Владелец (?owner=1) – без автозапуска, кнопка есть */
   function boot() {
     lang = pageLang(); uiText();
     var force = /[?&]siri=1(&|$)/.test(location.search), seen = false;
-    try { seen = !!localStorage.getItem('gp_siri_seen'); } catch (e) {}
+    try { seen = !!sessionStorage.getItem('gp_siri_seen'); localStorage.removeItem('gp_siri_seen'); } catch (e) {}
     if ((seen || /[?&]owner=1/.test(location.search)) && !force) { ask.hidden = false; return; }
     begin();
   }
