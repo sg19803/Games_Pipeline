@@ -1731,7 +1731,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   })();
 
   /* свежая версия: страница хранится в кэше телефона до 10 минут – сверяемся с сервером и один раз перезагружаемся */
-  var MBUILD = 'm-2026-11-10-3';
+  var MBUILD = 'm-2026-11-10-4';
   (function freshCheck() {
     try {
       fetch(location.pathname + '?nc=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
@@ -1762,7 +1762,8 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
 (function siriPresentation() {
   var MOBILE = !!window.__m;
   var TOUCH = !!(window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches);
-  if (!MOBILE && TOUCH) return;               /* десктоп-версия, открытая на телефоне, – без презентации */
+  var SMALL = Math.min(screen.width, screen.height) < 700;
+  if (!MOBILE && TOUCH && SMALL) return;      /* десктоп-версия, открытая на телефоне, – без презентации (ноутбук с сенсорным экраном – с ней) */
 
   var AUDIO = { ru: 'vo/ru.mp3', en: 'vo/en.mp3', es: 'vo/es.mp3', uk: 'vo/uk.mp3' };
   /* время сцен по озвучке (секунды) – распознано по каждому файлу */
@@ -2302,13 +2303,13 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     setTimeout(function () { var nl = pageLang(); if (was && nl !== lang) begin(); else { lang = nl; uiText(); } }, 120);
   });
 
-  /* каждый новый заход – сразу презентация; в той же вкладке после показа – только «Спроси у Siri». ?siri=1 – всегда.
+  /* при каждой загрузке страницы – сразу презентация (её можно пропустить). Владелец (?owner=1) и ?nosiri=1 – без автозапуска.
      Владелец (?owner=1) – без автозапуска, кнопка есть */
   function boot() {
     lang = pageLang(); uiText();
-    var force = /[?&]siri=1(&|$)/.test(location.search), seen = false;
-    try { seen = !!sessionStorage.getItem('gp_siri_seen'); localStorage.removeItem('gp_siri_seen'); } catch (e) {}
-    if ((seen || /[?&]owner=1/.test(location.search)) && !force) { ask.hidden = false; return; }
+    var force = /[?&]siri=1(&|$)/.test(location.search);
+    try { localStorage.removeItem('gp_siri_seen'); sessionStorage.removeItem('gp_siri_seen'); } catch (e) {}
+    if ((/[?&]owner=1/.test(location.search) || /[?&]nosiri=1/.test(location.search)) && !force) { ask.hidden = false; return; }
     begin();
   }
   if (document.readyState === 'complete') setTimeout(boot, 400); else window.addEventListener('load', function () { setTimeout(boot, 400); });

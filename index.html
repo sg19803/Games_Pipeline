@@ -3461,7 +3461,7 @@ body.tab-hidden .tabPoster{display:flex}
 
   /* отладочный крючок – для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-10-2 siri',
+    build: '2026-11-10-1 siri',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3881,6 +3881,10 @@ body.tab-hidden .tabPoster{display:flex}
 
 
 
+
+
+
+
 <script>
 /* =====================================================================
    ПРЕЗЕНТАЦИЯ SIRI. Голос ведёт по странице: крупные слова в стиле презентаций Apple,
@@ -3892,7 +3896,8 @@ body.tab-hidden .tabPoster{display:flex}
 (function siriPresentation() {
   var MOBILE = !!window.__m;
   var TOUCH = !!(window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches);
-  if (!MOBILE && TOUCH) return;               /* десктоп-версия, открытая на телефоне, – без презентации */
+  var SMALL = Math.min(screen.width, screen.height) < 700;
+  if (!MOBILE && TOUCH && SMALL) return;      /* десктоп-версия, открытая на телефоне, – без презентации (ноутбук с сенсорным экраном – с ней) */
 
   var AUDIO = { ru: 'vo/ru.mp3', en: 'vo/en.mp3', es: 'vo/es.mp3', uk: 'vo/uk.mp3' };
   /* время сцен по озвучке (секунды) – распознано по каждому файлу */
@@ -4432,13 +4437,13 @@ body.tab-hidden .tabPoster{display:flex}
     setTimeout(function () { var nl = pageLang(); if (was && nl !== lang) begin(); else { lang = nl; uiText(); } }, 120);
   });
 
-  /* каждый новый заход – сразу презентация; в той же вкладке после показа – только «Спроси у Siri». ?siri=1 – всегда.
+  /* при каждой загрузке страницы – сразу презентация (её можно пропустить). Владелец (?owner=1) и ?nosiri=1 – без автозапуска.
      Владелец (?owner=1) – без автозапуска, кнопка есть */
   function boot() {
     lang = pageLang(); uiText();
-    var force = /[?&]siri=1(&|$)/.test(location.search), seen = false;
-    try { seen = !!sessionStorage.getItem('gp_siri_seen'); localStorage.removeItem('gp_siri_seen'); } catch (e) {}
-    if ((seen || /[?&]owner=1/.test(location.search)) && !force) { ask.hidden = false; return; }
+    var force = /[?&]siri=1(&|$)/.test(location.search);
+    try { localStorage.removeItem('gp_siri_seen'); sessionStorage.removeItem('gp_siri_seen'); } catch (e) {}
+    if ((/[?&]owner=1/.test(location.search) || /[?&]nosiri=1/.test(location.search)) && !force) { ask.hidden = false; return; }
     begin();
   }
   if (document.readyState === 'complete') setTimeout(boot, 400); else window.addEventListener('load', function () { setTimeout(boot, 400); });
