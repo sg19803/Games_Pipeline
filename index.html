@@ -2702,6 +2702,10 @@ body.tab-hidden .tabPoster{display:flex}
       en: 'At this stage everyone works with the approved material and makes the final versions at maximum quality.',
       es: 'En esta etapa todos trabajan con el material aprobado y hacen las versiones finales con la máxima calidad.',
       uk: 'На цьому етапі всі працюють із затвердженим матеріалом і роблять фінальні версії в максимальній якості.' },
+    { ru: 'Ответственный за задачу смотрит работу и говорит, нравится или нет. Решает: пропустить дальше или вернуться на предыдущую ступень.',
+      en: 'The task owner reviews the work and says whether he likes it or not. The decision: move on, or go back to the previous step.',
+      es: 'El responsable de la tarea revisa el trabajo y dice si le gusta o no. Se decide: seguir adelante o volver a la etapa anterior.',
+      uk: 'Відповідальний за задачу дивиться роботу і каже, подобається чи ні. Рішення: пропустити далі або повернутися на попередній етап.' },
     { ru: 'Ответственный за задачу смотрит работу и говорит, нравится или нет. Решает: пропустить дальше или вернуться на предыдущую или позапрошлую ступень.',
       en: 'The task owner reviews the work and says whether he likes it or not. The decision: move on, or go back one or two steps.',
       es: 'El responsable de la tarea revisa el trabajo y dice si le gusta o no. Se decide: seguir adelante o volver una o dos etapas atrás.',
@@ -3437,6 +3441,7 @@ body.tab-hidden .tabPoster{display:flex}
     readSheet();
     if (manual) apply(); else fit();
     tintNodes();
+    if (window.__lensDirty) window.__lensDirty();   /* лупа – на новом языке */
   }
   function setLang(l, remember) {
     if (LANGS.indexOf(l) === -1) return;
@@ -3456,7 +3461,7 @@ body.tab-hidden .tabPoster{display:flex}
 
   /* отладочный крючок – для проверки сборки снаружи */
   window.__pipeline = {
-    build: '2026-11-10-1 siri',
+    build: '2026-11-10-2 siri',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3582,6 +3587,8 @@ body.tab-hidden .tabPoster{display:flex}
       reindex();
       dirty = false;
     }
+    /* тексты полей (язык, загруженные данные) меняются без следа в разметке – копии в лупе пересобираем */
+    window.__lensDirty = function () { dirty = true; if (shown) makeClones(); };
     /* изменения на листе переносим в копии точечно: атрибут – в тот же элемент,
        новое содержимое блока – копией только этого блока. Полная пересборка – только в крайнем случае */
     var pend = [], pendT = 0;
@@ -3854,6 +3861,14 @@ body.tab-hidden .tabPoster{display:flex}
 })();
 
 </script>
+
+
+
+
+
+
+
+
 
 
 
@@ -4256,7 +4271,7 @@ body.tab-hidden .tabPoster{display:flex}
   function both(k, f) { D[k] = f; Mo[k] = f; }
   both('hello', function () { document.body.classList.add('pz-intro'); say(X('hi'), '', 'huge'); });
   both('title', function () { say(X('title'), 'SergioVida.com', 'title'); });
-  both('sheet', function () { clearText(); document.body.classList.remove('pz-intro'); });
+  both('sheet', function () { clearText(); document.body.classList.remove('pz-intro'); if (window.__lensDirty) window.__lensDirty(); });
   both('blur', function () { focus([]); words([X('w1'), X('w2'), X('w3')]); });
   both('w1', addWord); both('w2', addWord); both('w3', addWord);
   both('conv', function () { say(X('conv')); });
