@@ -1725,7 +1725,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   })();
 
   /* свежая версия: страница хранится в кэше телефона до 10 минут – сверяемся с сервером и один раз перезагружаемся */
-  var MBUILD = 'm-2026-11-08-14';
+  var MBUILD = 'm-2026-11-10-1';
   (function freshCheck() {
     try {
       fetch(location.pathname + '?nc=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
@@ -1739,9 +1739,555 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
       }).catch(function () {});
     } catch (e) {}
   })();
-  window.__m = { show: showScreen, open: openSheet, close: closeSheet, lang: function () { return LANG; } };
+  window.__m = { show: showScreen, open: openSheet, close: closeSheet, lang: function () { return LANG; },
+    light: function (id) { lightStep(id); }, lightMany: function (ids, h) { lightSteps(ids, h == null ? 212 : h); }, unlight: unlight,
+    step: function (id) { return STEP_EL[id]; }, hue: hueOfStep };
 
 })();
 </script>
+<script>
+/* =====================================================================
+   ПРЕЗЕНТАЦИЯ SIRI. Голос ведёт по странице: крупные слова в стиле презентаций Apple,
+   курсор (на телефоне – касание) сам показывает нужные места – срабатывают те же подсветки,
+   что от человека; всё лишнее размыто. Сцены привязаны ко времени озвучки каждого языка.
+   «Пропустить презентацию» – сразу к странице; маленькая «Спроси у Siri» – показать ещё раз.
+   Одна и та же сцена – на компьютере (основная страница) и на телефоне (мобильная).
+   ===================================================================== */
+(function siriPresentation() {
+  var MOBILE = !!window.__m;
+  var TOUCH = !!(window.matchMedia && window.matchMedia('(hover: none), (pointer: coarse)').matches);
+  if (!MOBILE && TOUCH) return;               /* десктоп-версия, открытая на телефоне, – без презентации */
+
+  var AUDIO = { ru: 'vo/ru.mp3', en: 'vo/en.mp3', es: 'vo/es.mp3', uk: 'vo/uk.mp3' };
+  /* время сцен по озвучке (секунды) – распознано по каждому файлу */
+  var T = {"ru": [0.05, 1.5, 5.45, 9.0, 9.3, 12.2, 13.7, 15.2, 20.4, 20.7, 22.5, 23.6, 25.6, 27.6, 30.3, 34.8, 39.4, 43.3, 46.0, 48.0, 49.5, 51.0, 53.0, 56.3, 59.6, 63.3, 67.2, 72.5, 75.5, 78.2, 81.4, 88.4, 92.5, 96.5, 101.6, 107.6, 114.4, 119.5, 124.6, 128.6, 133.1, 136.6, 139.4, 141.4, 143.1, 148.6, 154.8, 157.6, 163.7, 166.4, 174.9, 179.6, 183.9, 187.2, 190.6, 193.2, 196.0, 197.2, 200.5, 204.5, 209.5, 213.4, 215.6, 219.6, 227.5, 230.2, 233.6, 236.5, 242.6, 245.6, 246.6, 250.2, 253.5], "en": [0.05, 1.34, 5.3, 8.44, 9.18, 10.64, 12.24, 13.5, 17.36, 18.46, 19.78, 20.66, 22.0, 25.38, 26.66, 31.26, 35.48, 40.46, 41.84, 43.84, 44.92, 46.42, 47.4, 50.7, 54.24, 57.5, 60.82, 67.24, 70.94, 73.94, 77.48, 84.72, 88.04, 92.76, 99.14, 106.84, 114.24, 118.88, 123.46, 127.48, 131.9, 135.4, 138.2, 140.2, 142.78, 147.86, 153.68, 157.76, 163.92, 167.14, 175.22, 179.32, 183.88, 186.74, 189.76, 192.36, 195.16, 195.06, 198.22, 202.06, 207.04, 210.66, 212.66, 216.6, 222.96, 225.76, 228.32, 231.34, 236.78, 241.88, 242.88, 245.02, 247.76], "es": [0.05, 0.82, 4.44, 7.98, 9.16, 10.4, 12.02, 13.0, 18.78, 20.22, 21.48, 22.26, 23.94, 25.8, 28.26, 32.72, 36.98, 41.52, 42.84, 44.84, 47.9, 49.4, 50.98, 53.22, 56.9, 60.24, 64.18, 71.46, 75.64, 79.74, 82.56, 89.36, 92.06, 97.52, 103.88, 111.24, 116.84, 120.96, 125.96, 130.0, 135.02, 138.52, 141.32, 143.32, 145.84, 150.86, 156.78, 160.82, 168.38, 171.64, 179.98, 185.18, 191.72, 195.36, 198.72, 201.32, 204.12, 205.46, 209.28, 213.06, 218.88, 222.82, 225.46, null, null, null, null, null, null, null, null, null, null], "uk": [0.05, 1.02, 4.8, 8.24, 9.24, 10.72, 12.48, 13.38, 18.02, 19.5, 20.84, 21.36, 22.96, 25.52, 26.76, 31.66, 35.74, 40.16, 41.6, 43.6, 45.06, 46.56, 49.7, 52.56, 56.92, 60.94, 64.7, 70.42, 73.82, 76.54, 79.36, 86.32, 90.02, 94.94, 99.92, 106.3, 112.2, 116.5, 121.34, 124.8, 128.68, 132.18, 134.98, 136.98, 138.48, 143.72, 148.76, 151.94, 158.1, 161.5, 169.72, 174.04, 178.94, 182.74, 185.76, 188.36, 191.16, 192.66, 195.64, 198.96, 204.6, 208.1, 210.08, 213.64, 220.8, 223.46, 226.26, 229.74, 235.1, 239.76, 240.76, 242.96, 246.22], "keys": ["hello", "title", "sheet", "blur", "w1", "w2", "w3", "conv", "list", "q", "t", "cr", "er", "sy", "par", "fast", "tores", "h2", "free", "davinci", "free2", "photo", "ds", "cents", "park", "folder", "folder2", "h004", "hcomfy", "who", "where", "progs", "any", "htxt", "linked", "park2", "s1", "s1a", "s1b", "s1c", "s2", "v20", "txt", "mus0", "s2a", "s2b", "dir", "s3", "key", "key2", "early", "rework", "onward", "s4", "comp", "mus", "fin", "s4b", "dir2", "s5", "back", "onward2", "hidden", "knows", "save", "pro", "res", "s6", "out", "center", "turn", "near", "go"], "end": {"ru": 255.33, "en": 250.05, "es": 228.37, "uk": 248.37}};
+  var TX = {
+    hi: { ru: 'Привет!', en: 'Hello!', es: '¡Hola!', uk: 'Привіт!' },
+    title: { ru: 'Пайплайн Сергея', en: 'Sergio’s Pipeline', es: 'El pipeline de Sergio', uk: 'Пайплайн Сергія' },
+    w1: { ru: 'Геймплей', en: 'Gameplay', es: 'Gameplay', uk: 'Геймплей' },
+    w2: { ru: 'ИИ-видео', en: 'AI video', es: 'Vídeo IA', uk: 'ШІ-відео' },
+    w3: { ru: 'Гибрид', en: 'Hybrid', es: 'Híbrido', uk: 'Гібрид' },
+    conv: { ru: 'Конвейер креативов.', en: 'A creative conveyor.', es: 'Una cadena de creatividades.', uk: 'Конвеєр креативів.' },
+    l1: { ru: 'Качество.', en: 'Quality.', es: 'Calidad.', uk: 'Якість.' },
+    l2: { ru: 'Время.', en: 'Time.', es: 'Tiempo.', uk: 'Час.' },
+    l3: { ru: 'Кредиты.', en: 'Credits.', es: 'Créditos.', uk: 'Кредити.' },
+    l4: { ru: 'Без ошибок.', en: 'Fewer errors.', es: 'Sin errores.', uk: 'Без помилок.' },
+    l5: { ru: 'Синхронизация.', en: 'In sync.', es: 'Sincronía.', uk: 'Синхронізація.' },
+    par: { ru: 'Параллельно.', en: 'In parallel.', es: 'En paralelo.', uk: 'Паралельно.' },
+    par2: { ru: 'Все делают своё – одновременно', en: 'Everyone does their part – at once', es: 'Cada uno lo suyo, a la vez', uk: 'Кожен робить своє – одночасно' },
+    fast: { ru: 'Быстро.', en: 'Fast.', es: 'Rápido.', uk: 'Швидко.' },
+    tores: { ru: 'От задачи до результата', en: 'From task to result', es: 'De la tarea al resultado', uk: 'Від задачі до результату' },
+    h2: { ru: '2 часа', en: '2 hours', es: '2 horas', uk: '2 години' },
+    free: { ru: 'Бесплатный софт.', en: 'Free software.', es: 'Software gratuito.', uk: 'Безкоштовний софт.' },
+    free2: { ru: 'Open source. Быстрый.', en: 'Open source. Fast.', es: 'Open source. Rápido.', uk: 'Open source. Швидкий.' },
+    ds: { ru: 'DeepSeek по API', en: 'DeepSeek via API', es: 'DeepSeek por API', uk: 'DeepSeek через API' },
+    cents: { ru: 'несколько центов за весь проект', en: 'just a few cents per project', es: 'unos céntimos por proyecto', uk: 'кілька центів за весь проєкт' },
+    folder: { ru: 'Папка проекта.', en: 'The project folder.', es: 'La carpeta del proyecto.', uk: 'Папка проєкту.' },
+    folder2: { ru: 'Понятна с первого взгляда', en: 'Clear at first glance', es: 'Clara a primera vista', uk: 'Зрозуміла з першого погляду' },
+    who: { ru: 'Кто кладёт сюда материалы', en: 'Who puts material here', es: 'Quién sube material aquí', uk: 'Хто кладе сюди матеріали' },
+    where: { ru: 'На каких этапах', en: 'At which stages', es: 'En qué etapas', uk: 'На яких етапах' },
+    progs: { ru: 'И в каких программах', en: 'And in which software', es: 'Y con qué programas', uk: 'І в яких програмах' },
+    any: { ru: 'Подсветка – из любого блока.', en: 'Highlights from any block.', es: 'Se ilumina desde cualquier bloque.', uk: 'Підсвічування – з будь-якого блоку.' },
+    linked: { ru: 'Всё связано. Всё видно.', en: 'Everything connected. Everything visible.', es: 'Todo conectado. Todo a la vista.', uk: 'Усе пов’язано. Усе видно.' },
+    stage: { ru: 'Этап ', en: 'Stage ', es: 'Etapa ', uk: 'Етап ' },
+    s1: { ru: 'Задача от заказчика – в Asana', en: 'The task comes from the client – in Asana', es: 'La tarea llega del cliente – en Asana', uk: 'Завдання від замовника – в Asana' },
+    s1a: { ru: 'Ведёт трафик-менеджер', en: 'Run by the traffic manager', es: 'La gestiona el traffic manager', uk: 'Веде трафік-менеджер' },
+    s1b: { ru: 'Что популярно, примеры видео', en: 'What’s trending, sample videos', es: 'Tendencias y vídeos de ejemplo', uk: 'Що популярно, приклади відео' },
+    s1c: { ru: 'Результат – бриф, опирающийся на данные', en: 'Result: a data-driven brief', es: 'Resultado: un briefing basado en datos', uk: 'Результат – бриф, що спирається на дані' },
+    s2: { ru: 'Структура, вид и звук', en: 'Structure, look and sound', es: 'Estructura, imagen y sonido', uk: 'Структура, вигляд і звук' },
+    s2a: { ru: 'Аниматик: уже видно и слышно', en: 'Animatic: you can already see and hear it', es: 'Animatic: ya se ve y se oye', uk: 'Аніматик: уже видно й чути' },
+    s2b: { ru: 'Динамика, стиль, озвучка, настроение', en: 'Pace, style, voiceover, mood', es: 'Ritmo, estilo, locución, tono', uk: 'Динаміка, стиль, озвучка, настрій' },
+    dir: { ru: 'Отвечает режиссёр.', en: 'The director is in charge.', es: 'Al mando: el director.', uk: 'Відповідає режисер.' },
+    appr: { ru: 'Утверждение', en: 'Approval', es: 'Aprobación', uk: 'Затвердження' },
+    key: { ru: 'Важнейший момент.', en: 'The crucial moment.', es: 'El momento clave.', uk: 'Найважливіший момент.' },
+    key2: { ru: 'Здесь экономятся кредиты на генерации', en: 'This is where generation credits are saved', es: 'Aquí se ahorran créditos de generación', uk: 'Тут економляться кредити на генерації' },
+    early: { ru: 'Проблемы решаются', en: 'Problems are solved', es: 'Los problemas se resuelven', uk: 'Проблеми вирішуються' },
+    early2: { ru: 'ещё до их появления', en: 'before they appear', es: 'antes de aparecer', uk: 'ще до їх появи' },
+    rework: { ru: 'На доработку', en: 'Back for revision', es: 'A corregir', uk: 'На доопрацювання' },
+    onward: { ru: 'Или дальше', en: 'Or onward', es: 'O adelante', uk: 'Або далі' },
+    s4: { ru: 'Чистовая работа', en: 'Final production', es: 'Acabado final', uk: 'Чистова робота' },
+    s4a: { ru: 'Каждый – мастер своего дела', en: 'Everyone is a master of their craft', es: 'Cada uno, experto en lo suyo', uk: 'Кожен – майстер своєї справи' },
+    s4b: { ru: 'Опыт растёт – качество растёт', en: 'Experience grows – quality grows', es: 'Crece la experiencia, crece la calidad', uk: 'Досвід росте – якість росте' },
+    dir2: { ru: 'Снова отвечает режиссёр.', en: 'The director again.', es: 'De nuevo, el director.', uk: 'Знову відповідає режисер.' },
+    back: { ru: 'Назад – на любую ступень', en: 'Back to any step', es: 'Atrás, a cualquier paso', uk: 'Назад – на будь-який крок' },
+    hidden: { ru: 'То, что не видно сразу', en: 'What you don’t see at first', es: 'Lo que no se ve a primera vista', uk: 'Те, чого не видно одразу' },
+    knows: { ru: 'Каждый знает, что делать', en: 'Everyone knows what to do', es: 'Cada uno sabe qué hacer', uk: 'Кожен знає, що робити' },
+    knows2: { ru: 'если креатив вернулся', en: 'when a creative comes back', es: 'si la creatividad vuelve', uk: 'якщо креатив повернувся' },
+    save: { ru: 'Огромная экономия времени.', en: 'A huge time saver.', es: 'Un ahorro enorme de tiempo.', uk: 'Величезна економія часу.' },
+    pro: { ru: 'Профессиональное управление проектом.', en: 'Professional project management.', es: 'Gestión profesional de proyectos.', uk: 'Професійне управління проєктом.' },
+    res: { ru: 'Нам нужны результаты.', en: 'We need results.', es: 'Queremos resultados.', uk: 'Нам потрібні результати.' },
+    s6: { ru: 'Ресайзы и выгрузка', en: 'Resizes and export', es: 'Formatos y exportación', uk: 'Ресайзи та вивантаження' },
+    turn: { ru: 'Твоя очередь.', en: 'Your turn.', es: 'Tu turno.', uk: 'Твоя черга.' },
+    near: { ru: 'Я рядом, если захочешь послушать ещё раз', en: 'I’m here if you want to hear it again', es: 'Estoy aquí si quieres escucharlo otra vez', uk: 'Я поруч, якщо захочеш послухати ще раз' },
+    go: { ru: 'Вперёд!', en: 'Go!', es: '¡Adelante!', uk: 'Вперед!' },
+    skip: { ru: 'Пропустить презентацию', en: 'Skip presentation', es: 'Saltar presentación', uk: 'Пропустити презентацію' },
+    ask: { ru: 'Спроси у Siri', en: 'Ask Siri', es: 'Pregunta a Siri', uk: 'Запитай у Siri' },
+    startT: { ru: 'Siri покажет, как работает пайплайн', en: 'Siri will show you how the pipeline works', es: 'Siri te enseña cómo funciona el pipeline', uk: 'Siri покаже, як працює пайплайн' },
+    startS: { ru: 'Нажми, чтобы начать – около четырёх минут', en: 'Click to start – about four minutes', es: 'Haz clic para empezar – unos cuatro minutos', uk: 'Натисни, щоб почати – близько чотирьох хвилин' },
+    startM: { ru: 'Коснись, чтобы начать – около четырёх минут', en: 'Tap to start – about four minutes', es: 'Toca para empezar – unos cuatro minutos', uk: 'Торкнися, щоб почати – близько чотирьох хвилин' }
+  };
+  var lang = 'ru';
+  function X(k) { var o = TX[k]; return o ? (o[lang] || o.en) : k; }
+  function pageLang() { var l = (document.documentElement.lang || 'ru').slice(0, 2); return AUDIO[l] ? l : 'en'; }
+
+  var css = document.createElement('style');
+  css.textContent = [
+    '.pzBlur{position:fixed; inset:0; z-index:60; pointer-events:none; opacity:0; transition:opacity .55s ease;',
+    '  background:rgba(4,10,14,.42); -webkit-backdrop-filter:blur(16px) saturate(.85); backdrop-filter:blur(16px) saturate(.85);',
+    '  -webkit-mask-size:100% 100%; mask-size:100% 100%; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat}',
+    '.pzBlur.on{opacity:1}',
+    '.pzStage{position:fixed; inset:0; z-index:66; pointer-events:none; overflow:hidden}',
+    '.pzText{--k:1; position:absolute; left:0; top:0; width:max-content; max-width:92vw; text-align:center; color:#fff; opacity:0;',
+    '  transform:translate(-50%,-50%) translateY(18px) scale(.985); filter:blur(8px);',
+    '  transition:opacity .6s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1), filter .6s ease}',
+    '.pzText.on{opacity:1; transform:translate(-50%,-50%); filter:none}',
+    '.pzText.out{opacity:0; transform:translate(-50%,-50%) translateY(-12px); filter:blur(6px); transition-duration:.35s}',
+    '.pzText b{display:block; font-weight:700; letter-spacing:-.04em; line-height:1.0; font-size:calc(min(128px, 8.4vw) * var(--k)); text-shadow:0 3px 40px rgba(0,0,0,.35); text-wrap:balance}',
+    '.pzText i{display:block; margin-top:.5em; font-style:normal; font-weight:500; letter-spacing:-.02em; font-size:calc(min(46px, 3.2vw) * var(--k)); line-height:1.2; color:rgba(225,238,243,.88); text-wrap:balance}',
+    '.pzText.huge b{font-size:calc(min(340px, 21vw) * var(--k))}',
+    '.pzText.title b{font-size:calc(min(220px, 13vw) * var(--k))}',
+    '.pzText.title i{font-size:calc(min(60px, 3.8vw) * var(--k)); letter-spacing:.01em; color:#8fd0e6}',
+    '.pzText.list b{font-size:calc(min(100px, 6.6vw) * var(--k)); line-height:1.12}',
+    '.pzText .w{display:inline-block; opacity:0; transform:translateY(12px); filter:blur(6px); transition:opacity .5s ease, transform .6s cubic-bezier(.2,.7,.2,1), filter .5s ease}',
+    '.pzText .w.on{opacity:1; transform:none; filter:none}',
+    '.pzText .sep{margin:0 .25em; color:rgba(143,208,230,.8)}',
+    '.pzCur{position:fixed; left:0; top:0; z-index:75; width:30px; height:36px; pointer-events:none; opacity:0; transition:opacity .4s ease; filter:drop-shadow(0 2px 4px rgba(0,0,0,.45))}',
+    '.pzCur.on{opacity:1}',
+    '.pzTap{position:fixed; left:0; top:0; z-index:75; width:44px; height:44px; margin:-22px 0 0 -22px; border-radius:50%; pointer-events:none; opacity:0;',
+    '  background:radial-gradient(circle, rgba(255,255,255,.55), rgba(255,255,255,.18) 60%, rgba(255,255,255,0) 72%); box-shadow:0 0 0 2px rgba(255,255,255,.75); transition:opacity .3s ease}',
+    '.pzTap.on{opacity:1} .pzTap.hit i{position:absolute; inset:0; border-radius:50%; box-shadow:0 0 0 2px rgba(255,255,255,.9); animation:pzHit .5s ease-out forwards}',
+    '@keyframes pzHit{from{transform:scale(.6); opacity:1} to{transform:scale(1.9); opacity:0}}',
+    'body.pz-intro .pzHide{opacity:0 !important; transform:scale(.975); filter:blur(10px)}',
+    '.pzHide{transition:opacity .9s ease, transform 1.1s cubic-bezier(.2,.7,.2,1), filter .9s ease}',
+    'body.pz-on #toast, body.pz-on .guestbadge, body.pz-on .mlens, body.pz-on .mlTip, body.pz-on .mlX{opacity:0 !important; pointer-events:none !important; transition:opacity .4s ease}',
+    'body.pz-intro .lens{opacity:0 !important}',
+    '.pzUi{position:fixed; z-index:95; border:0; cursor:pointer; color:#fff; font:600 16px/20px -apple-system, "InterPage", system-ui, sans-serif; letter-spacing:-.01em;',
+    '  background:radial-gradient(circle at 35% 25%, #ff7a70, #e0443c 60%, #c4362e); box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 6px 18px rgba(0,0,0,.35);',
+    '  border-radius:999px; transition:opacity .3s ease, transform .2s ease; -webkit-tap-highlight-color:transparent}',
+    '.pzUi:active{transform:scale(.97)}',
+    '.pzSkip{right:28px; bottom:28px; padding:14px 22px}',
+    '.pzAsk{right:20px; bottom:20px; padding:7px 12px 7px 8px; font-size:13px; line-height:16px; display:flex; align-items:center; gap:7px; opacity:.92}',
+    '.pzAsk:hover{opacity:1}',
+    '.pzAsk .orb{width:18px; height:18px; border-radius:50%; background:conic-gradient(from 200deg, #6ad1ff, #b98cff, #ff7ac8, #ffb36a, #6ad1ff); box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.75)}',
+    '.pzUi[hidden], .pzStart[hidden]{display:none}',
+    '.pzStart{position:fixed; inset:0; z-index:90; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; padding:0 24px; cursor:pointer; color:#fff; text-align:center}',
+    '.pzStart .play{width:120px; height:120px; border-radius:50%; display:flex; align-items:center; justify-content:center;',
+    '  background:rgba(255,255,255,.12); box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55), inset 0 2px 1px rgba(255,255,255,.4), 0 20px 60px rgba(0,0,0,.35);',
+    '  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); transition:transform .2s ease}',
+    '.pzStart:hover .play{transform:scale(1.05)}',
+    '.pzStart .play svg{width:44px; height:44px; margin-left:8px}',
+    '.pzStart b{font-size:40px; line-height:44px; font-weight:700; letter-spacing:-.03em}',
+    '.pzStart i{font-style:normal; font-size:18px; color:rgba(225,238,243,.8)}',
+    /* телефон */
+    '.pzM .pzText b{font-size:calc(12.5vw * var(--k))} .pzM .pzText i{font-size:calc(5.4vw * var(--k))}',
+    '.pzM .pzText.huge b{font-size:calc(25vw * var(--k))} .pzM .pzText.title b{font-size:calc(15vw * var(--k))} .pzM .pzText.title i{font-size:calc(6.4vw * var(--k))}',
+    '.pzM .pzText.list b{font-size:calc(11vw * var(--k))}',
+    '.pzM .pzSkip{left:50%; right:auto; transform:translateX(-50%); bottom:calc(22px + env(safe-area-inset-bottom)); padding:12px 20px; font-size:15px; white-space:nowrap}', '.pzM .pzSkip:active{transform:translateX(-50%) scale(.97)}',
+    '.pzM .pzAsk{right:12px; bottom:calc(96px + env(safe-area-inset-bottom))}',
+    '.pzM .pzStart b{font-size:30px; line-height:34px} .pzM .pzStart i{font-size:16px}'
+  ].join('\n');
+  document.head.appendChild(css);
+  if (MOBILE) document.documentElement.classList.add('pzM');
+
+  function mk(tag, cls) { var e = document.createElement(tag); e.className = cls; return e; }
+  var blurA = mk('div', 'pzBlur'), blurB = mk('div', 'pzBlur');
+  var stage = mk('div', 'pzStage');
+  var cur = mk('div', MOBILE ? 'pzTap' : 'pzCur');
+  cur.innerHTML = MOBILE ? '<i></i>' : '<svg viewBox="0 0 30 36" width="30" height="36"><path d="M3 2 L3 28 L9.5 22 L14 33 L18.5 31 L14 20.5 L23 20.5 Z" fill="#111" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>';
+  var skip = mk('button', 'pzUi pzSkip'); skip.type = 'button'; skip.hidden = true;
+  var ask = mk('button', 'pzUi pzAsk'); ask.type = 'button'; ask.hidden = true;
+  var start = mk('div', 'pzStart'); start.hidden = true;
+  [blurA, blurB, stage, cur, start, skip, ask].forEach(function (e) { document.body.appendChild(e); });
+  /* что прячется на вступлении (до появления таблицы) */
+  (MOBILE ? ['.top', 'main', '#tabs'] : ['#scroller', '#copy']).forEach(function (s) { var e = document.querySelector(s); if (e) e.classList.add('pzHide'); });
+  function uiText() {
+    skip.textContent = X('skip');
+    ask.innerHTML = '<span class="orb"></span>' + X('ask');
+    start.innerHTML = '<div class="play"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z" fill="#fff"/></svg></div><b>' + X('startT') + '</b><i>' + X(MOBILE ? 'startM' : 'startS') + '</i>';
+  }
+
+  var audio = new Audio();
+  audio.preload = 'auto';
+  audio.setAttribute('playsinline', '');
+  /* для проверки без звука: ?pzfake=1 – часы вместо аудио, перемотка через __siri.seek(t) */
+  var FAKE = /[?&]pzfake=1(&|$)/.test(location.search), fk0 = 0, fkOff = 0;
+  function now() { return FAKE ? fkOff + (performance.now() - fk0) / 1000 : audio.currentTime; }
+  function seek(t) { if (FAKE) { fkOff = t; fk0 = performance.now(); } else audio.currentTime = t; }
+  var on = false, cues = [], ci = 0, raf = 0;
+
+  /* ---------- пока идёт показ, настоящая мышка и пальцы ничего не трогают (кроме наших кнопок) ---------- */
+  ['mousemove', 'mouseover', 'mouseout', 'mouseenter', 'mouseleave', 'mousedown', 'mouseup', 'click', 'pointermove', 'pointerover', 'pointerout', 'pointerdown', 'pointerup', 'dblclick', 'contextmenu', 'touchstart', 'touchmove', 'touchend', 'wheel'].forEach(function (t) {
+    window.addEventListener(t, function (e) {
+      if (!on || !e.isTrusted) return;
+      if (e.target && e.target.closest && e.target.closest('.pzUi, .pzStart')) return;
+      e.stopImmediatePropagation();
+      if (e.cancelable && /^(click|mousedown|touchstart|touchmove|touchend|wheel|contextmenu|dblclick)$/.test(t)) e.preventDefault();
+    }, { capture: true, passive: false });
+  });
+
+  /* ---------- компьютер: виртуальная мышка – те же события, что от настоящей ---------- */
+  var hov = null, cx = -100, cy = -100, moveT = 0;
+  function chain(el) { var a = []; while (el && el.nodeType === 1) { a.push(el); el = el.parentElement; } return a; }
+  function fire(el, type, x, y, rel, bubbles) {
+    el.dispatchEvent(new MouseEvent(type, { bubbles: bubbles, cancelable: true, view: window, clientX: x, clientY: y, relatedTarget: rel || null }));
+  }
+  function vAt(x, y) {
+    var el = document.elementFromPoint(x, y);
+    if (el !== hov) {
+      var oc = chain(hov), nc = chain(el);
+      if (hov) fire(hov, 'mouseout', x, y, el, true);
+      oc.forEach(function (n) { if (nc.indexOf(n) < 0) fire(n, 'mouseleave', x, y, el, false); });
+      if (el) fire(el, 'mouseover', x, y, hov, true);
+      nc.slice().reverse().forEach(function (n) { if (oc.indexOf(n) < 0) fire(n, 'mouseenter', x, y, hov, false); });
+      hov = el;
+    }
+    fire(el || document.body, 'mousemove', x, y, null, true);
+  }
+  /* убрать «мышку» со страницы: подсветки гаснут, лупа прячется */
+  function vLeave() {
+    cancelAnimationFrame(moveT);
+    if (hov) {
+      chain(hov).forEach(function (n) { fire(n, 'mouseleave', cx, cy, null, false); });
+      fire(hov, 'mouseout', cx, cy, null, true);
+      hov = null;
+    }
+    document.dispatchEvent(new MouseEvent('mouseleave', { bubbles: false }));
+  }
+  function setCur(x, y) {
+    cx = x; cy = y;
+    cur.style.transform = MOBILE ? 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)' : 'translate(' + (x - 3).toFixed(1) + 'px,' + (y - 2).toFixed(1) + 'px)';
+  }
+  /* плавный «человеческий» путь: разгон-торможение и лёгкая дуга */
+  function moveTo(x, y, dur, done) {
+    cancelAnimationFrame(moveT);
+    var x0 = cx, y0 = cy, t0 = performance.now(), d = dur || 800;
+    var dx = x - x0, dy = y - y0, len = Math.sqrt(dx * dx + dy * dy) || 1, bend = Math.min(60, len * 0.12);
+    var nx = -dy / len * bend, ny = dx / len * bend;
+    (function f(n) {
+      var k = Math.min(1, (n - t0) / d), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2, arc = Math.sin(Math.PI * e);
+      setCur(x0 + dx * e + nx * arc, y0 + dy * e + ny * arc);
+      if (!MOBILE) vAt(cx, cy);
+      if (k < 1 && on) moveT = requestAnimationFrame(f); else if (done && on) done();
+    })(t0);
+  }
+  function el(sel) {
+    if (typeof sel !== 'string') return sel;
+    if (/^[#.\[]/.test(sel)) return document.querySelector(sel);
+    var k = sel.split(':')[0], v = sel.slice(k.length + 1);
+    if (k === 'node') { if (MOBILE) return window.__m.step(v); var r = window.__R && window.__R[v]; return r && r.el; }
+    if (k === 'folder') return document.querySelector(MOBILE ? '#folder [data-fold="' + v + '"]' : '#tree .trow[data-path="' + v + '"]');
+    if (k === 'prog') return document.querySelector(MOBILE ? '#progs [data-prog="' + v + '"]' : '#plist .prow[data-id="' + v + '"]');
+    if (k === 'stage') return document.querySelectorAll(MOBILE ? '#schema .mband' : '#frames .frame')[+v];
+    if (k === 'role') {
+      var rows = document.querySelectorAll('#names .nrow');
+      for (var i = 0; i < rows.length; i++) { var inp = rows[i].querySelector('.ninput'); if (inp && (inp.dataset.base || inp.value) === v) return rows[i]; }
+    }
+    return null;
+  }
+  function hover(sel, dur) {
+    var e = el(sel); if (!e) return;
+    var r = e.getBoundingClientRect();
+    if (e.classList.contains('prow') || e.classList.contains('trow')) r = (e.querySelector('.tname, .pname, span') || e).getBoundingClientRect();
+    moveTo(r.left + r.width * .5, r.top + r.height * .55, dur);
+  }
+
+  /* ---------- телефон: касание пальцем (кружок) + те же действия, что у человека ---------- */
+  var M = window.__m;
+  function tapAt(e, then) {
+    if (!e) { if (then) then(); return; }
+    var r = e.getBoundingClientRect();
+    cur.classList.add('on');
+    moveTo(r.left + r.width / 2, r.top + r.height / 2, 600, function () {
+      cur.classList.remove('hit'); void cur.offsetWidth; cur.classList.add('hit');
+      if (then) setTimeout(then, 140);
+    });
+  }
+  /* прокрутка сразу (под размытием переход не виден) – так «окно» в размытии всегда точно на месте */
+  function scrollToEl(e, top) {
+    if (!e) return;
+    var r = e.getBoundingClientRect(), hd = document.querySelector('.top');
+    var y = window.scrollY + r.top - (hd ? hd.getBoundingClientRect().height : 60) - (top == null ? 16 : top);
+    window.scrollTo(0, Math.max(0, y));
+  }
+  function mShow(scr) { M.close(); M.show(scr); window.scrollTo(0, 0); }
+  function mStage(n) { mShow('schema'); M.unlight(); scrollToEl(el('stage:' + n)); setTimeout(function () { focus(['stage:' + n]); }, 80); }
+  function mLight(id) { tapAt(el('node:' + id), function () { M.light(id); }); }
+  function mOpen(item, e) { tapAt(e, function () { M.open(item, false); }); }
+
+  /* ---------- размытие всего, кроме нужных мест (дырки в маске; две маски сменяют друг друга) ---------- */
+  var front = blurA, focusSpec = null, rfT = 0;
+  function rectOf(sel, pad) {
+    var e = el(sel); if (!e) return null;
+    var r = e.getBoundingClientRect(), p = pad == null ? (MOBILE ? 8 : 14) : pad;
+    return { l: r.left - p, t: r.top - p, r: r.right + p, b: r.bottom + p };
+  }
+  function rr(x, y, w, h, r) {
+    r = Math.max(0, Math.min(r, w / 2, h / 2));
+    return 'M' + (x + r) + ' ' + y + 'H' + (x + w - r) + 'A' + r + ' ' + r + ' 0 0 1 ' + (x + w) + ' ' + (y + r) + 'V' + (y + h - r) + 'A' + r + ' ' + r + ' 0 0 1 ' + (x + w - r) + ' ' + (y + h) +
+      'H' + (x + r) + 'A' + r + ' ' + r + ' 0 0 1 ' + x + ' ' + (y + h - r) + 'V' + (y + r) + 'A' + r + ' ' + r + ' 0 0 1 ' + (x + r) + ' ' + y + 'Z';
+  }
+  function maskFor(rects) {
+    var W = window.innerWidth, H = window.innerHeight, d = 'M0 0H' + W + 'V' + H + 'H0Z';
+    rects.forEach(function (q) { d += rr(q.l, q.t, q.r - q.l, q.b - q.t, 22); });
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '">' +
+      '<filter id="f" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="9"/></filter>' +
+      '<path fill-rule="evenodd" fill="#fff" filter="url(#f)" d="' + d + '"/></svg>';
+    return 'url("data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg) + '")';
+  }
+  /* spec: null – ничего не размыто; [] – размыто всё; ['#tree', 'node:txt'] – всё, кроме этих */
+  function focus(spec) {
+    focusSpec = spec;
+    var back = front === blurA ? blurB : blurA;
+    if (spec === null) { blurA.classList.remove('on'); blurB.classList.remove('on'); return; }
+    var m = maskFor(spec.map(function (s) { return rectOf(s); }).filter(Boolean));
+    back.style.webkitMaskImage = m; back.style.maskImage = m;
+    back.classList.add('on'); front.classList.remove('on');
+    front = back;
+  }
+  function refocus() { if (on && focusSpec && focusSpec.length) { var m = maskFor(focusSpec.map(function (s) { return rectOf(s); }).filter(Boolean)); front.style.webkitMaskImage = m; front.style.maskImage = m; } }
+  window.addEventListener('resize', refocus);
+  window.addEventListener('scroll', function () { if (on) { clearTimeout(rfT); rfT = setTimeout(refocus, 60); } }, { passive: true });
+
+  /* ---------- крупные слова ---------- */
+  var texts = [];
+  function clearText() { texts.forEach(function (t) { t.classList.remove('on'); t.classList.add('out'); setTimeout(function () { t.remove(); }, 500); }); texts = []; }
+  /* где поставить текст: в самом большом свободном от «дырок» месте экрана */
+  function spot() {
+    var W = window.innerWidth, H = window.innerHeight;
+    var rs = (focusSpec || []).map(function (s) { return rectOf(s, 0); }).filter(Boolean);
+    if (!rs.length) return { x: W / 2, y: H / 2, w: W, h: H };
+    var l = Infinity, t = Infinity, r = -Infinity, b = -Infinity;
+    rs.forEach(function (q) { l = Math.min(l, q.l); t = Math.min(t, q.t); r = Math.max(r, q.r); b = Math.max(b, q.b); });
+    l = Math.max(0, l); t = Math.max(0, t); r = Math.min(W, r); b = Math.min(H, b);
+    var opts = [
+      { a: t * W, x: W / 2, y: t / 2, w: W, h: t },
+      { a: (H - b) * W, x: W / 2, y: (b + H) / 2, w: W, h: H - b },
+      { a: l * H, x: l / 2, y: H / 2, w: l, h: H },
+      { a: (W - r) * H, x: (r + W) / 2, y: H / 2, w: W - r, h: H }
+    ];
+    opts.sort(function (p, q) { return q.a - p.a; });
+    return opts[0];
+  }
+  /* текст не выходит за край экрана и за свободное место; если не влез – уменьшаем шрифт */
+  function fitText(d, p) {
+    var W = window.innerWidth, H = window.innerHeight, pad = MOBILE ? 12 : 24;
+    var maxW = Math.max(220, Math.min(W - pad * 2, p.w - pad * 2)), maxH = Math.max(110, Math.min(H - pad * 2, p.h - pad * 2));
+    d.style.maxWidth = maxW + 'px';
+    var k = 1;
+    for (var n = 0; n < 8; n++) {
+      var r = d.getBoundingClientRect();
+      if (r.height <= maxH && r.width <= maxW + 1) break;
+      k *= .86; d.style.setProperty('--k', k.toFixed(3));
+    }
+    var r2 = d.getBoundingClientRect();
+    d.style.left = Math.min(W - pad - r2.width / 2, Math.max(pad + r2.width / 2, p.x)) + 'px';
+    d.style.top = Math.min(H - pad - r2.height / 2, Math.max(pad + r2.height / 2, p.y)) + 'px';
+  }
+  function say(big, small, cls) {
+    clearText();
+    var d = mk('div', 'pzText' + (cls ? ' ' + cls : ''));
+    d.innerHTML = '<b>' + big + '</b>' + (small ? '<i>' + small + '</i>' : '');
+    stage.appendChild(d);
+    fitText(d, spot());
+    texts.push(d);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { d.classList.add('on'); }); });
+    return d;
+  }
+  function words(list) { return say(list.map(function (w, i) { return (i ? '<span class="w sep">·</span>' : '') + '<span class="w">' + w + '</span>'; }).join('')); }
+  function addWord() {
+    var t = texts[texts.length - 1]; if (!t) return;
+    var w = t.querySelectorAll('.w:not(.on)');
+    if (w[0]) w[0].classList.add('on');
+    if (w[0] && w[0].classList.contains('sep') && w[1]) w[1].classList.add('on');
+  }
+  function sub(text) {
+    var t = texts[texts.length - 1]; if (!t) return;
+    var i = t.querySelector('i');
+    if (!i) { i = document.createElement('i'); t.appendChild(i); }
+    i.style.transition = 'opacity .3s ease'; i.style.opacity = 0;
+    setTimeout(function () { i.innerHTML = text; i.style.opacity = 1; }, 220);
+  }
+  function lines(list) { return say(list.map(function (w) { return '<span class="w" style="display:block">' + w + '</span>'; }).join(''), '', 'list'); }
+  function curOn(v) { cur.classList.toggle('on', !!v); }
+  function park() { if (MOBILE) { curOn(false); M.close(); M.unlight(); return; } moveTo(window.innerWidth * .5, window.innerHeight - 40, 900); setTimeout(vLeave, 950); }
+  function stageT(n, k) { say(X('stage') + n, X(k)); }
+
+  /* ---------- сцены: D – компьютер, Mo – телефон; ключи совпадают со временем в T ---------- */
+  var D = {}, Mo = {};
+  function both(k, f) { D[k] = f; Mo[k] = f; }
+  both('hello', function () { document.body.classList.add('pz-intro'); say(X('hi'), '', 'huge'); });
+  both('title', function () { say(X('title'), 'SergioVida.com', 'title'); });
+  both('sheet', function () { clearText(); document.body.classList.remove('pz-intro'); });
+  both('blur', function () { focus([]); words([X('w1'), X('w2'), X('w3')]); });
+  both('w1', addWord); both('w2', addWord); both('w3', addWord);
+  both('conv', function () { say(X('conv')); });
+  both('list', function () { lines([X('l1'), X('l2'), X('l3'), X('l4'), X('l5')]); });
+  ['q', 't', 'cr', 'er', 'sy'].forEach(function (k) { both(k, addWord); });
+  D.par = function () { focus(['stage:3']); say(X('par'), X('par2')); };
+  Mo.par = function () { mShow('schema'); scrollToEl(el('stage:3')); setTimeout(function () { focus(['stage:3']); say(X('par'), X('par2')); M.lightMany(['vid', 'comp', 'mus', 'fin']); }, 160); };
+  both('fast', function () { if (MOBILE) M.unlight(); focus([]); say(X('fast')); });
+  both('tores', function () { say(X('tores')); });
+  both('h2', function () { say(X('h2'), '', 'huge'); });
+  D.free = function () { focus(['.pcol', '.icol']); say(X('free')); curOn(true); setCur(window.innerWidth * .62, window.innerHeight * .2); hover('prog:comfyui', 900); };
+  Mo.free = function () { mShow('progs'); focus(['#progs']); say(X('free')); setCur(window.innerWidth * .5, window.innerHeight * .5); mOpen({ t: 'prog', id: 'comfyui' }, el('prog:comfyui')); setTimeout(function () { focus(['#bs']); }, 1000); };
+  D.davinci = function () { hover('prog:davinci-resolve', 700); };
+  Mo.davinci = function () { M.open({ t: 'prog', id: 'davinci-resolve' }, false); };
+  D.free2 = function () { sub(X('free2')); hover('prog:reaper', 700); };
+  Mo.free2 = function () { sub(X('free2')); M.open({ t: 'prog', id: 'reaper' }, false); };
+  D.photo = function () { hover('prog:photocraft', 700); };
+  Mo.photo = function () { M.open({ t: 'prog', id: 'photocraft' }, false); };
+  D.ds = function () { hover('prog:deepseek', 800); say(X('ds')); };
+  Mo.ds = function () { M.open({ t: 'prog', id: 'deepseek' }, false); say(X('ds')); };
+  both('cents', function () { sub(X('cents')); });
+  both('park', function () { focus(null); clearText(); park(); if (MOBILE) mShow('schema'); });
+  D.folder = function () { focus(['.tcol']); say(X('folder')); };
+  Mo.folder = function () { mShow('folder'); focus(['#folder']); say(X('folder')); };
+  both('folder2', function () { sub(X('folder2')); });
+  D.h004 = function () { hover('folder:004_Project', 1000); };
+  Mo.h004 = function () { curOn(true); setCur(window.innerWidth * .5, window.innerHeight * .75); tapAt(el('folder:004_Project')); };
+  D.hcomfy = function () { hover('folder:004_Project/ComfyUI', 700); clearText(); };
+  Mo.hcomfy = function () { clearText(); mOpen({ t: 'folder', id: '004_Project/ComfyUI' }, el('folder:004_Project/ComfyUI')); setTimeout(function () { focus(['#bs']); }, 1000); };
+  D.who = function () { focus(['.tcol', '#names']); say(X('who')); };
+  Mo.who = function () { focus(['#bs']); say(X('who')); };
+  D.where = function () { focus(['.tcol', '#names', '#stage']); say(X('where')); };
+  Mo.where = function () { say(X('where')); };
+  both('progs', function () { if (!MOBILE) focus(null); say(X('progs')); });
+  both('any', function () { if (MOBILE) mShow('schema'); focus([]); say(X('any')); });
+  D.htxt = function () { focus(null); clearText(); hover('node:txt', 1000); };
+  Mo.htxt = function () { focus(null); clearText(); var e = el('node:txt'); scrollToEl(e, 40); setTimeout(function () { mOpen({ t: 'step', id: 'txt' }, e); }, 600); };
+  D.linked = function () { focus(['#stage', '.toprow']); say(X('linked')); };
+  Mo.linked = function () { say(X('linked')); };
+  both('park2', function () { focus(null); clearText(); park(); });
+  D.s1 = function () { focus(['stage:0']); stageT(1, 's1'); hover('node:in', 900); };
+  Mo.s1 = function () { mStage(0); setTimeout(function () { stageT(1, 's1'); mLight('in'); }, 160); };
+  D.s1a = function () { hover('role:Трафик-менеджер', 900); focus(['stage:0', 'role:Трафик-менеджер']); sub(X('s1a')); };
+  Mo.s1a = function () { mLight('b1'); sub(X('s1a')); };
+  D.s1b = function () { hover('node:b2', 900); focus(['stage:0']); sub(X('s1b')); };
+  Mo.s1b = function () { mLight('b2'); sub(X('s1b')); };
+  D.s1c = function () { hover('node:b1', 800); sub(X('s1c')); };
+  Mo.s1c = function () { mLight('b1'); sub(X('s1c')); };
+  D.s2 = function () { focus(['stage:1']); stageT(2, 's2'); hover('node:scen', 800); };
+  Mo.s2 = function () { mStage(1); setTimeout(function () { stageT(2, 's2'); mLight('scen'); }, 160); };
+  ['v20', 'txt', 'mus0'].forEach(function (k) { D[k] = function () { hover('node:' + k, 700); }; Mo[k] = function () { mLight(k); }; });
+  D.s2a = function () { hover('node:mont', 800); sub(X('s2a')); };
+  Mo.s2a = function () { mLight('mont'); sub(X('s2a')); };
+  both('s2b', function () { sub(X('s2b')); });
+  D.dir = function () { hover('role:Режиссёр', 900); focus(['stage:1', 'role:Режиссёр']); say(X('dir')); };
+  Mo.dir = function () { say(X('dir')); };
+  D.s3 = function () { focus(['stage:2']); stageT(3, 'appr'); hover('node:d1', 900); };
+  Mo.s3 = function () { mStage(2); setTimeout(function () { stageT(3, 'appr'); mLight('d1'); }, 160); };
+  both('key', function () { say(X('key')); });
+  both('key2', function () { sub(X('key2')); });
+  both('early', function () { say(X('early'), X('early2')); });
+  D.rework = function () { hover('node:bad1', 800); say(X('rework')); };
+  Mo.rework = function () { mLight('d1'); say(X('rework')); };
+  D.onward = function () { hover('node:good1', 700); say(X('onward')); };
+  Mo.onward = function () { say(X('onward')); };
+  D.s4 = function () { focus(['stage:3']); stageT(4, 's4'); hover('node:vid', 800); };
+  Mo.s4 = function () { mStage(3); setTimeout(function () { stageT(4, 's4'); mLight('vid'); }, 160); };
+  D.comp = function () { hover('node:comp', 700); sub(X('s4a')); };
+  Mo.comp = function () { mLight('comp'); sub(X('s4a')); };
+  ['mus', 'fin'].forEach(function (k) { D[k] = function () { hover('node:' + k, 700); }; Mo[k] = function () { mLight(k); }; });
+  both('s4b', function () { sub(X('s4b')); });
+  D.dir2 = function () { hover('node:fmont', 900); say(X('dir2')); };
+  Mo.dir2 = function () { mLight('fmont'); say(X('dir2')); };
+  D.s5 = function () { focus(['stage:4']); stageT(5, 'appr'); hover('node:d2', 900); };
+  Mo.s5 = function () { mStage(4); setTimeout(function () { stageT(5, 'appr'); mLight('d2'); }, 160); };
+  D.back = function () { hover('node:bad2', 800); say(X('back')); };
+  Mo.back = function () { say(X('back')); };
+  D.onward2 = function () { hover('node:good2', 700); say(X('onward')); };
+  Mo.onward2 = function () { say(X('onward')); };
+  D.hidden = function () { focus(['#stage']); park(); say(X('hidden')); };
+  Mo.hidden = function () { park(); focus([]); say(X('hidden')); };
+  both('knows', function () { say(X('knows'), X('knows2')); });
+  both('save', function () { say(X('save')); });
+  both('pro', function () { say(X('pro')); });
+  both('res', function () { say(X('res')); });
+  D.s6 = function () { focus(['stage:5']); stageT(6, 's6'); hover('node:topj', 900); };
+  Mo.s6 = function () { mStage(5); setTimeout(function () { stageT(6, 's6'); mLight('topj'); }, 160); };
+  D.out = function () { hover('node:out', 800); };
+  Mo.out = function () { mLight('out'); };
+  D.center = function () { focus(null); clearText(); moveTo(window.innerWidth / 2, window.innerHeight / 2, 900); };
+  Mo.center = function () { focus(null); clearText(); M.unlight(); curOn(false); };
+  both('turn', function () { focus([]); say(X('turn')); if (!MOBILE) { vLeave(); curOn(false); } });
+  both('near', function () { sub(X('near')); });
+  both('go', function () { say(X('go'), '', 'huge'); });
+
+  /* ---------- запуск / остановка ---------- */
+  function build() {
+    var A = MOBILE ? Mo : D, ts = T[lang] || T.ru, out = [];
+    T.keys.forEach(function (k, i) { if (ts[i] != null && A[k]) out.push([ts[i], A[k]]); });
+    out.push([T.end[lang] || T.end.ru, function () { finish(); }]);
+    return out;
+  }
+  function tick() {
+    raf = 0;
+    if (!on) return;
+    var t = now();
+    while (ci < cues.length && cues[ci][0] <= t) { try { cues[ci][1](); } catch (e) { if (window.console) console.warn('siri cue', cues[ci][0], e); } ci++; }
+    if (ci >= cues.length) return;
+    raf = requestAnimationFrame(tick);
+  }
+  function begin() {
+    lang = pageLang();
+    uiText();
+    cues = build(); ci = 0;
+    on = true;
+    document.body.classList.add('pz-intro', 'pz-on');
+    skip.hidden = false; ask.hidden = true; start.hidden = true;
+    if (MOBILE) { M.close(); M.unlight(); M.show('schema'); window.scrollTo(0, 0); } else vLeave();
+    curOn(false); clearText(); focus(null);
+    cx = window.innerWidth / 2; cy = window.innerHeight / 2; setCur(cx, cy);
+    var src = AUDIO[lang];
+    if (audio.getAttribute('src') !== src) audio.src = src;
+    if (FAKE) { fkOff = 0; fk0 = performance.now(); }
+    else {
+      try { audio.currentTime = 0; } catch (e) {}
+      var p = audio.play();
+      if (p && p.catch) p.catch(function () { waitStart(); });
+    }
+    raf = requestAnimationFrame(tick);
+  }
+  /* браузер не даёт включить звук без касания – показываем кнопку «начать» */
+  function waitStart() {
+    on = false; cancelAnimationFrame(raf);
+    clearText();
+    document.body.classList.add('pz-intro', 'pz-on');
+    uiText();
+    start.hidden = false; skip.hidden = false;
+  }
+  start.addEventListener('click', function () { begin(); });
+  function finish() {
+    on = false; cancelAnimationFrame(raf); cancelAnimationFrame(moveT);
+    try { audio.pause(); } catch (e) {}
+    if (MOBILE) { M.close(); M.unlight(); window.scrollTo({ top: 0, behavior: 'smooth' }); } else vLeave();
+    curOn(false); clearText(); focus(null);
+    document.body.classList.remove('pz-intro', 'pz-on');
+    uiText();
+    skip.hidden = true; start.hidden = true; ask.hidden = false;
+    try { localStorage.setItem('gp_siri_seen', '1'); } catch (e) {}
+  }
+  skip.addEventListener('click', function () { finish(); });
+  ask.addEventListener('click', function () { begin(); });
+  document.addEventListener('keydown', function (e) { if (on && e.key === 'Escape') finish(); });
+  /* язык поменяли флагом – подписи кнопок на новом языке */
+  document.addEventListener('click', function (e) {
+    if (!on && e.target.closest && e.target.closest('.lflag, #flags button')) setTimeout(function () { lang = pageLang(); uiText(); }, 80);
+  });
+
+  /* первый визит – сразу презентация; потом – только «Спроси у Siri». ?siri=1 – показать всегда.
+     Владелец (?owner=1) – без автозапуска, кнопка есть */
+  function boot() {
+    lang = pageLang(); uiText();
+    var force = /[?&]siri=1(&|$)/.test(location.search), seen = false;
+    try { seen = !!localStorage.getItem('gp_siri_seen'); } catch (e) {}
+    if ((seen || /[?&]owner=1/.test(location.search)) && !force) { ask.hidden = false; return; }
+    begin();
+  }
+  if (document.readyState === 'complete') setTimeout(boot, 400); else window.addEventListener('load', function () { setTimeout(boot, 400); });
+  window.__siri = { begin: begin, finish: finish, audio: audio, seek: seek, now: now };
+})();
+</script>
+
 </body>
 </html>
