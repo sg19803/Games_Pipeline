@@ -1385,7 +1385,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     td.href = (window.__EXAMPLE ? 'example' : './') + '?desktop=1&lang=' + LANG;
     var eb = document.getElementById('exBtn');
     eb.textContent = L(window.__EXAMPLE ? { ru: 'Готовые креативы', en: 'Finished creatives', es: 'Creatividades terminadas', uk: 'Готові креативи' }
-                                       : { ru: 'Пример креатива', en: 'Creative example', es: 'Ejemplo de creatividad', uk: 'Приклад креативу' });
+                                       : { ru: 'Тест креатива', en: 'Creative test', es: 'Prueba de creatividad', uk: 'Тест креативу' });
     eb.href = window.__EXAMPLE ? '#videos' : 'example-mobile?lang=' + LANG;
     calcHues();
     renderSchema(); renderTeam(); renderProgs(); renderFolder();
@@ -1775,7 +1775,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   })();
 
   /* свежая версия: страница хранится в кэше телефона до 10 минут – сверяемся с сервером и один раз перезагружаемся */
-  var MBUILD = 'm-2026-11-16-1';
+  var MBUILD = 'm-2026-11-16-2';
   (function freshCheck() {
     try {
       fetch(location.pathname + '?nc=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
@@ -1918,9 +1918,9 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   var SMALL = Math.min(screen.width, screen.height) < 700;
   if (!MOBILE && TOUCH && SMALL) return;      /* десктоп-версия, открытая на телефоне, – без презентации (ноутбук с сенсорным экраном – с ней) */
 
-  var AUDIO = { ru: 'ex/vo/ru.mp3', en: 'ex/vo/en.mp3', es: 'ex/vo/es.mp3', uk: 'ex/vo/en.mp3' };
-  /* время сцен по озвучке (секунды) – распознано по каждому файлу; украинской озвучки пока нет – звук английский, подписи украинские */
-  var T = {"ru": [0.05, 3.2, 5.9, 8.66, 13.02, 16.72, 22.6, 25.56, 29.98, 37.66, 40.67, 45.22, 53.78, 59.04, 61.22, 63.76, 67.16, 69.22, 73.5, 78.74, 84.4, 89.3, 98.04, 103.48, 106.0, 107.98, 109.36, 115.28, 119.56, 123.42, 127.32, 138.68, 140.84, 144.78, 151.54, 155.56, 163.06, 166.14, 167.36, 168.42, 172.32, 176.44, 177.56, 178.5, 179.5, 183.12, 190.26, 192.06, 193.22, 195.02, 195.98, 196.92, 198.2, 199.57, 200.5, 202.92, 205.4, 206.86, 209.2, 212.2, 215.42, 219.02, 223.34, 225.86, 229.66, 234.18, 234.96, 237.28, 242.42, 245.06, 248.38, 250.26, 251.82, 253.12, 254.96, 258.4, 260.56, 266.74, 269.1, 274.04, 276.84, 278.18, 280.28, 282.7, 288.28, 289.76, 292.84, 294.58, 299.44, 300.74, 302.06, 308.02, 312.86, 315.92, 318.16], "en": [0.05, 3.48, 6.76, 9.16, 13.46, 17.4, 23.32, 25.82, 29.62, 34.72, 36.96, 41.56, 49.44, 56.24, 58.62, 61.02, 64.06, 66.46, 70.24, 75.08, 80.54, 84.66, 95.16, 101.64, 103.7, 105.54, 106.68, 111.34, 116.3, 120.4, 124.6, 137.12, 139.52, 144.14, 150.64, 155.04, 161.36, 165.24, 166.44, 167.56, 171.18, 174.76, 176.1, 177.42, 178.02, 182.0, 189.42, 190.92, 192.2, 194.24, 195.42, 196.74, 198.2, 199.54, 200.86, 202.9, 206.0, 207.9, 211.0, 214.42, 217.9, 222.16, 227.04, 228.74, 233.44, 237.88, 239.2, 241.76, 245.88, 248.02, 251.56, 254.22, 255.66, 257.76, 259.68, 263.94, 265.72, 273.16, 275.12, 279.42, 281.64, 283.68, 285.3, 288.14, 292.92, 294.22, 296.58, 297.86, 303.12, 304.38, 305.7, 311.12, 315.42, 317.44, 320.3], "es": [0.05, 3.74, 6.4, 8.14, 13.06, 17.02, 22.96, 25.7, 30.58, 36.9, 40.14, 45.04, 53.5, 60.2, 63.56, 66.64, 69.82, 73.12, 76.4, 81.46, 87.26, 91.36, 103.22, 110.0, 112.2, 114.14, 115.52, 120.9, 125.86, 130.52, 134.14, 147.08, 149.12, 153.48, 159.82, 164.26, 171.12, 174.8, 175.92, 176.84, 180.92, 184.76, 185.62, 186.72, 187.4, 191.56, 200.18, 201.34, 202.56, 204.26, 205.08, 206.16, 207.24, 208.44, 209.42, 211.22, 213.92, 215.78, 217.98, 222.08, 225.4, 229.3, 233.68, 235.42, 240.64, 245.54, 246.88, 249.82, 254.54, 256.66, 259.72, 262.66, 264.18, 265.76, 267.34, 271.2, 273.28, 279.84, 282.8, 287.74, 290.92, 292.82, 294.44, 297.2, 303.14, 305.2, 307.88, 309.88, 316.42, 318.02, 319.24, 326.18, 331.58, 333.58, 336.76], "keys": ["hello", "brief", "unclear", "unclear2", "none", "sheet", "gdrive", "resilio", "p2p", "priv", "cm", "idea", "refs", "topics", "t2", "t3", "studio", "vfx", "loc", "viral", "views", "rawidea", "channel", "ready", "r2", "r3", "canwork", "probi", "probi2", "saveproj", "fastai", "scripts", "grok", "prompts", "keyf", "turn", "static", "done", "gugu", "crew", "locs", "zombie", "monster", "cowboy", "ret", "shirts", "k1", "k2", "k3", "k4", "k5", "k6", "k7", "k8", "k9", "anim", "davinci", "dvscript", "dvname", "struct", "assemble", "static2", "render", "infold", "nolink", "appr1", "final", "genvid", "logo", "fusion", "smoke", "sound", "comp2", "nogp", "edit", "cut", "angles", "cc", "wb", "grade", "teal", "grain", "kodak", "lens", "master", "lufs", "fmont", "steadi", "appr2", "resize", "lua", "rdir", "gdrive2", "presets", "handed"], "end": {"ru": 319.5, "en": 321.4, "es": 338.0}};
+  var AUDIO = { ru: 'ex/vo/ru.mp3', en: 'ex/vo/en.mp3', es: 'ex/vo/es.mp3', uk: 'ex/vo/uk.mp3' };
+  /* время сцен по озвучке (секунды) – распознано по каждому файлу */
+  var T = {"ru": [0.05, 3.2, 5.9, 8.66, 13.02, 16.72, 22.6, 25.56, 29.98, 37.66, 40.67, 45.22, 53.78, 59.04, 61.22, 63.76, 67.16, 69.22, 73.5, 78.74, 84.4, 89.3, 98.04, 103.48, 106.0, 107.98, 109.36, 115.28, 119.56, 123.42, 127.32, 138.68, 140.84, 144.78, 151.54, 155.56, 163.06, 166.14, 167.36, 168.42, 172.32, 176.44, 177.56, 178.5, 179.5, 183.12, 190.26, 192.06, 193.22, 195.02, 195.98, 196.92, 198.2, 199.57, 200.5, 202.92, 205.4, 206.86, 209.2, 212.2, 215.42, 219.02, 223.34, 225.86, 229.66, 234.18, 234.96, 237.28, 242.42, 245.06, 248.38, 250.26, 251.82, 253.12, 254.96, 258.4, 260.56, 266.74, 269.1, 274.04, 276.84, 278.18, 280.28, 282.7, 288.28, 289.76, 292.84, 294.58, 299.44, 300.74, 302.06, 308.02, 312.86, 315.92, 318.16], "en": [0.05, 3.48, 6.76, 9.16, 13.46, 17.4, 23.32, 25.82, 29.62, 34.72, 36.96, 41.56, 49.44, 56.24, 58.62, 61.02, 64.06, 66.46, 70.24, 75.08, 80.54, 84.66, 95.16, 101.64, 103.7, 105.54, 106.68, 111.34, 116.3, 120.4, 124.6, 137.12, 139.52, 144.14, 150.64, 155.04, 161.36, 165.24, 166.44, 167.56, 171.18, 174.76, 176.1, 177.42, 178.02, 182.0, 189.42, 190.92, 192.2, 194.24, 195.42, 196.74, 198.2, 199.54, 200.86, 202.9, 206.0, 207.9, 211.0, 214.42, 217.9, 222.16, 227.04, 228.74, 233.44, 237.88, 239.2, 241.76, 245.88, 248.02, 251.56, 254.22, 255.66, 257.76, 259.68, 263.94, 265.72, 273.16, 275.12, 279.42, 281.64, 283.68, 285.3, 288.14, 292.92, 294.22, 296.58, 297.86, 303.12, 304.38, 305.7, 311.12, 315.42, 317.44, 320.3], "es": [0.05, 3.74, 6.4, 8.14, 13.06, 17.02, 22.96, 25.7, 30.58, 36.9, 40.14, 45.04, 53.5, 60.2, 63.56, 66.64, 69.82, 73.12, 76.4, 81.46, 87.26, 91.36, 103.22, 110.0, 112.2, 114.14, 115.52, 120.9, 125.86, 130.52, 134.14, 147.08, 149.12, 153.48, 159.82, 164.26, 171.12, 174.8, 175.92, 176.84, 180.92, 184.76, 185.62, 186.72, 187.4, 191.56, 200.18, 201.34, 202.56, 204.26, 205.08, 206.16, 207.24, 208.44, 209.42, 211.22, 213.92, 215.78, 217.98, 222.08, 225.4, 229.3, 233.68, 235.42, 240.64, 245.54, 246.88, 249.82, 254.54, 256.66, 259.72, 262.66, 264.18, 265.76, 267.34, 271.2, 273.28, 279.84, 282.8, 287.74, 290.92, 292.82, 294.44, 297.2, 303.14, 305.2, 307.88, 309.88, 316.42, 318.02, 319.24, 326.18, 331.58, 333.58, 336.76], "uk": [0.05, 2.2, 4.7, 7.14, 11.8, 15.0, 20.18, 22.18, 28.0, 34.02, 37.7, 42.36, 51.22, 56.94, 59.7, 62.04, 64.9, 67.12, 71.72, 76.44, 81.84, 85.98, 95.66, 102.3, 104.04, 105.58, 107.82, 112.5, 116.94, 120.82, 124.74, 136.74, 138.74, 143.62, 150.88, 155.96, 163.78, 168.28, 169.16, 170.16, 174.32, 178.34, 179.78, 180.82, 181.08, 185.0, 192.64, 194.86, 195.48, 197.38, 198.44, 199.36, 200.66, 201.76, 203.12, 204.7, 207.12, 209.24, 211.62, 214.96, 218.26, 221.82, 226.56, 228.66, 233.22, 237.62, 238.76, 240.8, 245.32, 247.72, 251.3, 253.0, 255.26, 256.5, 258.3, 261.6, 264.08, 270.54, 272.9, 277.66, 280.02, 281.22, 283.32, 285.84, 291.1, 293.19, 295.74, 297.3, 302.04, 303.42, 304.94, 310.74, 315.9, 317.98, 321.14], "keys": ["hello", "brief", "unclear", "unclear2", "none", "sheet", "gdrive", "resilio", "p2p", "priv", "cm", "idea", "refs", "topics", "t2", "t3", "studio", "vfx", "loc", "viral", "views", "rawidea", "channel", "ready", "r2", "r3", "canwork", "probi", "probi2", "saveproj", "fastai", "scripts", "grok", "prompts", "keyf", "turn", "static", "done", "gugu", "crew", "locs", "zombie", "monster", "cowboy", "ret", "shirts", "k1", "k2", "k3", "k4", "k5", "k6", "k7", "k8", "k9", "anim", "davinci", "dvscript", "dvname", "struct", "assemble", "static2", "render", "infold", "nolink", "appr1", "final", "genvid", "logo", "fusion", "smoke", "sound", "comp2", "nogp", "edit", "cut", "angles", "cc", "wb", "grade", "teal", "grain", "kodak", "lens", "master", "lufs", "fmont", "steadi", "appr2", "resize", "lua", "rdir", "gdrive2", "presets", "handed"], "end": {"ru": 319.5, "en": 321.4, "es": 338.0, "uk": 322.28}};
   if (T && !T.uk) { T.uk = T.en; T.end.uk = T.end.en; }
   var SZ = {"crew8": [1280, 720], "before_cc": [951, 532], "comfyui_project": [2400, 609], "crew5": [1280, 720], "editing": [2400, 1322], "gugu": [1400, 787], "render_presets": [861, 402], "zombie": [1400, 793], "loc2": [1280, 720], "after_cc": [953, 535], "resizes": [2400, 675], "fairlight": [2400, 661], "crew": [1400, 793], "color": [2400, 659], "frame8": [1280, 720], "crew2": [1280, 720], "loc1": [1280, 720], "cowboy": [1400, 793], "fusion_logo": [2400, 659], "monster": [1400, 793], "loc3": [1280, 720], "davinci_structure": [1107, 532], "bat_script": [1149, 1287], "frame3": [1280, 720], "probi": [941, 1672], "davinci_script": [606, 385], "067": [1280, 720], "069": [1280, 720], "068": [1280, 720], "animatic": [960, 540], "shots/resilio-sync.jpg": [1029, 699]};
   var TX = {
@@ -2019,6 +2019,21 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     rdir2: { ru: 'Resilio Sync → Google Диск, автоматически', en: 'Resilio Sync → Google Drive, automatically', es: 'Resilio Sync → Google Drive, automáticamente', uk: 'Resilio Sync → Google Диск, автоматично' },
     pres: { ru: 'Пресеты рендера – заранее', en: 'Render presets – made in advance', es: 'Presets de render, hechos de antemano', uk: 'Пресети рендера – заздалегідь' },
     hand: { ru: 'Передано в работу.', en: 'Handed over.', es: 'Entregado.', uk: 'Передано в роботу.' },
+    before: { ru: 'Было', en: 'Before', es: 'Antes', uk: 'Було' },
+    after: { ru: 'Стало', en: 'After', es: 'Después', uk: 'Стало' },
+    c1: { ru: 'Бриф', en: 'Brief', es: 'Brief', uk: 'Бриф' },
+    c2: { ru: 'Папка проекта и синхронизация', en: 'Project folder and sync', es: 'Carpeta del proyecto y sincronización', uk: 'Папка проєкту й синхронізація' },
+    c3: { ru: 'Идея и референсы', en: 'Idea and references', es: 'Idea y referencias', uk: 'Ідея й референси' },
+    c4: { ru: 'Тесты и сценарии', en: 'Tests and scripts', es: 'Pruebas y guiones', uk: 'Тести й сценарії' },
+    c5: { ru: 'Персонажи и локации', en: 'Characters and locations', es: 'Personajes y localizaciones', uk: 'Персонажі й локації' },
+    c6: { ru: 'Аниматик', en: 'Animatic', es: 'Animatic', uk: 'Аніматик' },
+    c7: { ru: 'Утверждение', en: 'Approval', es: 'Aprobación', uk: 'Затвердження' },
+    c8: { ru: 'Видео, логотип, звук', en: 'Video, logo, sound', es: 'Vídeo, logo, sonido', uk: 'Відео, логотип, звук' },
+    c9: { ru: 'Монтаж', en: 'Editing', es: 'Montaje', uk: 'Монтаж' },
+    c10: { ru: 'Цветокоррекция', en: 'Color grading', es: 'Etalonaje', uk: 'Кольорокорекція' },
+    c11: { ru: 'Мастеринг и финальный монтаж', en: 'Mastering and final edit', es: 'Masterización y montaje final', uk: 'Мастеринг і фінальний монтаж' },
+    c12: { ru: 'Утверждение', en: 'Approval', es: 'Aprobación', uk: 'Затвердження' },
+    c13: { ru: 'Ресайзы и выгрузка', en: 'Resizes and export', es: 'Formatos y exportación', uk: 'Ресайзи та вивантаження' },
     skip: { ru: 'Пропустить презентацию', en: 'Skip presentation', es: 'Saltar presentación', uk: 'Пропустити презентацію' },
     ask: { ru: 'Спроси у Siri', en: 'Ask Siri', es: 'Pregunta a Siri', uk: 'Запитай у Siri' },
     startT: { ru: 'Siri покажет, как делался этот креатив', en: 'Siri will show how this creative was made', es: 'Siri te enseña cómo se hizo esta creatividad', uk: 'Siri покаже, як робився цей креатив' },
@@ -2120,7 +2135,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   ['mousemove', 'mouseover', 'mouseout', 'mouseenter', 'mouseleave', 'mousedown', 'mouseup', 'click', 'pointermove', 'pointerover', 'pointerout', 'pointerdown', 'pointerup', 'dblclick', 'contextmenu', 'touchstart', 'touchmove', 'touchend', 'wheel'].forEach(function (t) {
     window.addEventListener(t, function (e) {
       if (!on || !e.isTrusted) return;
-      if (e.target && e.target.closest && e.target.closest('.pzUi, .pzStart, .lflag, #flags button')) return;
+      if (e.target && e.target.closest && e.target.closest('.pzUi, .pzStart, .pzRib, .exV, .lflag, #flags button')) return;
       e.stopImmediatePropagation();
       if (e.cancelable && /^(click|mousedown|touchstart|touchmove|touchend|wheel|contextmenu|dblclick)$/.test(t)) e.preventDefault();
     }, { capture: true, passive: false });
@@ -2263,7 +2278,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   function clearText() { texts.forEach(function (t) { t.classList.remove('on'); t.classList.add('out'); setTimeout(function () { t.remove(); }, 500); }); texts = []; }
   /* где поставить текст: в самом большом свободном от «дырок» месте экрана */
   function spot() {
-    var W = window.innerWidth, H = window.innerHeight;
+    var W = window.innerWidth, H = window.innerHeight - RIBH;
     var rs = (focusSpec || []).map(function (s) { return rectOf(s, 0); }).filter(Boolean);
     /* телефон: открытая карточка снизу – тоже занятое место */
     var bsEl = MOBILE && document.getElementById('bs');
@@ -2284,7 +2299,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   }
   /* текст не выходит за край экрана и за свободное место; если не влез – уменьшаем шрифт */
   function fitText(d, p) {
-    var W = window.innerWidth, H = window.innerHeight, pad = MOBILE ? 20 : 24;
+    var W = window.innerWidth, H = window.innerHeight - RIBH, pad = MOBILE ? 20 : 24;
     var maxW = Math.max(220, Math.min(W - pad * 2, p.w - pad * 2)), maxH = Math.max(110, Math.min(H - pad * 2, p.h - pad * 2));
     d.style.maxWidth = maxW + 'px';
     var k = 1;
@@ -2317,7 +2332,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     var W = window.innerWidth, H = window.innerHeight, w = skip.offsetWidth || 220, h = skip.offsetHeight || 44, m = MOBILE ? 10 : 24;
     var sT = MOBILE ? 10 + (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safeT')) || 0) : m;
     var hd = MOBILE && document.querySelector('.top'); if (hd) sT = Math.max(sT, hd.getBoundingClientRect().top + 8);
-    var sB = MOBILE ? 96 : m;
+    var sB = MOBILE ? 96 : m + RIBH;
     var opts = [[W - w - m, sT], [m, sT], [W - w - m, H - h - sB], [m, H - h - sB], [(W - w) / 2, H - h - sB], [(W - w) / 2, sT]];
     var r = d ? d.getBoundingClientRect() : null, pad = 10;
     var best = opts[0];
@@ -2358,17 +2373,27 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     '.pzMedia.on{opacity:1; transform:none; filter:none}',
     '.pzMedia.out{opacity:0; transform:scale(.985); filter:blur(6px); transition-duration:.35s}',
     '.pzMedia img, .pzMedia video{position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:block; transition:opacity .45s ease}',
-    '.pzM .pzMedia{border-radius:14px}'
+    '.pzM .pzMedia{border-radius:14px}',
+    '.pzMedia.cmp{background:none; box-shadow:none; overflow:visible}',
+    '.pzCmp{position:absolute; inset:0; display:flex; gap:14px}',
+    '.pzMedia.v .pzCmp{flex-direction:column; gap:10px}',
+    '.pzCmp figure{position:relative; flex:1 1 0; margin:0; border-radius:16px; overflow:hidden; background:#0b1418; box-shadow:0 0 0 1px rgba(255,255,255,.22), 0 24px 60px rgba(0,0,0,.5)}',
+    '.pzCmp figure img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}',
+    '.pzCmp figcaption{position:absolute; left:12px; top:12px; padding:6px 14px; border-radius:999px; color:#fff; font:700 calc(min(26px, 1.7vw)) / 1.1 -apple-system, "InterPage", system-ui, sans-serif; letter-spacing:-.01em;',
+    '  background:rgba(0,0,0,.5); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px)}',
+    '.pzCmp figure + figure figcaption{background:radial-gradient(circle at 35% 25%, #ff7a70, #e0443c 60%, #c4362e)}',
+    '.pzM .pzCmp figcaption{font-size:15px; padding:5px 11px; left:9px; top:9px}'
   ].join('\n');
   document.head.appendChild(mcss);
   var MB = null, cards = [], cycT = 0;
   function srcOf(name) { return /\//.test(name) ? name : (/^vid:/.test(name) ? 'ex/vid/' + name.slice(4) + '.mp4' : 'ex/img/' + name + '.jpg'); }
-  function arOf(name) { var s = SZ && SZ[name.replace(/^vid:/, '')]; return s ? s[0] / s[1] : 16 / 9; }
+  function arOf(name) {
+    if (/^cmp:/.test(name)) { var a = arOf(name.slice(4).split(',')[0]); return a * 2 + .04; } var s = SZ && SZ[name.replace(/^vid:/, '')]; return s ? s[0] / s[1] : 16 / 9; }
   function freeRegion() {
-    var W = window.innerWidth, H = window.innerHeight;
+    var W = window.innerWidth, H = window.innerHeight - RIBH;
     if (MOBILE) {
       var hd = document.querySelector('.top'), top = hd ? hd.getBoundingClientRect().bottom + 6 : 70;
-      var bs = document.getElementById('bs'), bot = H - 84;
+      var bs = document.getElementById('bs'), bot = window.innerHeight - 84;
       if (bs && bs.classList.contains('on')) bot = Math.min(bot, bs.getBoundingClientRect().top - 6);
       if (focusSpec && focusSpec.length) {
         var u = null;
@@ -2381,7 +2406,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   }
   /* компьютер: четыре свободные полосы вокруг подсвеченных мест – карточка встанет туда, где выйдет крупнее */
   function regions() {
-    var W = window.innerWidth, H = window.innerHeight;
+    var W = window.innerWidth, H = window.innerHeight - RIBH;
     var rs = (focusSpec || []).map(function (s) { return rectOf(s, /^(node|prog|folder|role):/.test(s) ? 85 : 0); }).filter(Boolean);
     if (!rs.length) return [{ x: W / 2, y: H / 2, w: W, h: H }];
     var l = Infinity, t = Infinity, r = -Infinity, b = -Infinity;
@@ -2419,12 +2444,25 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     return { c: c, tr: tr };
   }
   function place(card, ar) {
-    var lo = layout(ar), c = lo.c;
+    var lo = layout(ar), c = lo.c, vert = false;
+    if (card.dataset.cmp) {
+      var arV = (ar - .04) / 4 - .02, lv = layout(arV);
+      if (lv.c.w * lv.c.h > c.w * c.h * 1.1) { lo = lv; c = lv.c; vert = true; }
+      card.classList.toggle('v', vert);
+    }
     card.style.left = Math.round(c.l) + 'px'; card.style.top = Math.round(c.t) + 'px';
     card.style.width = Math.round(c.w) + 'px'; card.style.height = Math.round(c.h) + 'px';
     MB = { tr: lo.tr, ar: ar, card: card };
   }
   function fill(card, name) {
+    if (/^cmp:/.test(name)) {
+      var two = name.slice(4).split(','), w = document.createElement('div');
+      w.className = 'pzCmp';
+      w.innerHTML = '<figure><img src="' + srcOf(two[0]) + '" alt=""><figcaption>' + X('before') + '</figcaption></figure>' +
+        '<figure><img src="' + srcOf(two[1]) + '" alt=""><figcaption>' + X('after') + '</figcaption></figure>';
+      card.classList.add('cmp'); card.dataset.cmp = '1'; card.appendChild(w);
+      return w;
+    }
     var v = /^vid:/.test(name), e = document.createElement(v ? 'video' : 'img');
     if (v) { e.muted = true; e.loop = true; e.autoplay = true; e.setAttribute('playsinline', ''); e.setAttribute('muted', ''); e.src = srcOf(name); var pp = e.play(); if (pp && pp.catch) pp.catch(function () {}); }
     else { e.decoding = 'async'; e.alt = ''; e.src = srcOf(name); }
@@ -2465,6 +2503,58 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   /* заранее подгружаем картинки, чтобы не мигали */
   function preload() { if (!SZ) return; Object.keys(SZ).forEach(function (k) { if (!/^(067|068|069|animatic)$/.test(k)) { var i = new Image(); i.src = srcOf(k); } }); }
   window.addEventListener('resize', function () { if (MB && MB.card) place(MB.card, MB.ar); });
+  /* ---------- лента этапов внизу: номер – переход к этапу, текущий номер вдвое крупнее ---------- */
+  var CH = ['hello', 'sheet', 'cm', 'ready', 'keyf', 'anim', 'appr1', 'final', 'edit', 'cc', 'master', 'appr2', 'resize'];
+  var RIBH = MOBILE ? 84 : 84;
+  var rcss = document.createElement('style');
+  rcss.textContent = [
+    '.pzRib{position:fixed; left:50%; bottom:20px; z-index:95; display:flex; align-items:center; gap:2px; padding:6px 14px; border-radius:999px;',
+    '  transform:translate(-50%, 20px); opacity:0; pointer-events:none; transition:opacity .45s ease, transform .6s cubic-bezier(.2,.7,.2,1);',
+    '  background:rgba(255,255,255,.1); -webkit-backdrop-filter:blur(18px) saturate(1.2); backdrop-filter:blur(18px) saturate(1.2);',
+    '  box-shadow:inset 0 0 0 1px rgba(255,255,255,.28), inset 0 1px 0 rgba(255,255,255,.35), 0 12px 36px rgba(0,0,0,.35)}',
+    '.pzRib.on{opacity:1; transform:translate(-50%, 0); pointer-events:auto}',
+    '.pzRib button{min-width:30px; height:46px; padding:0 5px; border:0; background:none; cursor:pointer; color:rgba(255,255,255,.5);',
+    '  font:600 17px/46px -apple-system, "InterPage", system-ui, sans-serif; letter-spacing:-.02em; font-variant-numeric:tabular-nums;',
+    '  transition:font-size .5s cubic-bezier(.2,.7,.2,1), color .4s ease, min-width .5s cubic-bezier(.2,.7,.2,1); -webkit-tap-highlight-color:transparent}',
+    '.pzRib button:hover{color:rgba(255,255,255,.9)}',
+    '.pzRib button.done{color:rgba(255,255,255,.72)}',
+    '.pzRib button.on{font-size:34px; font-weight:700; min-width:52px; color:#fff; text-shadow:0 2px 18px rgba(143,208,230,.55)}',
+    '.pzM .pzRib{bottom:calc(env(safe-area-inset-bottom) + 14px); padding:4px 8px; gap:0; max-width:calc(100vw - 16px)}',
+    '.pzM .pzRib button{min-width:21px; height:40px; padding:0 2px; font-size:13px; line-height:40px}',
+    '.pzM .pzRib button.on{font-size:26px; min-width:36px}'
+  ].join('\n');
+  document.head.appendChild(rcss);
+  var rib = mk('div', 'pzRib');
+  rib.innerHTML = CH.map(function (k, i) { return '<button type="button" data-i="' + i + '">' + (i + 1) + '</button>'; }).join('');
+  document.body.appendChild(rib);
+  var rbs = rib.querySelectorAll('button'), curCh = -1;
+  function chT(i) { var ts = T[lang] || T.ru, j = T.keys.indexOf(CH[i]); return j < 0 ? 0 : ts[j]; }
+  function ribTitles() { for (var i = 0; i < rbs.length; i++) rbs[i].title = (i + 1) + ' – ' + X('c' + (i + 1)); }
+  function ribUpd(t) {
+    var n = 0;
+    for (var i = 0; i < CH.length; i++) if (t >= chT(i) - .05) n = i;
+    if (n === curCh) return;
+    curCh = n;
+    for (i = 0; i < rbs.length; i++) { rbs[i].classList.toggle('on', i === n); rbs[i].classList.toggle('done', i < n); }
+  }
+  function ribShow(v) { if (v) { ribTitles(); curCh = -1; ribUpd(0); } rib.classList.toggle('on', !!v); }
+  /* таймеры сцен: после перехода на другой этап старые не срабатывают */
+  var jg = 0;
+  function later(f, ms) { var g = jg; setTimeout(function () { if (on && g === jg) f(); }, ms); }
+  function jump(i) {
+    if (!on) return;
+    jg++; tapGen++;
+    var t = chT(i);
+    clearText(); mediaOff(); focus(null);
+    if (MOBILE) { M.close(); M.unlight(); if (LZ) LZ.dock(); curOn(false); } else { vLeave(); curOn(false); }
+    document.body.classList.toggle('pz-intro', i === 0);
+    if (i > 0 && window.__lensDirty) window.__lensDirty();
+    seek(Math.max(0, t));
+    ci = 0; while (ci < cues.length && cues[ci][0] < t - .001) ci++;
+    ribUpd(t);
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+  rib.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) jump(+b.dataset.i); });
   /* ---------- сцены примера: D – компьютер, Mo – телефон; ключи совпадают со временем в T ---------- */
   var D = {}, Mo = {};
   function both(k, f) { D[k] = f; Mo[k] = f; }
@@ -2489,11 +2579,11 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   D.sheet = function () {
     clearText(); document.body.classList.remove('pz-intro'); if (window.__lensDirty) window.__lensDirty();
     curOn(true); setCur(window.innerWidth * .5, window.innerHeight * .6);
-    setTimeout(function () { if (on) dPic(['.tcol'], 'folder:', 'bat_script', X('bat'), X('bat2')); }, 450);
+    later(function () { if (on) dPic(['.tcol'], 'folder:', 'bat_script', X('bat'), X('bat2')); }, 450);
   };
   Mo.sheet = function () {
     clearText(); document.body.classList.remove('pz-intro'); if (window.__lensDirty) window.__lensDirty();
-    mShow('folder'); setTimeout(function () { if (on) mPic('bat_script', X('bat'), X('bat2')); }, 450);
+    mShow('folder'); later(function () { if (on) mPic('bat_script', X('bat'), X('bat2')); }, 450);
   };
   both('gdrive', function () { sub(X('gd')); });
   D.resilio = function () { dPic(['.pcol'], 'prog:resilio-sync', 'shots/resilio-sync.jpg', 'Resilio Sync', X('rs2')); };
@@ -2502,10 +2592,10 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   both('priv', function () { media(null); if (!MOBILE) { focus([]); dClear(); } say('100%', X('priv'), 'huge'); });
   D.cm = function () { dPic(['#names'], 'role:Контент-менеджер', null, X('cm')); };
   Mo.cm = function () { mShow('team'); focus(['#team']); say(X('cm')); };
-  D.idea = function () { dPic(['#names', '.tcol'], 'role:Режиссёр', null, X('idea'), X('idea2')); setTimeout(function () { if (on) hover('folder:002_References', 900); }, 2200); };
-  Mo.idea = function () { mShow('folder'); focus(['#folder']); say(X('idea'), X('idea2')); setTimeout(function () { if (on) tapAt(el('folder:002_References')); }, 600); };
+  D.idea = function () { dPic(['#names', '.tcol'], 'role:Режиссёр', null, X('idea'), X('idea2')); later(function () { if (on) hover('folder:002_References', 900); }, 2200); };
+  Mo.idea = function () { mShow('folder'); focus(['#folder']); say(X('idea'), X('idea2')); later(function () { if (on) tapAt(el('folder:002_References')); }, 600); };
   D.refs = function () { dPic(['stage:0'], 'node:b2', null, X('refs')); };
-  Mo.refs = function () { mStage(0); setTimeout(function () { if (!on) return; say(X('refs')); mLight('b2'); }, 160); };
+  Mo.refs = function () { mStage(0); later(function () { if (!on) return; say(X('refs')); mLight('b2'); }, 160); };
   both('topics', function () { if (MOBILE) { M.unlight(); if (LZ) LZ.dock(); } dClear(); focus([]); lines([X('t1'), X('t2'), X('t3')]); addWord(); });
   both('t2', addWord); both('t3', addWord);
   both('studio', function () { say(X('studio'), X('studio2')); });
@@ -2519,20 +2609,20 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   both('ready', function () { if (MOBILE) { M.close(); M.unlight(); if (LZ) LZ.dock(); } dClear(); focus([]); lines([X('r1'), X('r2'), X('r3')]); addWord(); });
   both('r2', addWord); both('r3', addWord);
   D.canwork = function () { dPic(['stage:1'], 'node:scen', null, X('canw')); };
-  Mo.canwork = function () { mStage(1); setTimeout(function () { if (!on) return; say(X('canw')); mLight('scen'); }, 160); };
+  Mo.canwork = function () { mStage(1); later(function () { if (!on) return; say(X('canw')); mLight('scen'); }, 160); };
   D.probi = function () { dPic(['stage:1'], 'node:txt', 'probi', X('probi'), X('probi2')); };
   Mo.probi = function () { mPic('probi', X('probi'), X('probi2')); };
   both('probi2', function () { sub(X('probi3')); });
   both('saveproj', function () { sub(X('save')); });
   both('fastai', function () { say(X('fast'), X('fast2')); });
   D.scripts = function () { dPic(['stage:1'], 'node:v20', null, X('scr'), 'ScriptForge AI + Grok'); };
-  Mo.scripts = function () { media(null); mStage(1); setTimeout(function () { if (!on) return; say(X('scr'), 'ScriptForge AI + Grok'); mLight('v20'); }, 160); };
+  Mo.scripts = function () { media(null); mStage(1); later(function () { if (!on) return; say(X('scr'), 'ScriptForge AI + Grok'); mLight('v20'); }, 160); };
   D.grok = function () { focus(['stage:1', '.pcol']); hover('prog:scriptforge-ai', 900); sub(X('grok')); };
   Mo.grok = function () { sub(X('grok')); };
   D.prompts = function () { focus(['stage:1', '.tcol']); hover('folder:004_Project/ScriptForge', 900); sub(X('prm')); };
   Mo.prompts = function () { sub(X('prm')); };
   D.keyf = function () { dPic(['stage:1'], 'node:p2', null, X('keyf'), X('keyf2')); };
-  Mo.keyf = function () { mLight('p2'); say(X('keyf'), X('keyf2')); };
+  Mo.keyf = function () { media(null); mStage(1); later(function () { say(X('keyf'), X('keyf2')); mLight('p2'); }, 160); };
   both('turn', function () { sub(X('turn')); });
   both('static', function () { sub(X('stat')); });
   both('done', function () { if (MOBILE) { M.unlight(); if (LZ) LZ.dock(); } dClear(); focus([]); say(X('done'), '', 'huge'); });
@@ -2547,7 +2637,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   both('k1', function () { cycle(['crew2', 'crew5', 'crew8'], 2600); words(['Location Manager', 'Second AC', 'DIT', 'Gaffer', 'Props Master', 'Boom Operator', 'Stunt Coordinator', 'Special Effects', 'VFX Supervisor']); addWord(); });
   ['k2', 'k3', 'k4', 'k5', 'k6', 'k7', 'k8', 'k9'].forEach(function (k) { both(k, addWord); });
   D.anim = function () { dPic(['stage:1'], 'node:mont', null, X('anim')); };
-  Mo.anim = function () { media(null); mStage(1); setTimeout(function () { if (!on) return; say(X('anim')); mLight('mont'); }, 160); };
+  Mo.anim = function () { media(null); mStage(1); later(function () { if (!on) return; say(X('anim')); mLight('mont'); }, 160); };
   D.davinci = function () { dPic(['.pcol'], 'prog:davinci-resolve', 'davinci_script', X('dv')); };
   Mo.davinci = function () { mPic('davinci_script', X('dv')); };
   both('dvscript', function () { sub(X('dv2')); });
@@ -2562,9 +2652,9 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   both('infold', function () { sub(X('inf')); });
   both('nolink', function () { sub(X('nolink')); });
   D.appr1 = function () { media(null); dPic(['stage:2'], 'node:d1', null, X('appr')); };
-  Mo.appr1 = function () { media(null); mStage(2); setTimeout(function () { if (!on) return; say(X('appr')); mLight('d1'); }, 160); };
+  Mo.appr1 = function () { media(null); mStage(2); later(function () { if (!on) return; say(X('appr')); mLight('d1'); }, 160); };
   D.final = function () { dPic(['stage:3'], 'node:good1', null, X('fin')); };
-  Mo.final = function () { mStage(3); setTimeout(function () { if (!on) return; say(X('fin')); mLight('vid'); }, 160); };
+  Mo.final = function () { mStage(3); later(function () { if (!on) return; say(X('fin')); mLight('vid'); }, 160); };
   D.genvid = function () { dPic(['stage:3'], 'node:vid', 'frame3', X('gen'), X('gen2')); };
   Mo.genvid = function () { mPic('frame3', X('gen'), X('gen2')); };
   D.logo = function () { dPic(['stage:3'], 'node:comp', 'fusion_logo', X('logo')); };
@@ -2575,15 +2665,15 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   Mo.sound = function () { mPic('fairlight', X('snd')); };
   both('comp2', function () { sub(X('cmp')); });
   D.nogp = function () { media(null); dPic(['stage:3'], 'node:fin', null, X('nogp')); };
-  Mo.nogp = function () { media(null); mStage(3); setTimeout(function () { if (!on) return; say(X('nogp')); mLight('fin'); }, 160); };
+  Mo.nogp = function () { media(null); mStage(3); later(function () { if (!on) return; say(X('nogp')); mLight('fin'); }, 160); };
   D.edit = function () { dPic(['stage:3'], 'node:sved', 'editing', X('edit')); };
   Mo.edit = function () { mPic('editing', X('edit')); };
   both('cut', function () { sub(X('cut')); });
   both('angles', function () { sub(X('ang')); });
-  D.cc = function () { dPic(['stage:3'], 'node:color', 'before_cc', X('cc')); };
-  Mo.cc = function () { mPic('before_cc', X('cc')); };
+  D.cc = function () { dPic(['stage:3'], 'node:color', 'cmp:before_cc,after_cc', X('cc')); };
+  Mo.cc = function () { mPic('cmp:before_cc,after_cc', X('cc')); };
   both('wb', function () { sub(X('wb')); });
-  both('grade', function () { media('after_cc'); sub(X('grade')); });
+  both('grade', function () { sub(X('grade')); });
   both('teal', function () { sub('Teal &amp; Orange'); });
   both('grain', function () { media('color'); say(X('grain')); });
   both('kodak', function () { sub('Kodak Pro Image 100'); });
@@ -2595,17 +2685,17 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   Mo.fmont = function () { mPic('frame8', X('fm')); };
   both('steadi', function () { sub(X('std')); });
   D.appr2 = function () { media(null); dPic(['stage:4'], 'node:d2', null, X('appr')); };
-  Mo.appr2 = function () { media(null); mStage(4); setTimeout(function () { if (!on) return; say(X('appr')); mLight('d2'); }, 160); };
+  Mo.appr2 = function () { media(null); mStage(4); later(function () { if (!on) return; say(X('appr')); mLight('d2'); }, 160); };
   D.resize = function () { dPic(['stage:5'], 'node:topj', 'resizes', X('rs')); };
   Mo.resize = function () { mPic('resizes', X('rs')); };
   both('lua', function () { sub(X('lua')); });
   D.rdir = function () { media(null); dPic(['stage:5', '.tcol'], 'folder:005_DAYlease', null, X('rdir')); };
-  Mo.rdir = function () { media(null); mShow('folder'); focus(['#folder']); say(X('rdir')); setTimeout(function () { if (on) tapAt(el('folder:005_DAYlease')); }, 600); };
+  Mo.rdir = function () { media(null); mShow('folder'); focus(['#folder']); say(X('rdir')); later(function () { if (on) tapAt(el('folder:005_DAYlease')); }, 600); };
   both('gdrive2', function () { sub(X('rdir2')); });
   D.presets = function () { dPic(['stage:5'], 'node:topj', 'render_presets', X('pres')); };
   Mo.presets = function () { mPic('render_presets', X('pres')); };
   D.handed = function () { media(null); dPic(['stage:5'], 'node:out', null, X('hand')); };
-  Mo.handed = function () { media(null); mStage(5); setTimeout(function () { if (!on) return; say(X('hand')); mLight('out'); }, 160); };
+  Mo.handed = function () { media(null); mStage(5); later(function () { if (!on) return; say(X('hand')); mLight('out'); }, 160); };
 
   /* ---------- запуск / остановка ---------- */
   function build() {
@@ -2619,6 +2709,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     if (!on) return;
     var t = now();
     while (ci < cues.length && cues[ci][0] <= t) { try { cues[ci][1](); } catch (e) { if (window.console) console.warn('siri cue', cues[ci][0], e); } ci++; }
+    ribUpd(t);
     if (ci >= cues.length) return;
     raf = requestAnimationFrame(tick);
   }
@@ -2626,7 +2717,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     lang = pageLang();
     uiText();
     cues = build(); ci = 0;
-    mediaOff(); preload(); if (window.__exVideos) window.__exVideos.close();
+    mediaOff(); preload(); jg++; ribShow(true); if (window.__exVideos) window.__exVideos.close();
     on = true;
     document.body.classList.add('pz-intro', 'pz-on');
     skip.hidden = false; ask.hidden = true; start.hidden = true;
@@ -2646,7 +2737,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   }
   /* браузер не даёт включить звук без касания – показываем кнопку «начать» */
   function waitStart() {
-    on = false; cancelAnimationFrame(raf);
+    on = false; cancelAnimationFrame(raf); ribShow(false);
     clearText();
     document.body.classList.add('pz-intro', 'pz-on');
     uiText();
@@ -2657,7 +2748,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     on = false; cancelAnimationFrame(raf); cancelAnimationFrame(moveT);
     try { audio.pause(); } catch (e) {}
     if (MOBILE) { M.close(); M.unlight(); window.scrollTo({ top: 0, behavior: 'smooth' }); if (LZ) LZ.dock(); } else vLeave();
-    curOn(false); clearText(); focus(null); mediaOff();
+    curOn(false); clearText(); focus(null); mediaOff(); ribShow(false);
     document.body.classList.remove('pz-intro', 'pz-on');
     if (window.__exVideos) window.__exVideos.open();
     uiText();
