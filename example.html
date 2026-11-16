@@ -3476,7 +3476,7 @@ body.tab-hidden .tabPoster{display:flex}
 
   /* отладочный крючок – для проверки сборки снаружи */
   window.__pipeline = {
-    build: 'ex-20261116-093828',
+    build: 'ex-20261116-101403',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -4876,7 +4876,8 @@ body.tab-hidden .tabPoster{display:flex}
     try { sessionStorage.setItem('gp_ex_seen', '1'); } catch (e) {}
   }
   skip.addEventListener('click', function () { finish(); });
-  ask.addEventListener('click', function () { begin(); });
+  /* «Спроси у Siri» – презентация самого пайплайна (главная страница); пример запускается красной кнопкой «Тест креатива» */
+  ask.addEventListener('click', function () { location.href = (MOBILE ? 'mobile' : './') + '?siri=1&lang=' + lang; });
   document.addEventListener('keydown', function (e) { if (on && e.key === 'Escape') finish(); });
   /* язык поменяли флагом – подписи кнопок на новом языке */
   /* флаг поменяли: подписи – на новом языке; если показ идёт – начинаем заново со звуком этого языка */

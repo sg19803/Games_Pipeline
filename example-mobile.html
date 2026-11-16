@@ -2756,7 +2756,8 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     try { sessionStorage.setItem('gp_ex_seen', '1'); } catch (e) {}
   }
   skip.addEventListener('click', function () { finish(); });
-  ask.addEventListener('click', function () { begin(); });
+  /* «Спроси у Siri» – презентация самого пайплайна (главная страница); пример запускается красной кнопкой «Тест креатива» */
+  ask.addEventListener('click', function () { location.href = (MOBILE ? 'mobile' : './') + '?siri=1&lang=' + lang; });
   document.addEventListener('keydown', function (e) { if (on && e.key === 'Escape') finish(); });
   /* язык поменяли флагом – подписи кнопок на новом языке */
   /* флаг поменяли: подписи – на новом языке; если показ идёт – начинаем заново со звуком этого языка */
