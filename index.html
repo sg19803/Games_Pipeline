@@ -796,6 +796,14 @@ body{
 /* флаги языков – плоские, над правым верхним углом листа */
 /* флаги живут внутри листа и масштабируются вместе с ним: на компьютере ~30×20, на телефоне пропорционально меньше */
 .langbar{position:absolute; right:40px; bottom:100%; margin-bottom:12px; display:flex; gap:6px; z-index:5}
+.exbtn{position:absolute; left:16px; bottom:100%; margin-bottom:14px; z-index:5; display:inline-flex; align-items:center; gap:14px; padding:14px 32px 14px 24px; border-radius:999px;
+  color:#fff; font:700 30px/36px -apple-system, "InterPage", system-ui, sans-serif; letter-spacing:-.01em; text-decoration:none; white-space:nowrap; cursor:pointer;
+  background:radial-gradient(circle at 35% 25%, #ff7a70, #e0443c 60%, #c4362e); box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 6px 18px rgba(224,68,60,.45), 0 2px 6px rgba(0,0,0,.35);
+  transition:transform .15s ease, box-shadow .2s ease}
+.exbtn:hover{transform:translateY(-1px) scale(1.03); box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 10px 26px rgba(224,68,60,.6), 0 2px 6px rgba(0,0,0,.35)}
+.exbtn:active{transform:scale(.97)}
+.exbtn::before{content:""; width:0; height:0; border-left:18px solid #fff; border-top:11px solid transparent; border-bottom:11px solid transparent}
+.lensClone .exbtn{display:none !important}
 .lflag{position:relative; width:48px; height:32px; padding:0; border:0; background:none; cursor:pointer}
 .lflag svg{display:block; width:48px; height:32px}
 
@@ -899,6 +907,7 @@ body.tab-hidden .tabPoster{display:flex}
   <div class="zoomer" id="zoomer">
     <div class="sheet" id="sheet">
       <div class="langbar" id="langbar" role="group" aria-label="Language"></div>
+      <a class="exbtn" id="exbtn" href="example"></a>
       <div class="caustics" aria-hidden="true"><i></i><i></i></div>
       <div class="headrow">
         <input class="headline" id="cnum" type="text" placeholder="Пайплайн ИИ-креативов" spellcheck="false" autocomplete="off" aria-label="Пайплайн ИИ-креативов">
@@ -3395,6 +3404,12 @@ body.tab-hidden .tabPoster{display:flex}
     var st = document.querySelectorAll('[data-i18n]');
     for (var i = 0; i < st.length; i++) { var k = UI[st[i].dataset.i18n]; if (k) st[i].textContent = L(k); }
     if (cnumEl) { cnumEl.placeholder = L(UI.title); cnumEl.setAttribute('aria-label', L(UI.title)); }
+    var exb = document.getElementById('exbtn');
+    if (exb) {
+      exb.textContent = L(window.__EXAMPLE ? { ru: 'Готовые креативы', en: 'Finished creatives', es: 'Creatividades terminadas', uk: 'Готові креативи' }
+                                           : { ru: 'Пример креатива', en: 'Creative example', es: 'Ejemplo de creatividad', uk: 'Приклад креативу' });
+      exb.href = window.__EXAMPLE ? '#videos' : 'example?lang=' + LANG;
+    }
     var rows = namesEl.querySelectorAll('.nrow');
     for (i = 0; i < rows.length; i++) {
       var ri = rows[i].querySelector('.ninput'), pi = rows[i].querySelector('.nperson'), di = rows[i].querySelector('.ndtext');
@@ -3461,7 +3476,7 @@ body.tab-hidden .tabPoster{display:flex}
 
   /* отладочный крючок – для проверки сборки снаружи */
   window.__pipeline = {
-    build: 'siri-20261110-211114',
+    build: 'siri-20261116-091717',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3861,6 +3876,10 @@ body.tab-hidden .tabPoster{display:flex}
 })();
 
 </script>
+
+
+
+
 
 
 
