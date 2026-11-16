@@ -3406,9 +3406,8 @@ body.tab-hidden .tabPoster{display:flex}
     if (cnumEl) { cnumEl.placeholder = L(UI.title); cnumEl.setAttribute('aria-label', L(UI.title)); }
     var exb = document.getElementById('exbtn');
     if (exb) {
-      exb.textContent = L(window.__EXAMPLE ? { ru: 'Готовые креативы', en: 'Finished creatives', es: 'Creatividades terminadas', uk: 'Готові креативи' }
-                                           : { ru: 'Тест креатива', en: 'Creative test', es: 'Prueba de creatividad', uk: 'Тест креативу' });
-      exb.href = window.__EXAMPLE ? '#videos' : 'example?lang=' + LANG;
+      exb.textContent = L({ ru: 'Тест креатива', en: 'Creative test', es: 'Prueba de creatividad', uk: 'Тест креативу' });
+      exb.href = window.__EXAMPLE ? '#start' : 'example?lang=' + LANG;
     }
     var rows = namesEl.querySelectorAll('.nrow');
     for (i = 0; i < rows.length; i++) {
@@ -3476,7 +3475,7 @@ body.tab-hidden .tabPoster{display:flex}
 
   /* отладочный крючок – для проверки сборки снаружи */
   window.__pipeline = {
-    build: 'siri-20261116-093128',
+    build: 'siri-20261116-093828',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3876,6 +3875,8 @@ body.tab-hidden .tabPoster{display:flex}
 })();
 
 </script>
+
+
 
 
 

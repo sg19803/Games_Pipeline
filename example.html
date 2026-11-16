@@ -3407,9 +3407,8 @@ body.tab-hidden .tabPoster{display:flex}
     if (cnumEl) { cnumEl.placeholder = L(UI.title); cnumEl.setAttribute('aria-label', L(UI.title)); }
     var exb = document.getElementById('exbtn');
     if (exb) {
-      exb.textContent = L(window.__EXAMPLE ? { ru: 'Готовые креативы', en: 'Finished creatives', es: 'Creatividades terminadas', uk: 'Готові креативи' }
-                                           : { ru: 'Тест креатива', en: 'Creative test', es: 'Prueba de creatividad', uk: 'Тест креативу' });
-      exb.href = window.__EXAMPLE ? '#videos' : 'example?lang=' + LANG;
+      exb.textContent = L({ ru: 'Тест креатива', en: 'Creative test', es: 'Prueba de creatividad', uk: 'Тест креативу' });
+      exb.href = window.__EXAMPLE ? '#start' : 'example?lang=' + LANG;
     }
     var rows = namesEl.querySelectorAll('.nrow');
     for (i = 0; i < rows.length; i++) {
@@ -3477,7 +3476,7 @@ body.tab-hidden .tabPoster{display:flex}
 
   /* отладочный крючок – для проверки сборки снаружи */
   window.__pipeline = {
-    build: 'ex-20261116-093448',
+    build: 'ex-20261116-093828',
     layout: layout,
     collect: collect,
     snapshot: snapshot,
@@ -3915,11 +3914,13 @@ body.tab-hidden .tabPoster{display:flex}
 
 
 
+
+
 <script>
 /* =====================================================================
    ГОТОВЫЕ КРЕАТИВЫ: три финальных видео (V067–V069) – экран после презентации.
-   Каждое видео играет прямо в своей карточке по кнопке Play. Открыть снова – красная кнопка
-   «Готовые креативы» вверху страницы (адрес #videos). Закрыть – крестик или Esc.
+   Каждое видео играет прямо в своей карточке по кнопке Play. Открыть снова – адрес #videos
+   (красная кнопка «Тест креатива» вверху запускает презентацию заново). Закрыть – крестик или Esc.
    ===================================================================== */
 (function exampleVideos() {
   var V = ['067', '068', '069'];
@@ -4016,7 +4017,8 @@ body.tab-hidden .tabPoster{display:flex}
   document.addEventListener('keydown', function (e) { if (opened && e.key === 'Escape') close(); });
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('#exbtn, #exBtn');
-    if (a) { e.preventDefault(); open(); }
+    /* «Тест креатива» на странице примера – презентация заново, с самого начала */
+    if (a) { e.preventDefault(); close(); if (window.__siri) window.__siri.begin(); else open(); }
     if (e.target.closest && e.target.closest('.lflag, #flags button')) setTimeout(texts, 150);
   });
   window.addEventListener('hashchange', function () { if (location.hash === '#videos') open(); });

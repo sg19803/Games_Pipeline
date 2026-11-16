@@ -1384,9 +1384,8 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     td.textContent = L({ ru: 'Десктоп-версия', en: 'Desktop version', es: 'Versión de escritorio', uk: 'Десктоп-версія' });
     td.href = (window.__EXAMPLE ? 'example' : './') + '?desktop=1&lang=' + LANG;
     var eb = document.getElementById('exBtn');
-    eb.textContent = L(window.__EXAMPLE ? { ru: 'Готовые креативы', en: 'Finished creatives', es: 'Creatividades terminadas', uk: 'Готові креативи' }
-                                       : { ru: 'Тест креатива', en: 'Creative test', es: 'Prueba de creatividad', uk: 'Тест креативу' });
-    eb.href = window.__EXAMPLE ? '#videos' : 'example-mobile?lang=' + LANG;
+    eb.textContent = L({ ru: 'Тест креатива', en: 'Creative test', es: 'Prueba de creatividad', uk: 'Тест креативу' });
+    eb.href = window.__EXAMPLE ? '#start' : 'example-mobile?lang=' + LANG;
     calcHues();
     renderSchema(); renderTeam(); renderProgs(); renderFolder();
     var fb = document.querySelectorAll('#flags button');
@@ -1775,7 +1774,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   })();
 
   /* свежая версия: страница хранится в кэше телефона до 10 минут – сверяемся с сервером и один раз перезагружаемся */
-  var MBUILD = 'm-2026-11-16-2';
+  var MBUILD = 'm-2026-11-16-3';
   (function freshCheck() {
     try {
       fetch(location.pathname + '?nc=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
@@ -1800,8 +1799,8 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
 <script>
 /* =====================================================================
    ГОТОВЫЕ КРЕАТИВЫ: три финальных видео (V067–V069) – экран после презентации.
-   Каждое видео играет прямо в своей карточке по кнопке Play. Открыть снова – красная кнопка
-   «Готовые креативы» вверху страницы (адрес #videos). Закрыть – крестик или Esc.
+   Каждое видео играет прямо в своей карточке по кнопке Play. Открыть снова – адрес #videos
+   (красная кнопка «Тест креатива» вверху запускает презентацию заново). Закрыть – крестик или Esc.
    ===================================================================== */
 (function exampleVideos() {
   var V = ['067', '068', '069'];
@@ -1898,7 +1897,8 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   document.addEventListener('keydown', function (e) { if (opened && e.key === 'Escape') close(); });
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('#exbtn, #exBtn');
-    if (a) { e.preventDefault(); open(); }
+    /* «Тест креатива» на странице примера – презентация заново, с самого начала */
+    if (a) { e.preventDefault(); close(); if (window.__siri) window.__siri.begin(); else open(); }
     if (e.target.closest && e.target.closest('.lflag, #flags button')) setTimeout(texts, 150);
   });
   window.addEventListener('hashchange', function () { if (location.hash === '#videos') open(); });

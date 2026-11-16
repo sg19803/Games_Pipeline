@@ -1383,9 +1383,8 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
     td.textContent = L({ ru: 'Десктоп-версия', en: 'Desktop version', es: 'Versión de escritorio', uk: 'Десктоп-версія' });
     td.href = (window.__EXAMPLE ? 'example' : './') + '?desktop=1&lang=' + LANG;
     var eb = document.getElementById('exBtn');
-    eb.textContent = L(window.__EXAMPLE ? { ru: 'Готовые креативы', en: 'Finished creatives', es: 'Creatividades terminadas', uk: 'Готові креативи' }
-                                       : { ru: 'Тест креатива', en: 'Creative test', es: 'Prueba de creatividad', uk: 'Тест креативу' });
-    eb.href = window.__EXAMPLE ? '#videos' : 'example-mobile?lang=' + LANG;
+    eb.textContent = L({ ru: 'Тест креатива', en: 'Creative test', es: 'Prueba de creatividad', uk: 'Тест креативу' });
+    eb.href = window.__EXAMPLE ? '#start' : 'example-mobile?lang=' + LANG;
     calcHues();
     renderSchema(); renderTeam(); renderProgs(); renderFolder();
     var fb = document.querySelectorAll('#flags button');
@@ -1774,7 +1773,7 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
   })();
 
   /* свежая версия: страница хранится в кэше телефона до 10 минут – сверяемся с сервером и один раз перезагружаемся */
-  var MBUILD = 'm-2026-11-16-2';
+  var MBUILD = 'm-2026-11-16-3';
   (function freshCheck() {
     try {
       fetch(location.pathname + '?nc=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
