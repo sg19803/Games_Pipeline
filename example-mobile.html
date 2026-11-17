@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+<meta name="copyright" content="© 2026 Sergio Vida (Serhii Horbunov). All rights reserved.">
+
 <meta charset="utf-8">
 <script>window.__EXAMPLE = true;</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -2781,5 +2783,46 @@ body.gmove .gv{opacity:0; transition:opacity .08s ease}
 })();
 </script>
 
+<!-- © 2026 Sergio Vida (Serhii Horbunov). All rights reserved. Intellectual property notice. -->
+<style id="sv-ip-css">
+#sv-ip{position:fixed;left:12px;bottom:6px;z-index:2147483000;max-width:min(520px,46vw);font:400 10px/1.35 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.01em;color:rgba(255,255,255,.5);text-align:left;pointer-events:none;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+#sv-ip a{color:rgba(255,255,255,.72);text-decoration:underline;text-underline-offset:2px;pointer-events:auto}
+#sv-ip a:hover{color:#fff}
+@media (max-width:760px){#sv-ip{left:8px;right:8px;max-width:none;bottom:calc(2px + env(safe-area-inset-bottom));text-align:center;font-size:8.5px}}
+@media print{#sv-ip{position:static;color:#555;text-shadow:none}}
+</style>
+<div id="sv-ip" role="note" lang="ru"></div>
+<script>
+(function () {
+  var T = {
+    ru: '© 2026 Sergio Vida (Сергей Горбунов). Этот пайплайн – моя интеллектуальная собственность. Копирование, использование и адаптация – только после согласования со мной: ',
+    uk: '© 2026 Sergio Vida (Сергій Горбунов). Цей пайплайн – моя інтелектуальна власність. Копіювання, використання й адаптація – лише після погодження зі мною: ',
+    en: '© 2026 Sergio Vida (Serhii Horbunov). This pipeline is my intellectual property. Copying, use or adaptation only with my prior permission: ',
+    es: '© 2026 Sergio Vida (Serhii Horbunov). Este pipeline es mi propiedad intelectual. Copiarlo, usarlo o adaptarlo solo con mi autorización previa: '
+  };
+  var box = document.getElementById('sv-ip');
+  function lang() {
+    var l = (document.documentElement.lang || 'ru').slice(0, 2).toLowerCase();
+    if (l === 'ua') l = 'uk';
+    return T[l] ? l : 'en';
+  }
+  var cur = '';
+  function render() {
+    var l = lang();
+    if (l === cur) return;
+    cur = l;
+    box.lang = l;
+    box.textContent = T[l];
+    var a = document.createElement('a');
+    a.href = 'https://sergiovida.com';
+    a.target = '_top';
+    a.rel = 'noopener';
+    a.textContent = 'sergiovida.com';
+    box.appendChild(a);
+  }
+  render();
+  new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+})();
+</script>
 </body>
 </html>
